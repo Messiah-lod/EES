@@ -139,7 +139,7 @@ GDS* GDS::Call()
 				putenv(AppPath.c_str());
 
 				path.append("fbclient.dll");
-				mHandle = LoadLibrary(path.c_str());
+				mHandle = LoadLibrary((path.c_str()));
 				if (mHandle != 0 || newpos == std::string::npos) break;
 			}
 			pos = newpos + 1;

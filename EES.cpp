@@ -407,37 +407,37 @@ void EES::setDataToModel(QString fileName)
 
 }
 
-void EES::create_page(SQL_to_FB &DB_conn, std::string page_name, std::string parent_page, std::string template_page, std::string event_group, int id_subject)
-{
-	DB_conn.create_new_page(page_name, 660, 600, parent_page, template_page, "120:120:120", "window");
-	DB_conn.create_new_obj_onpage("", 131, 90, 120, 9, page_name, "VKLN_G", "Шина_DC", "0:92:0", "0:92:0", 1, id_subject);
-	DB_conn.create_new_obj_onpage("", 112, 90, 0, 0, page_name, "VKLN_G", "Выключатель+ЗН 6кВ_стрелка", "0:92:0", "0:92:0", 1, id_subject);
-	DB_conn.create_new_obj_onpage("", 40, 139, 0, 0, page_name, "VKLN_G", "Плакаты выключатель", "120:120:120", "120:120:120", 0, id_subject);
-	DB_conn.create_new_obj_onpage("", 75, 203, 100, 41, page_name, "VKLN_G", "Подпись_VKL", "120:120:120", "120:120:120", 0, id_subject);
-	DB_conn.create_new_obj_onpage("", 10, 289, 0, 0, page_name, "VKLN_G", "Плакаты заземлитель", "120:120:120", "120:120:120", 0, id_subject);
-	DB_conn.create_new_obj_onpage("", 41, 357, 80, 41, page_name, "VKLN_G", "Подпись_ZN", "120:120:120", "120:120:120", 0, id_subject);
-	DB_conn.create_new_obj_onpage("", 120, 470, 0, 0, page_name, "VKLN_G", "Наименование_VKL", "120:120:120", "120:120:120", 0, id_subject);
-	DB_conn.create_new_obj_onpage("", 115, 60, 0, 0, page_name, "RAD_G", "АДм Стандарт+ед.изм", "120:120:120", "120:120:120", 0);
-	DB_conn.create_new_obj_onpage("", 390, 90, 0, 0, page_name, "EKRA_103", "ЭКРА", "120:120:120", "120:120:120", 0);
-
-//	DB_conn.create_new_prim_onpage("", "text", "[Ячейка 1][12][Arial][255:255:255]", 187, 101, 75, 16, page_name, 0, "120:120:120", "120:120:120", 1);
-	DB_conn.create_new_prim_onpage("event", "text", "[СОБЫТИЯ][10][Arial][0:0:0]", 410, 600, 117, 29, page_name, 1, "192:192:192", "0:0:0", 0);
-	DB_conn.create_new_prim_onpage("", "image", "Иконка История событий", 535, 600, 31, 32, page_name, 1, "192:192:192", "0:0:0", 2);
-	DB_conn.create_new_prim_onpage("butevent", "button", "[ ][12][Arial][255:255:255]", 529, 595, 43, 38, page_name, 0, "120:120:120", "120:120:120", 2);
-
-	//DB_conn.create_new_event(page_name, parent_page);
-
-	DB_conn.create_new_anim_onpage("[foncolor][event][Пред_2][1]", "0:128:255", page_name, "event", event_group);
-	DB_conn.create_new_anim_onpage("[foncolor][event][пред][1]", "255:255:0", page_name, "event", event_group);
-	DB_conn.create_new_anim_onpage("[foncolor][event][авар][1]", "255:0:0", page_name, "event", event_group);
-
-	DB_conn.create_new_anim_onpage("[flashfoncolor][event][Пред_2][1]", "0;128:128:128", page_name, "event", event_group);
-	DB_conn.create_new_anim_onpage("[flashfoncolor][event][пред][1]", "0;128:128:128", page_name, "event", event_group);
-	DB_conn.create_new_anim_onpage("[flashfoncolor][event][авар][1]", "0;128:128:128", page_name, "event", event_group);
-
-	DB_conn.create_new_anim_onpage("[textcolor][event][Пред_2][1]", "0:0:0", page_name, "event", event_group);
-	DB_conn.create_new_anim_onpage("[textcolor][event][пред][1]", "0:0:0", page_name, "event", event_group);
-	DB_conn.create_new_anim_onpage("[textcolor][event][авар][1]", "0:0:0", page_name, "event", event_group);
-
-	DB_conn.create_new_rec_onpage("event", page_name, "butevent", event_group, "[5][1][0][0]");
-}
+//void EES::create_page(SQL_to_FB &DB_conn, std::string page_name, std::string parent_page, std::string template_page, std::string event_group, int id_subject)
+//{
+//	DB_conn.create_new_page(page_name, 660, 600, parent_page, template_page, "120:120:120", "window");
+//	DB_conn.create_new_obj_onpage("", 131, 90, 120, 9, page_name, "VKLN_G", "Шина_DC", "0:92:0", "0:92:0", 1, id_subject);
+//	DB_conn.create_new_obj_onpage("", 112, 90, 0, 0, page_name, "VKLN_G", "Выключатель+ЗН 6кВ_стрелка", "0:92:0", "0:92:0", 1, id_subject);
+//	DB_conn.create_new_obj_onpage("", 40, 139, 0, 0, page_name, "VKLN_G", "Плакаты выключатель", "120:120:120", "120:120:120", 0, id_subject);
+//	DB_conn.create_new_obj_onpage("", 75, 203, 100, 41, page_name, "VKLN_G", "Подпись_VKL", "120:120:120", "120:120:120", 0, id_subject);
+//	DB_conn.create_new_obj_onpage("", 10, 289, 0, 0, page_name, "VKLN_G", "Плакаты заземлитель", "120:120:120", "120:120:120", 0, id_subject);
+//	DB_conn.create_new_obj_onpage("", 41, 357, 80, 41, page_name, "VKLN_G", "Подпись_ZN", "120:120:120", "120:120:120", 0, id_subject);
+//	DB_conn.create_new_obj_onpage("", 120, 470, 0, 0, page_name, "VKLN_G", "Наименование_VKL", "120:120:120", "120:120:120", 0, id_subject);
+//	DB_conn.create_new_obj_onpage("", 115, 60, 0, 0, page_name, "RAD_G", "АДм Стандарт+ед.изм", "120:120:120", "120:120:120", 0);
+//	DB_conn.create_new_obj_onpage("", 390, 90, 0, 0, page_name, "EKRA_103", "ЭКРА", "120:120:120", "120:120:120", 0);
+//
+////	DB_conn.create_new_prim_onpage("", "text", "[Ячейка 1][12][Arial][255:255:255]", 187, 101, 75, 16, page_name, 0, "120:120:120", "120:120:120", 1);
+//	DB_conn.create_new_prim_onpage("event", "text", "[СОБЫТИЯ][10][Arial][0:0:0]", 410, 600, 117, 29, page_name, 1, "192:192:192", "0:0:0", 0);
+//	DB_conn.create_new_prim_onpage("", "image", "Иконка История событий", 535, 600, 31, 32, page_name, 1, "192:192:192", "0:0:0", 2);
+//	DB_conn.create_new_prim_onpage("butevent", "button", "[ ][12][Arial][255:255:255]", 529, 595, 43, 38, page_name, 0, "120:120:120", "120:120:120", 2);
+//
+//	//DB_conn.create_new_event(page_name, parent_page);
+//
+//	DB_conn.create_new_anim_onpage("[foncolor][event][Пред_2][1]", "0:128:255", page_name, "event", event_group);
+//	DB_conn.create_new_anim_onpage("[foncolor][event][пред][1]", "255:255:0", page_name, "event", event_group);
+//	DB_conn.create_new_anim_onpage("[foncolor][event][авар][1]", "255:0:0", page_name, "event", event_group);
+//
+//	DB_conn.create_new_anim_onpage("[flashfoncolor][event][Пред_2][1]", "0;128:128:128", page_name, "event", event_group);
+//	DB_conn.create_new_anim_onpage("[flashfoncolor][event][пред][1]", "0;128:128:128", page_name, "event", event_group);
+//	DB_conn.create_new_anim_onpage("[flashfoncolor][event][авар][1]", "0;128:128:128", page_name, "event", event_group);
+//
+//	DB_conn.create_new_anim_onpage("[textcolor][event][Пред_2][1]", "0:0:0", page_name, "event", event_group);
+//	DB_conn.create_new_anim_onpage("[textcolor][event][пред][1]", "0:0:0", page_name, "event", event_group);
+//	DB_conn.create_new_anim_onpage("[textcolor][event][авар][1]", "0:0:0", page_name, "event", event_group);
+//
+//	DB_conn.create_new_rec_onpage("event", page_name, "butevent", event_group, "[5][1][0][0]");
+//}

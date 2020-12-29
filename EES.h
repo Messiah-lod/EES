@@ -26,7 +26,7 @@ class EES : public QWidget
 public:
 	EES(QWidget *parent = 0);
 	void retranslateUi();
-	void create_page(SQL_to_FB &DB_conn, std::string page_name, std::string parent_page, std::string template_page, std::string event_group, int id_subject = 0);
+//	void create_page(SQL_to_FB &DB_conn, std::string page_name, std::string parent_page, std::string template_page, std::string event_group, int id_subject = 0);
 	int initializingConnection(std::string path);
 
 private:
