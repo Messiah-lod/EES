@@ -1882,7 +1882,7 @@ int SQL_to_FB::create_new_digital_object(std::string controller, std::string obj
 	}
 
 	if (resource.size() == 0) resource = "0";
-
+	if (plcAdress.size() == 0) plcAdress = "0";
 	//Создадим запрос на создание объекта
 	query.clear();
 	query = "INSERT INTO CARDS (MARKA, NAME, DISC, OBJSIGN, OBJTYPEID, PLC_GR, PLC_ADRESS, PLC_ID, PLC_VARNAME, ARH_PER, USERID, KLID, EVKLID, KKS, LINKDEVICEID, SREZCONTROL)"

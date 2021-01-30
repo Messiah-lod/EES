@@ -91,7 +91,7 @@ void EES::on_buttonLoad_clicked()
 	try
 	{
 		fileName = QFileDialog::getOpenFileName(nullptr,
-			tr("Open file"), QDir::currentPath(), tr("Data Files (*.xls *.xlsx)"));
+			tr("Open file"), QDir::currentPath(), tr("Data Files (*.xls *.xlsx *.xlsm)"));
 
 	}
 	catch (const std::exception&)
