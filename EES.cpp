@@ -139,7 +139,7 @@ void EES::on_buttonUpLoad_clicked()
 	int evkl_subject = 0;// ID созданной группы событий
 	int id_techprog = 0;// ID созданной тех. программы
 
-	std::vector <bool> isTechProg;//проверка присутвия тех. программы ДО проливки
+//	std::vector <bool> isTechProg;//проверка присутвия тех. программы ДО проливки
 
 	try
 	{
@@ -149,13 +149,13 @@ void EES::on_buttonUpLoad_clicked()
 			textEditLogs->append(tr("Upload START!", "txt_connect"));
 			logs << tr("Upload START!", "txt_connect").toStdString() << std::endl;
 
-			for (size_t j = 0; j < tableData->rowCount(); j++)//проверка присутвия тех. программы ДО проливки
-			{
-				index = tableView->model()->index(j, 0);
-				technicalProgramName = tableData->getObject(index).getTechnicalProgramName().toString().toLocal8Bit();
-				id_techprog = dataBase.presenceObj(technicalProgramName,"programm");
-				(id_techprog != 1 && id_techprog == 0) ? isTechProg.push_back(true) : isTechProg.push_back(false);
-			}
+			//for (size_t j = 0; j < tableData->rowCount(); j++)//проверка присутвия тех. программы ДО проливки
+			//{
+			//	index = tableView->model()->index(j, 0);
+			//	technicalProgramName = tableData->getObject(index).getTechnicalProgramName().toString().toLocal8Bit();
+			//	id_techprog = dataBase.presenceObj(technicalProgramName,"programm");//НЕ ВЕРНО!!! нет поиска программы в конкретном ресурсе!
+			//	(id_techprog != 1 && id_techprog == 0) ? isTechProg.push_back(true) : isTechProg.push_back(false);
+			//}
 
 			for (size_t i = 0; i < tableData->rowCount(); i++)
 			{
@@ -207,14 +207,7 @@ void EES::on_buttonUpLoad_clicked()
 
 				logs << tr("Create new technical programm, id = ", "txt_connect").toStdString() << std::to_string(id_techprog) << std::endl;
 
-				//	добавить условие проверки созданной тех. программы в данном цикле работы, если да, 
-				//	то создаем много объектов на одной, если нет, то не создаем объекты на программе
-				//if (id_techprog != 4 && id_techprog != 1)//тех. программа была или создана успешно
-				//{
-
-				//нужна проверка - есть объект на тех.программе или нет.
-					dataBase.object_on_technological_program(technicalProgramName, controller, resource, objectTemplate, objectType, mark);
-				//}
+				dataBase.object_on_technological_program(technicalProgramName, controller, resource, objectTemplate, objectType, mark);
 			}
 
 			textEditLogs->append(tr("Uploading completed!", "txt_connect"));

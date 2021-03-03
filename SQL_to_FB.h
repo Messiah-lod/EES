@@ -74,8 +74,9 @@ private:
 	void pars_type_prim(std::string content, std::string & txt, std::string & size, std::string & font, std::string & color);
 	void SQL_to_FB::get_type_anim(std::string type_anim, std::string parametr, std::string content, int &atribid, int &paramid, int &oper, int &constvalue, std::string &actparam, std::string &varerror);
 	void get_type_rec(std::string type_rec, std::string parametr, std::string value, int & type_id, int & param_int, float & param_float, std::string & param_st, int & evparams, int & dparams, int & userright);
-	void template_on_technological_program(std::string name_page, std::string controller, std::string resource, std::string templateObj, std::string type_obj, std::any templateID, int deltaX=0, int deltaY=0);
-	void replaceString(std::string & input_string, const std::string & searched_string, const std::string & replace_string);
+	void template_on_technological_program(std::any pageID, std::any templateID, int deltaX=0, int deltaY=0);
+	void replaceString(std::string & input_string, const std::string searched_string, const std::string replace_string);
 	void search_param(std::string inputString, std::string param, std::string &out, const char symbol);
+	void moveTemplate(int deltaX, int deltaY, std::vector <std::any> list);
 };
 

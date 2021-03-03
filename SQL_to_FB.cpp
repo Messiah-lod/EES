@@ -412,9 +412,9 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 			
 		if (std::any_cast<int>(tmpID) != 0) 	//прверим уникальность имени
 		{
-			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: имя не уникально!" << std::endl;
+			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: имя не уникально! Создание новой программы не требуется." << std::endl;
 			logs << timeToLogs() << "Метод create_new_technical_programm: tmpID = " << any_to_str(tmpID) << std::endl;
-			errorName = true;
+			return std::any_cast<int>(tmpID);
 		}
 		if	((name_page[0] >= '0') && (name_page[0] <= '9'))		//имя не начинается с цифры
 		{
@@ -431,7 +431,7 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: имя содержит не корректные символы!" << std::endl;
 		}
 
-
+		if (errorName) break;
 
 
 	}
@@ -452,26 +452,26 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 		if (parentpage.size() == 0) 						//Проверка на пустое имя
 		{
 			errorNameTemplate = true;
-			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: пустое имя группы тех. программы!" << std::endl;
+			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: пустое имя ГРУППЫ тех. программы!" << std::endl;
 		}
 		for (int i = 0; i < parentpage.length(); i++)
 		{
 			if (((parentpage[i] >= 'а') && (parentpage[i] <= 'я')) || //проверим кирилицу
 				((parentpage[i] >= 'А') && (parentpage[i] <= 'Я')))
 			{
-				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: кирилица в имени группы!" << std::endl;
+				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: кирилица в имени ГРУППЫ!" << std::endl;
 				errorNameTemplate = true;
 			}
 
 			if (std::any_cast<int>(tmpID) != 0) 	//прверим уникальность имени
 			{
-				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: имя группы не уникально!" << std::endl;
+				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: имя ГРУППЫ не уникально!" << std::endl;
 				logs << timeToLogs() << "Метод create_new_technical_programm: tmpID = " << any_to_str(tmpID) << std::endl;
 				errorNameTemplate = true;
 			}
 			if ((parentpage[0] >= '0') && (parentpage[0] <= '9'))		//имя не начинается с цифры
 			{
-				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: имя группы начинается с цифры!" << std::endl;
+				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: имя ГРУППЫ начинается с цифры!" << std::endl;
 				errorNameTemplate = true;
 			}
 			if (((parentpage[i] >= '!') && (parentpage[i] <= '/')) ||//проверка отсутствия символов
@@ -481,8 +481,9 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 				((parentpage[i] >= '{') && (parentpage[i] <= '~')))
 			{
 				errorNameTemplate = true;
-				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: имя группы содержит не корректные символы!" << std::endl;
+				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: имя ГРУППЫ содержит не корректные символы!" << std::endl;
 			}
+			if (errorNameTemplate) break;
 
 		}
 		if (!errorNameTemplate)
@@ -517,8 +518,7 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 		
 	}
 
-	if (!errorName)
-	{
+	if (!errorName){
 		//создадим тех. программу с +1 (count, если пришлось создать группу тех. программ) номером выполнения от максимального
 		query.clear();
 		query = "INSERT INTO ISAOBJ(NAME, KINDOBJ, USERID, GROUPID, LIBID, \"ORDER\") VALUES(  '" +
@@ -560,12 +560,7 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 		write(query);
 		logs << timeToLogs() << "Новая тех. программа создана. Имя: " << name_page << ", ID: " << any_to_str(isaobjID) << std::endl;
 	}
-	else
-	{
-		logs << timeToLogs() << "Ошибка в методе create_new_technical_programm:" << std::endl;
-		logs << timeToLogs() << "Технологическая программа была не создана т.к. наименование тех. программы не корректно!" << std::endl;
-		return 1;
-	}
+
 	return std::any_cast<int>(isaobjID);
 }
 
@@ -776,6 +771,7 @@ void SQL_to_FB::read(std::string query, std::string table, std::string coll_answ
 		catch (std::exception& exp)
 		{
 			logs << timeToLogs() << "Исключение в методе read:" << std::endl;
+			logs << timeToLogs() << "Запрос вида:" << query << std::endl;
 			logs << exp.what() << std::endl;
 		}
 		tr->Commit();
@@ -837,6 +833,7 @@ void SQL_to_FB::read(std::string query, std::string table, std::string coll_answ
 		catch (std::exception& exp)
 		{
 			logs << timeToLogs() << "Исключение в методе read:" << std::endl;
+			logs << timeToLogs() << "Запрос вида:" << query << std::endl;
 			logs << exp.what() << std::endl;
 		}
 		tr->Commit();
@@ -1432,7 +1429,7 @@ int SQL_to_FB::object_on_technological_program(std::string name_page, std::strin
 	}
 	//ID шаблона найден****************************
 
-	template_on_technological_program(name_page, controller, resource, templateObj, type_obj, templateID);
+	template_on_technological_program(pageID, templateID);
 
 	//***********************************************************************************************
 	//***********************************************************************************************
@@ -1516,7 +1513,6 @@ int SQL_to_FB::object_on_technological_program(std::string name_page, std::strin
 		write(query);
 	}
 	/*
-	Создть функционал добавления безэкземплярных блоков.
 	После успешного создания объектов в таблице ISAPAGECONTENTS, необходимо отобрать все блоки, у которых FIELDSID <> 0
 	сохранить их ID, FIELDSID, OBJMSID, PAGEID и создать в таблице ISAOBJFIELDS новые записи:
 	ID = FIELDSID
@@ -1532,7 +1528,7 @@ int SQL_to_FB::object_on_technological_program(std::string name_page, std::strin
 	return 0;
 }
 
-void SQL_to_FB::template_on_technological_program(std::string name_page, std::string controller, std::string resource, std::string templateObj, std::string type_obj, std::any templateID, int deltaX, int deltaY)
+void SQL_to_FB::template_on_technological_program(std::any pageID, std::any templateID, int deltaX, int deltaY)
 {
 	std::any params;//параметр связи
 	std::any fpParams;//параметр блока в связи
@@ -1544,8 +1540,11 @@ void SQL_to_FB::template_on_technological_program(std::string name_page, std::st
 	std::string tmp, fp, lp;
 
 	std::vector <std::any> linkIDlist;//ID всех связей в шаблоне
-	//Листы для хранения ID и параметра новых блоков на заданной тех. программе
+	//Листы для хранения ID новых блоков на заданной тех. программе
 	std::vector <std::any> blocksIDlistProgram;
+	//Листы для хранения ID существующих блоков на заданной тех. программе
+	std::vector <std::any> oldBlocksIDlistProgram;
+	//Листы для хранения параметра новых блоков на заданной тех. программе
 	std::vector <std::any> blocksParamlistProgram;
 
 	linkID = 0;
@@ -1561,7 +1560,7 @@ void SQL_to_FB::template_on_technological_program(std::string name_page, std::st
 			any_to_str(templateID) + "'";
 		write(query);
 
-		//запрос на лист всех ID связей с GROBJTYPE = 20 в нужном шаблоне
+		//запрос на лист всех ID связей с GROBJTYPE = 20 в нужном шаблоне, это связи блоков
 		query.clear();
 		query = "SELECT ID FROM ISAPAGECONTENTS WHERE PAGEID = " + any_to_str(templateID) + " AND GROBJTYPE = 20";
 		read(query, "ISAPAGECONTENTS", "ID", linkIDlist);
@@ -1631,20 +1630,54 @@ void SQL_to_FB::template_on_technological_program(std::string name_page, std::st
 		logs << timeToLogs() << "Шаблон объекта не найден!" << std::endl;
 		logs << timeToLogs() << "Создание объектов тех. программы выполнено не было." << std::endl;
 	}
+
+
+	//*********************************************************************
+	//*****Организуем сдвиг шаблона оносительно самой низкой точки текущих объектов
+	int X = 0, Y = 0;//координаты начала установки шаблона
+	int maxYPage = 0, maxHeightPage = 0, maxSummPage = 0;
+	std::any tmpANY;
+
+	query.clear();
+	query = "SELECT ID FROM ISAPAGECONTENTS WHERE PAGEID = " + any_to_str(pageID);
+	read(query, "ISAPAGECONTENTS", "ID", oldBlocksIDlistProgram);
+
+	if (deltaX == 0 && deltaY == 0) {//если в вызове метода жестко прописали координаты сдвига
+		for (size_t i = 0; i < oldBlocksIDlistProgram.size(); i++) {
+			get_param("ISAPAGECONTENTS", "ID", "Y", any_to_str(oldBlocksIDlistProgram[i]), tmpANY);
+			maxYPage = std::any_cast<int>(tmpANY);
+			get_param("ISAPAGECONTENTS", "ID", "HEIGHT", any_to_str(oldBlocksIDlistProgram[i]), tmpANY);
+			maxHeightPage = std::any_cast<int>(tmpANY);
+			maxSummPage = maxYPage + maxHeightPage;
+			if (Y < maxSummPage) Y = maxSummPage;
+		}
+		moveTemplate(X, Y, blocksIDlistProgram);
+	}
+	else moveTemplate(deltaX, deltaY, blocksIDlistProgram);
 	
+
+	//****************увеличим лист кратно шаблону
+	for (size_t i = 0; i < blocksIDlistProgram.size(); i++)
+	{
+		oldBlocksIDlistProgram.push_back(blocksIDlistProgram[i]);
+	}
+	for (size_t i = 0; i < oldBlocksIDlistProgram.size(); i++) {
+		get_param("ISAPAGECONTENTS", "ID", "Y", any_to_str(oldBlocksIDlistProgram[i]), tmpANY);
+		maxYPage = std::any_cast<int>(tmpANY);
+		get_param("ISAPAGECONTENTS", "ID", "HEIGHT", any_to_str(oldBlocksIDlistProgram[i]), tmpANY);
+		maxHeightPage = std::any_cast<int>(tmpANY);
+		maxSummPage = maxYPage + maxHeightPage;
+		if (Y < maxSummPage) Y = maxSummPage;
+	}
+	int i = 1;
+	while (Y > 1500 * i) i++;
+	query = "UPDATE ISAGRPAGES SET HEIGHT = '" + std::to_string(1500*i) +
+		"'  WHERE ID = ' " + any_to_str(pageID) + "' ";
+	write(query);
 }
 
-void SQL_to_FB::replaceString(std::string& input_string, const std::string& searched_string, const std::string& replace_string)
+void SQL_to_FB::replaceString(std::string& input_string, const std::string searched_string, const std::string replace_string)
 {
-//	logs << "*****************Вход в метод replaceString******************" << std::endl;
-//	logs << "Подопытная строка" << std::endl;
-//	logs << input_string << std::endl;
-//	logs << "Ищем старый ID блока" << std::endl;
-//	logs << searched_string << std::endl;
-//	logs << "Заменяем вот на этот новый ID блока" << std::endl;
-//	logs << replace_string << std::endl;
-
-
 	std::size_t replace_pos = input_string.find(searched_string);
 
 	if (replace_pos != std::string::npos)
@@ -1658,10 +1691,6 @@ void SQL_to_FB::replaceString(std::string& input_string, const std::string& sear
 		for (std::size_t i = 0; i < replace_string.size(); ++i)
 			input_string[i + replace_pos] = replace_string[i];
 	}
-
-//	logs << "************************Выходная строка*******************" << std::endl;
-//	logs << input_string << std::endl;
-//	logs << "********************************************************" << std::endl;
 }
 
 void SQL_to_FB::search_param(std::string inputString, std::string param, std::string & out, const char symbol)
@@ -1683,6 +1712,8 @@ void SQL_to_FB::search_param(std::string inputString, std::string param, std::st
 		}
 	}
 }
+
+
 
 int SQL_to_FB::create_new_object(std::string controller, std::string resource, std::string templateObj, std::string type_obj,
 	std::string mark_obj, std::string name_obj, std::string evklid_obj, std::string disc_obj, std::string KKS_obj, std::string sign_obj)
@@ -2191,4 +2222,84 @@ int SQL_to_FB::presenceObj(std::string name, std::string typeObject, std::string
 
 	logs << timeToLogs() << "Исключение в методе presenceObj. Не был выполнен вход в метод для определения ID." << std::endl;
 	return 1;
+}
+
+void SQL_to_FB::moveTemplate(int deltaX, int deltaY, std::vector <std::any> listIdObj)
+{
+	const int DELTA = 100;//расстояние от последнего блока до нового
+	std::any X, Y;
+	std::any params;
+	std::string parametrSTR, tmp;
+	std::string coordX;
+	std::string coordY;
+	int count = 0;
+	int nposParams = 0; //номер позиции параметра PL
+	int sizeParams = 0;
+
+	for (size_t i = 0; i < listIdObj.size(); i++) {
+		X = 0; Y = 0; sizeParams = 0; parametrSTR.clear();
+		count = 0;
+		get_param("ISAPAGECONTENTS", "ID", "Y", listIdObj[i], Y);
+		get_param("ISAPAGECONTENTS", "ID", "X", listIdObj[i], X);
+
+//		logs << timeToLogs() << "Стартовые координаты X = " << any_to_str(X) << "  и Y = " << any_to_str(Y) << std::endl;
+
+		get_param("ISAPAGECONTENTS", "ID", "GROBJTYPE", "PARAMS" ,listIdObj[i], "20", params);
+
+		if (any_to_str(params).size() > 1) {
+			search_param(any_to_str(params), "[PL]=", parametrSTR, '[');
+			tmp = any_to_str(params);
+			nposParams = tmp.find(parametrSTR);//сохраним позицию для вставки нового параметра
+			sizeParams = parametrSTR.size() - 2;
+			tmp.erase(nposParams, sizeParams);
+			
+//			logs << timeToLogs() << "Стартовые параметры полилинии = " << parametrSTR << std::endl;
+
+			while (count < parametrSTR.size())
+			{
+				coordX.clear();
+				coordY.clear();
+				//блок для Х
+				if (parametrSTR[count] == '(') {
+					count++;
+					while (parametrSTR[count] != ',') {
+						coordX += parametrSTR[count];
+						parametrSTR.erase(count, 1);
+					};
+					parametrSTR.insert(count, std::to_string(stoi(coordX) + DELTA + deltaX));
+				}
+				//блок для Y
+				if (parametrSTR[count] == ',') {
+					count++;
+					while (parametrSTR[count] != ')') {
+						coordY += parametrSTR[count];
+						parametrSTR.erase(count, 1);
+					};
+					parametrSTR.insert(count, std::to_string(stoi(coordY) + DELTA + deltaY));
+				}
+
+				count++;
+
+			}
+			tmp.insert(nposParams, parametrSTR);
+
+//			logs << timeToLogs() << "Измененные параметры полилинии = " << parametrSTR << std::endl;
+
+			query = "UPDATE ISAPAGECONTENTS SET PARAMS = '" + tmp +
+				"'  WHERE ID = ' " + any_to_str(listIdObj[i]) + "' ";
+			write(query);
+		}
+
+		X = std::any_cast<int>(X) + DELTA + deltaX;
+		Y = std::any_cast<int>(Y) + DELTA + deltaY;
+
+//		logs << timeToLogs() << "Измененные координаты X = " << any_to_str(X) << "  и Y = " << any_to_str(Y) << std::endl;
+
+		query = "UPDATE ISAPAGECONTENTS SET X = " + any_to_str(X) +
+			"  WHERE ID = ' " + any_to_str(listIdObj[i]) + "' ";
+		write(query);
+		query = "UPDATE ISAPAGECONTENTS SET Y = " + any_to_str(Y) +
+			"  WHERE ID = ' " + any_to_str(listIdObj[i]) + "' ";
+		write(query);
+	}
 }
