@@ -11,11 +11,14 @@ int main(int argc, char *argv[])
 	SetConsoleOutputCP(1251);
 
 	QApplication a(argc, argv);
+	a.setStyle(QStyleFactory::create("fusion"));
 
 	QTranslator myTranslator;
 	myTranslator.load(QLocale::system().name());
-//	myTranslator.load("RU_ru");
 	a.installTranslator(&myTranslator);
+
+	const QIcon mainIcon = QIcon::fromTheme("mainIcon", QIcon("icon1.ico"));
+	a.setWindowIcon(mainIcon);
 
 	EES excelExportScada;
 	excelExportScada.setMinimumHeight(400);

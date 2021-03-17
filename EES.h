@@ -2,7 +2,8 @@
 
 #include "SQL_to_FB.h"
 #include "ObjectProject.h"
-#include "ObjectProjectData.h"
+#include "ModelLinkData.h"
+//#include "ObjectProjectData.h"
 
 #include <QtWidgets/QWidget>
 #include <QtWidgets>
@@ -30,9 +31,26 @@ public:
 	int initializingConnection(std::string path);
 
 private:
+
 	QSplitter *splitterVertical;
-	ObjectProject *tableData;
-	QTableView *tableView;
+
+	QTabWidget *tabWidget; //организуем вкладки
+	QWidget *tab_tableData;//вкладка создания
+	QWidget *tab_tableDataLink;//вкладка связки
+
+	enum Tab {//добавим перечисления для уникального идентифицирования вкладок
+		enum_tableData = 0,
+		enum_tableDataLink
+	};
+	
+	QGridLayout *grid_tab_tableData; //создаем грид, который кладем на вкладку
+	QTableView *tableView;//создаем вью, который положим на грид вкладки
+	ObjectProject *tableData;//создадим модель, которую вложим во вью
+
+	QGridLayout *grid_tableDataLink;//создаем грид, который кладем на вкладку
+	QTableView *tableViewLink;//создаем вью, который положим на грид вкладки
+	ModelLinkData *tableDataLink;//создадим модель, которую вложим во вью
+
 	QPushButton *buttonLoad;
 	QPushButton *buttonUpLoad;
 	QPushButton *buttonConnect;
@@ -45,12 +63,12 @@ private:
 	std::ofstream logs;
 	QString temp;
 
-	void setDataToModel(QString fileName);
+	void setDataToModel(QString fileName, int currentTab = 0);
 
 public slots:
 	void on_buttonLoad_clicked();
 	void on_buttonUpLoad_clicked();
 	void on_buttonConnect_clicked();
 	void slotTimerLogs();
-	
+	void closeTab(int index);
 };

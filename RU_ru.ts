@@ -4,96 +4,96 @@
 <context>
     <name>EES</name>
     <message>
-        <location filename="EES.cpp" line="94"/>
-        <location filename="EES.cpp" line="238"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="94"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="237"/>
         <source>Open file</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="94"/>
-        <source>Data Files (*.xls *.xlsx)</source>
-        <translation>файлы данных (*.xls *.xlsx)</translation>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="94"/>
+        <source>Data Files (*.xls *.xlsx *.xlsm)</source>
+        <translation></translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="104"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="104"/>
         <source>No file chosen!</source>
         <comment>txt_connect</comment>
         <translation>Файл не выбран!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="108"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="108"/>
         <source>File open: </source>
         <comment>txt_connect</comment>
-        <translation>Открыт файл:</translation>
+        <translation>Открыт файл: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="146"/>
-        <location filename="EES.cpp" line="147"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="149"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="150"/>
         <source>Upload START!</source>
         <comment>txt_connect</comment>
         <translation>Выгрузка началась!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="185"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="183"/>
         <source>transfer object </source>
         <comment>txt_connect</comment>
-        <translation>Перекачка объекта</translation>
+        <translation>Загружается объект</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="186"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="184"/>
         <source>transfer object: </source>
         <comment>txt_connect</comment>
-        <translation>Перекачиваем объект:</translation>
+        <translation>Загружается объект: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="199"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="202"/>
         <source>Create new object, id = </source>
         <comment>txt_connect</comment>
-        <translation>Создали новый объект, id = </translation>
+        <translation>Создание нового объекта, id = </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="205"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="208"/>
         <source>Create new technical programm, id = </source>
         <comment>txt_connect</comment>
-        <translation>Создали новую технологическую программу, id = </translation>
+        <translation>Создание новой технологической программы,  id = </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="214"/>
-        <source>Unloading completed!</source>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="213"/>
+        <source>Uploading completed!</source>
         <comment>txt_connect</comment>
-        <translation>Выгрузка окончена</translation>
+        <translation>Выгрузка завершена!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="218"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="217"/>
         <source>Connection failed or data not loaded!</source>
         <comment>txt_connect</comment>
-        <translation>Ошибка подключения или файл данных не загружен!</translation>
+        <translation>Ошибка подключения или данные не загружены!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="238"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="237"/>
         <source>Data base (*.gdb)</source>
-        <translation>Data base (*.gdb)</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="244"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="243"/>
         <source>No data base chosen!</source>
         <comment>txt_connect</comment>
-        <translation>База данных не выбрана!</translation>
+        <translation>Не выбрана база данных!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="253"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="252"/>
         <source>Connection successful!</source>
         <comment>txt_connect</comment>
-        <translation>Подключение успешо!</translation>
+        <translation>Подключение успешно!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="255"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="254"/>
         <source>Database connected: </source>
         <comment>txt_connect</comment>
         <translation>Подключение к базе данных: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="260"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="259"/>
         <source>Connection failed!</source>
         <comment>txt_connect</comment>
         <translation>Ошибка подключения!</translation>
@@ -102,197 +102,131 @@
 <context>
     <name>EESClass</name>
     <message>
-        <location filename="EES.ui" line="14"/>
+        <location filename="EES.ui" line="16"/>
         <source>EES</source>
-        <translation>EES</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="EES.ui" line="29"/>
-        <location filename="EES.ui" line="36"/>
-        <source>PushButton</source>
-        <translation>кнопка</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="60"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="60"/>
         <source>Excel Export Scada</source>
-        <translation>Excel Export Scada</translation>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>ObjectProject</name>
     <message>
-        <location filename="ObjectProject.cpp" line="65"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="65"/>
         <source>Mark</source>
         <comment>headerDataObjectProject</comment>
         <translation>Марка</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="67"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="67"/>
         <source>Name</source>
         <comment>headerDataObjectProject</comment>
         <translation>Наименование</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="69"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="69"/>
         <source>Description</source>
         <comment>headerDataObjectProject</comment>
         <translation>Описание</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="71"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="71"/>
         <source>Object Type</source>
         <comment>headerDataObjectProject</comment>
         <translation>Тип объекта</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="73"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="73"/>
+        <source>Digital</source>
+        <comment>headerDataObjectProject</comment>
+        <translation>Цифровой</translation>
+    </message>
+    <message>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="75"/>
         <source>Signature</source>
         <comment>headerDataObjectProject</comment>
         <translation>Подпись</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="75"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="77"/>
         <source>Controller</source>
         <comment>headerDataObjectProject</comment>
         <translation>Контроллер</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="77"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="79"/>
+        <source>PlcAdress</source>
+        <comment>headerDataObjectProject</comment>
+        <translation>Адрес</translation>
+    </message>
+    <message>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="81"/>
+        <source>PlcVarname</source>
+        <comment>headerDataObjectProject</comment>
+        <translation>PLC_переменная</translation>
+    </message>
+    <message>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="83"/>
         <source>Resource</source>
         <comment>headerDataObjectProject</comment>
         <translation>Ресурс</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="79"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="85"/>
         <source>Group events</source>
         <comment>headerDataObjectProject</comment>
         <translation>Группа событий</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="81"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="87"/>
         <source>KKS</source>
         <comment>headerDataObjectProject</comment>
         <translation>KKS</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="83"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="89"/>
         <source>Template object</source>
         <comment>headerDataObjectProject</comment>
         <translation>Шаблон объекта</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="85"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="91"/>
         <source>Mnemonic Frame Name</source>
         <comment>headerDataObjectProject</comment>
         <translation>Наименование мнемокадра</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="87"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="93"/>
         <source>Mnemonic Frame Template</source>
         <comment>headerDataObjectProject</comment>
-        <translation>Шаблон мнемокадра</translation>
+        <translation>Наименование шаблона мнемокадра</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="89"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="95"/>
         <source>Mnemonic Frame Parent</source>
         <comment>headerDataObjectProject</comment>
         <translation>Родительский мнемокадр</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="91"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="97"/>
         <source>Technical Program Name</source>
         <comment>headerDataObjectProject</comment>
         <translation>Наименование тех. программы</translation>
     </message>
     <message>
-        <location filename="ObjectProject.cpp" line="93"/>
+        <location filename="../../../MyGitHubRepository/EES/ObjectProject.cpp" line="99"/>
         <source>Technical Program Parent</source>
         <comment>headerDataObjectProject</comment>
-        <translation>Группа тех. программ</translation>
-    </message>
-</context>
-<context>
-    <name>QObject</name>
-    <message>
-        <location filename="EES.cpp" line="66"/>
-        <source>Mark</source>
-        <translation>Марка</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="67"/>
-        <source>Name</source>
-        <translation>Наименование</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="68"/>
-        <source>Description</source>
-        <translation>Описание</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="69"/>
-        <source>Object Type</source>
-        <translation>Тип объекта</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="70"/>
-        <source>Signature</source>
-        <translation>Подпись</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="71"/>
-        <source>Controller</source>
-        <translation>Контроллер</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="72"/>
-        <source>Resource</source>
-        <translation>Ресурс</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="73"/>
-        <source>Group events</source>
-        <translation>Группа событий</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="74"/>
-        <source>KKS</source>
-        <translation>KKS</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="75"/>
-        <source>Template object</source>
-        <translation>Шаблон объекта</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="76"/>
-        <source>Mnemonic Frame Name</source>
-        <translation>Наименование мнемокадра</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="77"/>
-        <source>Mnemonic Frame Template</source>
-        <translation>Шаблон мнемокадра</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="78"/>
-        <source>Mnemonic Frame Parent</source>
-        <translation>Родительский мнемокадр</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="79"/>
-        <source>Technical Program Name</source>
-        <translation>Наименование тех. программы</translation>
-    </message>
-    <message>
-        <location filename="EES.cpp" line="80"/>
-        <source>Technical Program Parent</source>
         <translation>Группа тех. программ</translation>
     </message>
 </context>
 <context>
     <name>buttonConnect</name>
     <message>
-        <location filename="EES.cpp" line="63"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="63"/>
         <source>Connect</source>
         <translation>Подключение</translation>
     </message>
@@ -300,7 +234,7 @@
 <context>
     <name>buttonLoad</name>
     <message>
-        <location filename="EES.cpp" line="61"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="61"/>
         <source>Open file</source>
         <translation>Открыть файл</translation>
     </message>
@@ -308,9 +242,9 @@
 <context>
     <name>buttonUpLoad</name>
     <message>
-        <location filename="EES.cpp" line="62"/>
+        <location filename="../../../MyGitHubRepository/EES/EES.cpp" line="62"/>
         <source>Upload</source>
-        <translation>Выгрузить</translation>
+        <translation>Выгрузка</translation>
     </message>
 </context>
 </TS>

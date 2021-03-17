@@ -59,7 +59,7 @@ QVariant ObjectProject::headerData(int section, Qt::Orientation orientation, int
 	if (orientation == Qt::Vertical)
 		//тут можно задать вертикальный хедер
 		return QVariant(section + 1);
-	else
+	else 
 		switch (section) {
 		case 0:
 			return QVariant(tr("Mark", "headerDataObjectProject"));
@@ -149,6 +149,8 @@ QVariant ObjectProject::getData(int num, int position) const {
 
 ObjectProject::~ObjectProject()
 {
+	delData();
+	delete listOfParams;
 }
 
 ObjectProjectData& ObjectProject::getObject(const QModelIndex & index) const
@@ -175,5 +177,4 @@ void ObjectProject::delData()
 	for (int k = 0; k < listOfParams->count(); k++)
 		listOfParams->removeAt(k);
 	listOfParams->clear();
-//	QMessageBox::information(this, "tt", "ttnt");
 }

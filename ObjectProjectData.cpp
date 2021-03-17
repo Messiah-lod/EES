@@ -104,41 +104,41 @@ void ObjectProjectData::setData(int numParam, QVariant value)
 {
 		switch (numParam) {
 	case 0:
-		data[0] = value;
+		data[0] = value; break;
 	case 1:
-		data[1] = value;
+		data[1] = value; break;
 	case 2:
-		data[2] = value;
+		data[2] = value; break;
 	case 3:
-		data[3] = value;
+		data[3] = value; break;
 	case 4:
-		data[4] = value;
+		data[4] = value; break;
 	case 5:
-		data[5] = value;
+		data[5] = value; break;
 	case 6:
-		data[6] = value;
+		data[6] = value; break;
 	case 7:
-		data[7] = value;
+		data[7] = value; break;
 	case 8:
-		data[8] = value;
+		data[8] = value; break;
 	case 9:
-		data[9] = value;
+		data[9] = value; break;
 	case 10:
-		data[10] = value;
+		data[10] = value; break;
 	case 11:
-		data[11] = value;
+		data[11] = value; break;
 	case 12:
-		data[12] = value;
+		data[12] = value; break;
 	case 13:
-		data[13] = value;
+		data[13] = value; break;
 	case 14:
-		data[14] = value;
+		data[14] = value; break;
 	case 15:
-		data[15] = value;
+		data[15] = value; break;
 	case 16:
-		data[16] = value;
+		data[16] = value; break;
 	case 17:
-		data[17] = value;
+		data[17] = value; break;
 
 //	default:
 		

@@ -8,15 +8,29 @@ EES::EES(QWidget *parent)
 	//инициализируем элементы графического интерфейса
 	gridLayout = new QGridLayout;
 	splitterVertical = new QSplitter(Qt::Vertical);
+
+	tabWidget = new QTabWidget; //организуем вкладки
+	tab_tableData = new QWidget;//вкладка создания
+	tab_tableData->setAccessibleName(QString::number(enum_tableData));//добавим номер перечисения к вкладке, для уникального идентифицирования
+	tab_tableDataLink = new QWidget;//вкладка связки
+	tab_tableDataLink->setAccessibleName(QString::number(enum_tableDataLink));
+
 	tableData = new ObjectProject;
 	tableView = new QTableView;
+	grid_tab_tableData = new QGridLayout(tab_tableData);
+	grid_tab_tableData->addWidget(tableView);
+
+	tableDataLink = new ModelLinkData;
+	tableViewLink = new QTableView;
+	grid_tableDataLink = new QGridLayout(tab_tableDataLink);
+	grid_tableDataLink->addWidget(tableViewLink);
+
 	buttonLoad = new QPushButton;
 	buttonUpLoad = new QPushButton;
 	buttonConnect = new QPushButton;
 	textEditLogs = new QTextEdit;
 	txtPath = new QTextEdit;
-//	dataBase = new SQL_to_FB;
-	
+
 	textEditLogs->setMinimumHeight(100);
 	//Установили запрет на редактирование текста
 	textEditLogs->setReadOnly(true);
@@ -25,10 +39,25 @@ EES::EES(QWidget *parent)
 	buttonConnect->setMaximumHeight(25);
 	//свяжем модель таблицы с представлением
 	tableView->setModel(tableData);
-	tableView->setMinimumHeight(100);
+	tableViewLink->setModel(tableDataLink);
+	//тригер запрета редактирования таблицы
+	tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	tableViewLink->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
 	//разделим основные элементы сплиттером
-	splitterVertical->addWidget(tableView);
+	splitterVertical->addWidget(tabWidget);
 	splitterVertical->addWidget(textEditLogs);
+	//наполним табы
+	tabWidget->setMinimumHeight(300);
+	tabWidget->tabBar()->setExpanding(false);
+	tabWidget->addTab(tab_tableData, QString());
+	tabWidget->addTab(tab_tableDataLink, QString());
+	//выберем вкладку, которая открывается по умолчанию, счет с нуля
+	tabWidget->setCurrentIndex(0);
+	tabWidget->setDocumentMode(false);//безрамочный режим таба
+	tabWidget->setMovable(true);//метод подвижности вкладок
+//	tabWidget->setTabsClosable(true);//добавит кнопки закрытия вкладок
+
 	//Добавим на грид необходимые элементы
 	gridLayout->addWidget(txtPath, 0, 0, 1, 4);
 	gridLayout->addWidget(buttonConnect, 0, 4, 1, 1);
@@ -39,8 +68,9 @@ EES::EES(QWidget *parent)
 	QObject::connect(buttonLoad, SIGNAL(clicked()), this, SLOT(on_buttonLoad_clicked()));
 	QObject::connect(buttonUpLoad, SIGNAL(clicked()), this, SLOT(on_buttonUpLoad_clicked()));
 	QObject::connect(buttonConnect, SIGNAL(clicked()), this, SLOT(on_buttonConnect_clicked()));
-	//тригер запрета редактирования таблицы
-	tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	//связка для закрытия вкладки или смены
+//	QObject::connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+//	QObject::connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(closeTab(int)));//сигнал при смене вкладке, отдает индекс выбранной вкладки
 
 	retranslateUi();
 	//отобразим грид с виджетами
@@ -51,8 +81,10 @@ EES::EES(QWidget *parent)
 	//создадим таймер для ежесекндного вычитывания данных из логов
 	timer = new QTimer();
 	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(slotTimerLogs()));
-	//timer->start(1000); // И запустим таймер
 
+	//подгоним ширину столбцов под хедеры
+	tableView->resizeColumnsToContents();
+	tableViewLink->resizeColumnsToContents();
 }
 
 void EES::retranslateUi()
@@ -62,37 +94,26 @@ void EES::retranslateUi()
 	buttonUpLoad->setText(QApplication::translate("buttonUpLoad", "Upload", nullptr));
 	buttonConnect->setText(QApplication::translate("buttonConnect", "Connect", nullptr));
 
-	//Зададим переводимые хедеры
-	tableData->setHeaderData(0, Qt::Horizontal, QObject::tr("Mark"));
-	tableData->setHeaderData(1, Qt::Horizontal, QObject::tr("Name"));
-	tableData->setHeaderData(2, Qt::Horizontal, QObject::tr("Description"));
-	tableData->setHeaderData(3, Qt::Horizontal, QObject::tr("Object Type"));
-	tableData->setHeaderData(4, Qt::Horizontal, QObject::tr("Signature"));
-	tableData->setHeaderData(5, Qt::Horizontal, QObject::tr("Controller"));
-	tableData->setHeaderData(6, Qt::Horizontal, QObject::tr("Resource"));
-	tableData->setHeaderData(7, Qt::Horizontal, QObject::tr("Group events"));
-	tableData->setHeaderData(8, Qt::Horizontal, QObject::tr("KKS"));
-	tableData->setHeaderData(9, Qt::Horizontal, QObject::tr("Template object"));
-	tableData->setHeaderData(10, Qt::Horizontal, QObject::tr("Mnemonic Frame Name"));
-	tableData->setHeaderData(11, Qt::Horizontal, QObject::tr("Mnemonic Frame Template"));
-	tableData->setHeaderData(12, Qt::Horizontal, QObject::tr("Mnemonic Frame Parent"));
-	tableData->setHeaderData(13, Qt::Horizontal, QObject::tr("Technical Program Name"));
-	tableData->setHeaderData(14, Qt::Horizontal, QObject::tr("Technical Program Parent"));
+	tabWidget->setTabText(tabWidget->indexOf(tab_tableData), QApplication::translate("tab_tableData", "Filling", nullptr));
+	tabWidget->setTabText(tabWidget->indexOf(tab_tableDataLink), QApplication::translate("tab_tableDataLink", "Link", nullptr));
+
 } // retranslateUi
 
 void EES::on_buttonLoad_clicked()
 {
-//	textEditLogs->append("Clicked buttonLoad");
-
-	//добавить очистку модели
-	tableData->delData();
-
+	QWidget* widget = tabWidget->currentWidget();//получили текущий выбраный виджет
+	QString name = widget->accessibleName();//получили уникальное имя виджета из enum Tab
+	if (name.toInt() == enum_tableData) {
+		tableData->delData();//добавить очистку модели
+	} else if (name.toInt() == enum_tableDataLink) {
+		tableDataLink->delData();
+	}
+			
 	QString fileName;
 	try
 	{
 		fileName = QFileDialog::getOpenFileName(nullptr,
 			tr("Open file"), QDir::currentPath(), tr("Data Files (*.xls *.xlsx *.xlsm)"));
-
 	}
 	catch (const std::exception&)
 	{
@@ -108,9 +129,10 @@ void EES::on_buttonLoad_clicked()
 		textEditLogs->append((tr("File open: ", "txt_connect")
 			+ fileName));
 
-		setDataToModel(fileName);
+		setDataToModel(fileName, name.toInt());
 	}
-
+	tableView->resizeColumnsToContents();
+	tableViewLink->resizeColumnsToContents();
 }
 
 void EES::on_buttonUpLoad_clicked()
@@ -139,23 +161,12 @@ void EES::on_buttonUpLoad_clicked()
 	int evkl_subject = 0;// ID созданной группы событий
 	int id_techprog = 0;// ID созданной тех. программы
 
-//	std::vector <bool> isTechProg;//проверка присутвия тех. программы ДО проливки
-
-	try
-	{
+	try	{
 		if (dataBase.connected() &&
 			tableData->columnCount() > 1)// && tableData->rowCount() > 1)
 		{
 			textEditLogs->append(tr("Upload START!", "txt_connect"));
 			logs << tr("Upload START!", "txt_connect").toStdString() << std::endl;
-
-			//for (size_t j = 0; j < tableData->rowCount(); j++)//проверка присутвия тех. программы ДО проливки
-			//{
-			//	index = tableView->model()->index(j, 0);
-			//	technicalProgramName = tableData->getObject(index).getTechnicalProgramName().toString().toLocal8Bit();
-			//	id_techprog = dataBase.presenceObj(technicalProgramName,"programm");//НЕ ВЕРНО!!! нет поиска программы в конкретном ресурсе!
-			//	(id_techprog != 1 && id_techprog == 0) ? isTechProg.push_back(true) : isTechProg.push_back(false);
-			//}
 
 			for (size_t i = 0; i < tableData->rowCount(); i++)
 			{
@@ -183,31 +194,33 @@ void EES::on_buttonUpLoad_clicked()
 				textEditLogs->append(tr("transfer object ", "txt_connect") + " " + tableData->getObject(index).getMark().toString());
 				logs << tr("transfer object: ", "txt_connect").toStdString() << mark << std::endl;
 
-				//начинаем создавать объекты
-				evkl_subject = dataBase.create_new_event(eventGroup, mnemonicFrameParent);
-				if (digital == "драйвер")
-				{
-					id_subject = dataBase.create_new_driver(mark, name, description, signature, objectType, controller, KKS, objectTemplate);
+				//начинаем создавать объекты если марка не пустая
+				if (mark.size() != 0) {
+					evkl_subject = dataBase.create_new_event(eventGroup, mnemonicFrameParent);
+					if (digital == "драйвер")
+					{
+						id_subject = dataBase.create_new_driver(mark, name, description, signature, objectType, controller, KKS, objectTemplate);
+					}
+					else if (digital == "цифровой")
+					{
+						id_subject = dataBase.create_new_digital_object(controller, objectType, mark, name, plcAdress,
+							plcVarname, resource, eventGroup, description, KKS, signature);
+					}
+					else
+					{
+						id_subject = dataBase.create_new_object(controller, resource, objectTemplate, objectType, mark, name, eventGroup, description, KKS, signature);
+					}
+
+					logs << tr("Create new object, id = ", "txt_connect").toStdString() << std::to_string(id_subject) << std::endl;
+
+					//				textEditLogs->append(("id new subject: " + std::to_string(id_subject)).c_str());
+					dataBase.copy_page_with_object(mnemonicFrameTemplate, mnemonicFrameName, mnemonicFrameParent, std::to_string(id_subject), eventGroup, description);
+					id_techprog = dataBase.create_new_technical_programm(technicalProgramName, 300, 200, technicalProgramParent, controller, resource);
+
+					logs << tr("Create new technical programm, id = ", "txt_connect").toStdString() << std::to_string(id_techprog) << std::endl;
+
+					dataBase.object_on_technological_program(technicalProgramName, controller, resource, objectTemplate, objectType, mark);
 				}
-				else if (digital == "цифровой")
-				{
-					id_subject = dataBase.create_new_digital_object(controller, objectType, mark, name, plcAdress, 
-								plcVarname, resource, eventGroup, description, KKS, signature);
-				}
-				else
-				{
-					id_subject = dataBase.create_new_object(controller, resource, objectTemplate, objectType, mark, name, eventGroup, description, KKS, signature);
-				}
-
-				logs << tr("Create new object, id = ", "txt_connect").toStdString() << std::to_string(id_subject) << std::endl;
-
-//				textEditLogs->append(("id new subject: " + std::to_string(id_subject)).c_str());
-				dataBase.copy_page_with_object(mnemonicFrameTemplate, mnemonicFrameName, mnemonicFrameParent, std::to_string(id_subject), eventGroup, description);
-				id_techprog = dataBase.create_new_technical_programm(technicalProgramName, 300, 200, technicalProgramParent, controller, resource);
-
-				logs << tr("Create new technical programm, id = ", "txt_connect").toStdString() << std::to_string(id_techprog) << std::endl;
-
-				dataBase.object_on_technological_program(technicalProgramName, controller, resource, objectTemplate, objectType, mark);
 			}
 
 			textEditLogs->append(tr("Uploading completed!", "txt_connect"));
@@ -217,10 +230,7 @@ void EES::on_buttonUpLoad_clicked()
 			textEditLogs->append(tr("Connection failed or data not loaded!", "txt_connect"));
 		}
 	}
-	catch (const std::exception&)
-	{
-
-	}
+	catch (const std::exception&){}
 	
 }
 
@@ -238,23 +248,19 @@ void EES::on_buttonConnect_clicked()
 			tmp = fileName.toLocal8Bit();
 			txtPath->setText(fileName);
 
-			if (fileName.isEmpty())
-			{
-				textEditLogs->append(tr("No data base chosen!", "txt_connect"));
-			}
-
+			if (fileName.isEmpty()) textEditLogs->append(tr("No data base chosen!", "txt_connect"));
 	}
 
-		initializingConnection(tmp);
+	initializingConnection(tmp);
 
-		if (dataBase.connected())
+	if (dataBase.connected())
 		{
 			textEditLogs->append(tr("Connection successful!", "txt_connect"));
 			//Метод вычитывания пути и записи его в лог
 			textEditLogs->append(tr("Database connected: ", "txt_connect")
 				+ txtPath->toPlainText());
 		}
-		else
+	else
 		{
 			textEditLogs->append(tr("Connection failed!", "txt_connect"));
 		}
@@ -266,8 +272,8 @@ void EES::on_buttonConnect_clicked()
 
 	//QTextCodec* codec = QTextCodec::codecForName("CP-1251");
 	//QMessageBox::warning(this, "Active filter", QString::number(tmp.size()));
-
-
+//		tabWidget->addTab(tab_tableData, QString());
+//		tabWidget->addTab(tab_tableDataLink, QString());
 }
 
 void EES::slotTimerLogs()
@@ -280,6 +286,12 @@ void EES::slotTimerLogs()
 //		textEditLogs->append(temp);
 //		file.close();
 //	}
+}
+
+void EES::closeTab(int index)
+{
+	//QMessageBox::warning(this, "Active filter", "Close tab index = " + QString::number(index));
+//	tabWidget->removeTab(index);//сам виджет жив, можно в любой момент вернуть обратно
 }
 
 int EES::initializingConnection(std::string _path)
@@ -314,7 +326,7 @@ int EES::initializingConnection(std::string _path)
 	
 }
 
-void EES::setDataToModel(QString fileName)
+void EES::setDataToModel(QString fileName, int currentTab)
 {
 	//Получили дир. запуска программы
 	//QString tmp_s = QApplication::applicationDirPath();
@@ -346,7 +358,10 @@ void EES::setDataToModel(QString fileName)
 //	tableData->setColumnCount(countCols);
 //	tableData->setRowCount(countRows);
 
+
 	ObjectProjectData rowData;
+	TableLinkData rowDataLink;
+	
 
 	for (int nRow = 0; nRow < countRows; ++nRow)
 	{
@@ -359,11 +374,20 @@ void EES::setDataToModel(QString fileName)
 			QVariant value = cell->property("Value");
 			
 			//заполним строку данных
-			rowData.setData(nCol-1, value);
+			if (currentTab == enum_tableData) {
+				rowData.setData(nCol - 1, value);
+			} else if (currentTab == enum_tableDataLink) {
+				rowDataLink.setData(nCol - 1, value);
+			}
+			
 			//кончили заполнять
 		}
 		//запись в модель
-		tableData->addObject(rowData);
+		if (currentTab == enum_tableData) {
+			tableData->addObject(rowData);
+		} else if (currentTab == enum_tableDataLink) {
+			tableDataLink->addObject(rowDataLink);
+		}
 	}
 
 	/*
@@ -391,7 +415,7 @@ void EES::setDataToModel(QString fileName)
 
 	*/
 
-	//зачем-то надо, канонично сразу не закомменитировал, теперь не помн
+	//зачем-то надо, канонично сразу не закомменитировал, теперь не помню
 	workbook->dynamicCall("Close(Boolean)", false);
 	//закрываем приложение
 	mExcel->dynamicCall("Quit(void)");
@@ -399,38 +423,3 @@ void EES::setDataToModel(QString fileName)
 	delete(mExcel);
 
 }
-
-//void EES::create_page(SQL_to_FB &DB_conn, std::string page_name, std::string parent_page, std::string template_page, std::string event_group, int id_subject)
-//{
-//	DB_conn.create_new_page(page_name, 660, 600, parent_page, template_page, "120:120:120", "window");
-//	DB_conn.create_new_obj_onpage("", 131, 90, 120, 9, page_name, "VKLN_G", "Шина_DC", "0:92:0", "0:92:0", 1, id_subject);
-//	DB_conn.create_new_obj_onpage("", 112, 90, 0, 0, page_name, "VKLN_G", "Выключатель+ЗН 6кВ_стрелка", "0:92:0", "0:92:0", 1, id_subject);
-//	DB_conn.create_new_obj_onpage("", 40, 139, 0, 0, page_name, "VKLN_G", "Плакаты выключатель", "120:120:120", "120:120:120", 0, id_subject);
-//	DB_conn.create_new_obj_onpage("", 75, 203, 100, 41, page_name, "VKLN_G", "Подпись_VKL", "120:120:120", "120:120:120", 0, id_subject);
-//	DB_conn.create_new_obj_onpage("", 10, 289, 0, 0, page_name, "VKLN_G", "Плакаты заземлитель", "120:120:120", "120:120:120", 0, id_subject);
-//	DB_conn.create_new_obj_onpage("", 41, 357, 80, 41, page_name, "VKLN_G", "Подпись_ZN", "120:120:120", "120:120:120", 0, id_subject);
-//	DB_conn.create_new_obj_onpage("", 120, 470, 0, 0, page_name, "VKLN_G", "Наименование_VKL", "120:120:120", "120:120:120", 0, id_subject);
-//	DB_conn.create_new_obj_onpage("", 115, 60, 0, 0, page_name, "RAD_G", "АДм Стандарт+ед.изм", "120:120:120", "120:120:120", 0);
-//	DB_conn.create_new_obj_onpage("", 390, 90, 0, 0, page_name, "EKRA_103", "ЭКРА", "120:120:120", "120:120:120", 0);
-//
-////	DB_conn.create_new_prim_onpage("", "text", "[Ячейка 1][12][Arial][255:255:255]", 187, 101, 75, 16, page_name, 0, "120:120:120", "120:120:120", 1);
-//	DB_conn.create_new_prim_onpage("event", "text", "[СОБЫТИЯ][10][Arial][0:0:0]", 410, 600, 117, 29, page_name, 1, "192:192:192", "0:0:0", 0);
-//	DB_conn.create_new_prim_onpage("", "image", "Иконка История событий", 535, 600, 31, 32, page_name, 1, "192:192:192", "0:0:0", 2);
-//	DB_conn.create_new_prim_onpage("butevent", "button", "[ ][12][Arial][255:255:255]", 529, 595, 43, 38, page_name, 0, "120:120:120", "120:120:120", 2);
-//
-//	//DB_conn.create_new_event(page_name, parent_page);
-//
-//	DB_conn.create_new_anim_onpage("[foncolor][event][Пред_2][1]", "0:128:255", page_name, "event", event_group);
-//	DB_conn.create_new_anim_onpage("[foncolor][event][пред][1]", "255:255:0", page_name, "event", event_group);
-//	DB_conn.create_new_anim_onpage("[foncolor][event][авар][1]", "255:0:0", page_name, "event", event_group);
-//
-//	DB_conn.create_new_anim_onpage("[flashfoncolor][event][Пред_2][1]", "0;128:128:128", page_name, "event", event_group);
-//	DB_conn.create_new_anim_onpage("[flashfoncolor][event][пред][1]", "0;128:128:128", page_name, "event", event_group);
-//	DB_conn.create_new_anim_onpage("[flashfoncolor][event][авар][1]", "0;128:128:128", page_name, "event", event_group);
-//
-//	DB_conn.create_new_anim_onpage("[textcolor][event][Пред_2][1]", "0:0:0", page_name, "event", event_group);
-//	DB_conn.create_new_anim_onpage("[textcolor][event][пред][1]", "0:0:0", page_name, "event", event_group);
-//	DB_conn.create_new_anim_onpage("[textcolor][event][авар][1]", "0:0:0", page_name, "event", event_group);
-//
-//	DB_conn.create_new_rec_onpage("event", page_name, "butevent", event_group, "[5][1][0][0]");
-//}
