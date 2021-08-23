@@ -1,9 +1,10 @@
 #pragma once
 
 #include "SQL_to_FB.h"
+#include "BaseSQL.h"
 #include "ObjectProject.h"
 #include "ModelLinkData.h"
-//#include "ObjectProjectData.h"
+#include "Logger.h"
 
 #include <QtWidgets/QWidget>
 #include <QtWidgets>
@@ -17,7 +18,6 @@
 #include <string>
 #include <any>
 #include <vector>
-#include <fstream>
 #include <conio.h> //для getch
 
 class EES : public QWidget
@@ -27,7 +27,6 @@ class EES : public QWidget
 public:
 	EES(QWidget *parent = 0);
 	void retranslateUi();
-//	void create_page(SQL_to_FB &DB_conn, std::string page_name, std::string parent_page, std::string template_page, std::string event_group, int id_subject = 0);
 	int initializingConnection(std::string path);
 
 private:
@@ -57,10 +56,13 @@ private:
 	QTextEdit *textEditLogs;
 	QGridLayout *gridLayout;
 	QTextEdit *txtPath;
-	SQL_to_FB dataBase;
+
+	//переменные для подключения к БД
+	std::string webserver;
+	std::string path;
 
 	QTimer *timer;
-	std::ofstream logs;
+	Logger logs{"logsQT"};
 	QString temp;
 
 	void setDataToModel(QString fileName, int currentTab = 0);

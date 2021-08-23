@@ -1,5 +1,5 @@
 #include "SQL_to_FB.h"
-#include "D:\YandexDisk\development\QT\EES\EES\ibpp\ibpp.h"
+
 #include <exception>
 #include "Windows.h"
 #include <iostream>
@@ -13,75 +13,30 @@
 
 #define BOOL_STR(b) (b?"true":"false")
 
-SQL_to_FB::SQL_to_FB()
-{
-	CreateDirectoryW(L"logs", NULL);
-	logs.open("./logs/logsSQL.txt", std::ios_base::app);//открываем(создаем) файл
-	webserver = "";
-	path = "";
-	user = "";
-	pass = "";
-}
+//SQL_to_FB::SQL_to_FB() : BaseSQL()
+//{
+//
+//
+//}
 
 SQL_to_FB::SQL_to_FB(std::string webserver_, std::string path_, std::string user_, std::string pass_)
+	: BaseSQL ( webserver_, path_, user_, pass_)
 {
-	CreateDirectoryW(L"logs", NULL);
-	logs.open("./logs/logsSQL.txt", std::ios_base::app);//открываем(создаем) файл
-	webserver = webserver_;
-	path = path_;
-	user = user_;
-	pass = pass_;
+
 }
 
 SQL_to_FB::~SQL_to_FB()
 {
-	Database->Disconnect();
-}
 
-int SQL_to_FB::connect()
-{//После получения данных о базе и пользователе создаем подключение
-
-	Database = IBPP::DatabaseFactory(webserver, path, user, pass);
-	logs << timeToLogs() << "Попытка подключения к базе данных" << std::endl;
-	logs << timeToLogs() << webserver << path << std::endl;// << user << pass
-	try
-	{
-		Database->Connect();
-	}
-	catch (std::exception& exp)
-	{
-		logs << timeToLogs() << exp.what() << std::endl;
-		logs << timeToLogs() << "Заданы неверные параметры подключения к базе данных!" << std::endl;
-		//		system("pause");
-		return 1;
-	}
-
-	bool isSucessConn = Database->Connected();
-	if (isSucessConn)
-	{
-		return 0;
-		//		std::cout << "Успешное подключение к БД." << std::endl;//Логин: " << Database->Username() << std::endl;
-	}
-
-//	return 0;
 }
 
 bool SQL_to_FB::connected()
 {
-	if (Database->Connected())
-	{
-		return true;
-	}
-	else return false;
+	return BaseSQL::connected();
 }
 
-void SQL_to_FB::setConnectParam(std::string webserver_, std::string path_, std::string user_, std::string pass_)
-{
-	webserver = webserver_;
-	path = path_;
-	user = user_;
-	pass = pass_;
-}
+
+
 
 void SQL_to_FB::get_param(std::string table, std::string coll_param, std::string coll_answer, std::any param, std::any &answer_)
 {
@@ -103,198 +58,15 @@ void SQL_to_FB::get_param(std::string table, std::string coll_param, std::string
 	read(query, table, coll_answer, answer_);
 }
 
-void SQL_to_FB::write(std::string query)
-{
-	IBPP::Transaction tr2;
-	tr2 = IBPP::TransactionFactory(Database, IBPP::amWrite);//, IBPP::ilConcurrency,
-//		IBPP::lrWait, IBPP::TFF(0));
 
-	if (Database->Connected())
-	{
-		tr2->Start();
-		if (tr2->Started())
-		{
-			//		std::cout << "Транзакция выполнена" << std::endl;
-		}
 
-		IBPP::Statement st1 = IBPP::StatementFactory(Database, tr2);
-
-		try
-		{
-			st1->Execute(query);//отправляем SQL-запрос
-//			st1->Execute("COMMIT WORK;");
-			st1->Close();
-		}
-		catch (std::exception& exp)//
-		{
-			logs << timeToLogs() << "Исключение в методе write:" << std::endl;
-			logs << exp.what() << std::endl;
-			//		return 2;
-		}
-		tr2->Commit();    // Or tr->Rollback();
-	}
-	else
-	{
-		logs << timeToLogs() << "Нет подключения к базе данных!" << std::endl;
-	}
-}
-
-std::string SQL_to_FB::get_type_name(std::string table, std::string coll)
-{
-//	coll.erase(std::remove(coll.begin(), coll.end(), '"', coll.end());
-//	coll.erase(std::remove_if(coll.begin(), coll.end(), "d"), coll.end());
-//	remove_copy(coll.begin(), coll.end(), back_inserter(coll), '"');
-
-	for (int i = 0; i < coll.length(); i++)
-	{
-		if (coll[i] == '"')
-		{
-			coll.erase(i, 1);
-		}
-	}
-
-	all_coll_name.clear();
-	all_coll_type.clear();
-//	all_coll_name_.empty();
-//	all_coll_type_ = 0;
-
-	std::string  query1, query2;
-	query.clear();
-	query1 = "select R.RDB$RELATION_NAME,  R.RDB$FIELD_NAME, F.RDB$FIELD_TYPE from RDB$FIELDS F, RDB$RELATION_FIELDS R where F.RDB$FIELD_NAME = R.RDB$FIELD_SOURCE and R.RDB$SYSTEM_FLAG = 0";
-	query2 = "order by R.RDB$RELATION_NAME, R.RDB$FIELD_POSITION";
-	query = query1 + ' ' + "and RDB$RELATION_NAME = '" + table.c_str() + "' " + query2;
-
-	//	zap = "select R.RDB$RELATION_NAME, R.RDB$FIELD_NAME, F.RDB$FIELD_TYPE from RDB$FIELDS F, RDB$RELATION_FIELDS R where F.RDB$FIELD_NAME = R.RDB$FIELD_SOURCE and R.RDB$SYSTEM_FLAG = 0 and RDB$RELATION_NAME = 'USERS' order by R.RDB$RELATION_NAME, R.RDB$FIELD_POSITION";
-	//	zap = "select* from users";
-	IBPP::Transaction tr1;
-	tr1 = IBPP::TransactionFactory(Database, IBPP::amRead);
-
-	if (Database->Connected())
-	{
-		tr1->Start();
-
-		if (tr1->Started())
-		{
-			//					std::cout << "Транзакция выполнена" << std::endl;
-		}
-
-		IBPP::Statement st = IBPP::StatementFactory(Database, tr1);
-
-		try
-		{
-			st->Execute(query);//отправляем SQL-запрос
-			while (st->Fetch())//пока получаем данные...
-			{
-				st->Get("RDB$FIELD_NAME", all_coll_name_);
-				//удалим лишние пробелы
-				for (int k = 0; k < all_coll_name_.size(); k++) {
-					if (all_coll_name_[k] == ' ') {
-						all_coll_name_.erase(k, 1);
-						k--;
-					}
-				}
-				all_coll_name.push_back(all_coll_name_);
-
-				st->Get("RDB$FIELD_TYPE", all_coll_type_);
-				all_coll_type.push_back(all_coll_type_);
-			}
-			st->Close();
-		}
-		catch (std::exception& exp)
-		{
-			logs << exp.what() << std::endl;
-		}
-		tr1->Commit();
-	}
-	else
-	{
-		logs << timeToLogs() << "Исключение в методе get_type_name:" ;
-		logs << timeToLogs() << "Отсутствует подключение к базе данных!" << std::endl;
-	}
-
-	//logs << coll << std::endl;
-	for (size_t i = 0; i < all_coll_name.size(); i++)
-	{
-		if (all_coll_name[i] == coll)
-		{
-			if (all_coll_type[i] == 7)
-			{
-				return "SHORT";
-			}
-			else if (all_coll_type[i] == 8)
-			{
-				return "INTEGER";
-			}
-			else if (all_coll_type[i] == 9)
-			{
-				return "QUAD";
-			}
-			else if (all_coll_type[i] == 10)
-			{
-				return "FLOAT";
-			}
-			else if (all_coll_type[i] == 12)
-			{
-				return "DATE";
-			}
-			else if (all_coll_type[i] == 13)
-			{
-				return "TIME";
-			}
-			else if (all_coll_type[i] == 14)
-			{
-				return "TEXT";
-			}
-			else if (all_coll_type[i] == 16)
-			{
-				return "INT64";
-			}
-			else if (all_coll_type[i] == 23)
-			{
-				return "BOOLEAN";
-			}
-			else if (all_coll_type[i] == 27)
-			{
-				return "DOUBLE";
-			}
-			else if (all_coll_type[i] == 35)
-			{
-				return "TIMESTAMP";
-			}
-			else if (all_coll_type[i] == 37)
-			{
-				return "VARCHAR";
-			}
-			else if (all_coll_type[i] == 40)
-			{
-				return "CSTRING";
-			}
-			else if (all_coll_type[i] == 45)
-			{
-				return "BLOB_ID";
-			}
-			else if (all_coll_type[i] == 261)
-			{
-				return "BLOB";
-			}
-			else
-			{
-				logs << timeToLogs() << "Исключение в методе get_type_name: Type not defined" << std::endl;
-				return "Type not defined";
-			}
-		}
-	}
-	return "Таблица или колонка с требуемым именем не найдена!";
-
-}
-
-void SQL_to_FB::print(std::vector <std::any> param)
-{
-	for (size_t i = 0; i < param.size(); i++)
-	{
-		logs << timeToLogs() << any_to_str(param[i]) << std::endl;
-	}
-}
+//void SQL_to_FB::print(std::vector <std::any> param)
+//{
+//	for (size_t i = 0; i < param.size(); i++)
+//	{
+//		logs << timeToLogs() << any_to_str(param[i]) << std::endl;
+//	}
+//}
 
 void SQL_to_FB::create_new_page(std::string name_page, int height, int width, std::string parentpage, std::string shablonpage, std::string FONCOLOR, std::string FRAMETYPE)
 {
@@ -321,7 +93,7 @@ void SQL_to_FB::create_new_page(std::string name_page, int height, int width, st
 
 	if (std::any_cast <int> (PID) == 0)
 	{
-		logs << timeToLogs() << "Родительский кадр найден! Создаем автоматически." << std::endl;
+		logs << "Родительский кадр найден! Создаем автоматически.";
 
 		query.clear();
 		query = "INSERT INTO GRPAGES(NAME,EDITBY ,HEIGHT, WIDTH, SHABLONPAGEID, FONCOLOR, PRINTWIDTH, PRINTHEIGHT, FRAMENUM) VALUES( '" +
@@ -354,8 +126,8 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 	
 	if (std::any_cast<int>(res) == 0)
 	{
-		logs << timeToLogs() << "Ошибка в методе create_new_technical_programm:" << std::endl;
-		logs << timeToLogs() << "Ресурс или контроллер для создания тех. прграммы не найден!" << std::endl;
+		logs << "Ошибка в методе create_new_technical_programm:";
+		logs << "Ресурс или контроллер для создания тех. прграммы не найден!";
 		return 4;
 	}
 
@@ -399,26 +171,26 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 	if (name_page.size() == 0) 						//Проверка на пустое имя
 	{
 		errorName = true;
-		logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: пустое имя тех. программы!" << std::endl;
+		logs << "Ошибка в методе create_new_technical_programm: пустое имя тех. программы!";
 	}
 	for (int i = 0; i < name_page.length(); i++)
 	{
 		if (((name_page[i] >= 'а') && (name_page[i] <= 'я')) || //проверим кирилицу
 			((name_page[i] >= 'А') && (name_page[i] <= 'Я')))
 		{
-			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: кирилица в имени!" << std::endl;
+			logs << "Ошибка в методе create_new_technical_programm: кирилица в имени!";
 			errorName = true;
 		}
 			
 		if (std::any_cast<int>(tmpID) != 0) 	//прверим уникальность имени
 		{
-			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: имя не уникально! Создание новой программы не требуется." << std::endl;
-			logs << timeToLogs() << "Метод create_new_technical_programm: tmpID = " << any_to_str(tmpID) << std::endl;
+			logs << "Ошибка в методе create_new_technical_programm: имя не уникально! Создание новой программы не требуется.";
+			logs << "Метод create_new_technical_programm: tmpID = " + any_to_str(tmpID);
 			return std::any_cast<int>(tmpID);
 		}
 		if	((name_page[0] >= '0') && (name_page[0] <= '9'))		//имя не начинается с цифры
 		{
-			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: имя начинается с цифры!" << std::endl;
+			logs << "Ошибка в методе create_new_technical_programm: имя начинается с цифры!";
 			errorName = true;
 		}
 		if(	((name_page[i] >= '!') && (name_page[i] <= '/'))  ||//проверка отсутствия символов
@@ -428,7 +200,7 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 			((name_page[i] >= '{') && (name_page[i] <= '~')) )	
 		{
 			errorName = true;
-			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm: имя содержит не корректные символы!" << std::endl;
+			logs << "Ошибка в методе create_new_technical_programm: имя содержит не корректные символы!";
 		}
 
 		if (errorName) break;
@@ -452,26 +224,26 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 		if (parentpage.size() == 0) 						//Проверка на пустое имя
 		{
 			errorNameTemplate = true;
-			logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: пустое имя ГРУППЫ тех. программы!" << std::endl;
+			logs << "Ошибка в методе create_new_technical_programm_GROUP: пустое имя ГРУППЫ тех. программы!";
 		}
 		for (int i = 0; i < parentpage.length(); i++)
 		{
 			if (((parentpage[i] >= 'а') && (parentpage[i] <= 'я')) || //проверим кирилицу
 				((parentpage[i] >= 'А') && (parentpage[i] <= 'Я')))
 			{
-				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: кирилица в имени ГРУППЫ!" << std::endl;
+				logs << "Ошибка в методе create_new_technical_programm_GROUP: кирилица в имени ГРУППЫ!";
 				errorNameTemplate = true;
 			}
 
 			if (std::any_cast<int>(tmpID) != 0) 	//прверим уникальность имени
 			{
-				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: имя ГРУППЫ не уникально!" << std::endl;
-				logs << timeToLogs() << "Метод create_new_technical_programm: tmpID = " << any_to_str(tmpID) << std::endl;
+				logs << "Ошибка в методе create_new_technical_programm_GROUP: имя ГРУППЫ не уникально!";
+				logs << "Метод create_new_technical_programm: tmpID = " + any_to_str(tmpID);
 				errorNameTemplate = true;
 			}
 			if ((parentpage[0] >= '0') && (parentpage[0] <= '9'))		//имя не начинается с цифры
 			{
-				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: имя ГРУППЫ начинается с цифры!" << std::endl;
+				logs << "Ошибка в методе create_new_technical_programm_GROUP: имя ГРУППЫ начинается с цифры!";
 				errorNameTemplate = true;
 			}
 			if (((parentpage[i] >= '!') && (parentpage[i] <= '/')) ||//проверка отсутствия символов
@@ -481,14 +253,14 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 				((parentpage[i] >= '{') && (parentpage[i] <= '~')))
 			{
 				errorNameTemplate = true;
-				logs << timeToLogs() << "Ошибка в методе create_new_technical_programm_GROUP: имя ГРУППЫ содержит не корректные символы!" << std::endl;
+				logs << "Ошибка в методе create_new_technical_programm_GROUP: имя ГРУППЫ содержит не корректные символы!";
 			}
 			if (errorNameTemplate) break;
 
 		}
 		if (!errorNameTemplate)
 		{
-			logs << timeToLogs() << "Группа тех. программ не найдена. Создаем автоматически" << std::endl;;
+			logs << "Группа тех. программ не найдена. Создаем автоматически" ;
 			//создадим группу тех. программ с +1 номером выполнения от максимального
 			query.clear();
 			query = "INSERT INTO ISAOBJ(NAME, KINDOBJ, USERID, GROUPID, LIBID, \"ORDER\") VALUES(  '" +
@@ -512,7 +284,7 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 		}
 		else
 		{
-			logs << timeToLogs() << "Наименование группы тех. программ не корректно!" << std::endl;
+			logs << "Наименование группы тех. программ не корректно!";
 			parentID = 0;
 		}
 		
@@ -558,43 +330,27 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
 		query = "UPDATE ISAPOUSTTEXT SET RESOURCE = '" + std::to_string(std::any_cast<int>(res)) +
 		"'  WHERE ISAOBJID = ' " + std::to_string(std::any_cast<int>(isaobjID)) + "' ";
 		write(query);
-		logs << timeToLogs() << "Новая тех. программа создана. Имя: " << name_page << ", ID: " << any_to_str(isaobjID) << std::endl;
+		logs << "Новая тех. программа создана. Имя: " + name_page + ", ID: " + any_to_str(isaobjID);
 	}
 
 	return std::any_cast<int>(isaobjID);
 }
 
-void SQL_to_FB::IntToBinary(int num, std::string  &buf)
-{
-	do
-	{
-		if (num % 2 == 0) buf += '0';
-		else buf += '1';
-		num /= 2;
-	} while (num > 0);
-
-	while (buf.size() < 8)
-	{
-		buf += '0';
-	}
-
-	std::reverse(buf.begin(), buf.end());
-}
 
 int SQL_to_FB::create_new_event(std::string name_event, std::string parent_event)
 {
-	logs << timeToLogs() << "Запрос на создание группы событий: " << name_event << std::endl;
+	logs << "Запрос на создание группы событий: " + name_event;
 	std::any PID = 0;
 	//Проверим не пустое ли имя группы событий
 	if (name_event .size() == 0)
 	{
-		logs << timeToLogs() << "Указанная группа событий имеет пустое имя. Группа событий создана не была." << std::endl;
+		logs << "Указанная группа событий имеет пустое имя. Группа событий создана не была.";
 		return 2;
 	}
 	get_param("EVKLASSIFIKATOR", "NAME", "ID", name_event, PID);
 	if (std::any_cast <int> (PID) != 0)
 	{
-		logs << timeToLogs() << "Указанная группа событий существует. Создание новой не требуется." << std::endl;
+		logs << "Указанная группа событий существует. Создание новой не требуется.";
 		return 1;
 	}
 	//Найдем родительскую группу событий
@@ -604,12 +360,12 @@ int SQL_to_FB::create_new_event(std::string name_event, std::string parent_event
 	{
 		if (parent_event.size() == 0)
 		{
-			logs << timeToLogs() << "Указанная родительская группа событий имеет пустое имя." << std::endl;
+			logs << "Указанная родительская группа событий имеет пустое имя.";
 			PID = -2;
 		}
 		else
 		{
-			logs << timeToLogs() << "Родительская группа событий не найдена! Создаем автоматически: " << parent_event << std::endl;
+			logs << "Родительская группа событий не найдена! Создаем автоматически: " + parent_event;
 			query.clear();
 			query = "INSERT INTO EVKLASSIFIKATOR(PID, NAME, ARHCB)VALUES("
 				"-2 , '" + parent_event + "', 1)";
@@ -678,7 +434,7 @@ void SQL_to_FB::create_new_obj_onpage(std::string name_obj, int x, int y, int wi
 	get_param("GRPAGES", "NAME", "ID", name_page, page);
 	if (std::any_cast <int> (page) == 0)
 	{
-		logs << timeToLogs() << "Родительский кадр найден!" << std::endl;
+		logs << "Родительский кадр найден!";
 	}
 
 	//найдем ID библиотечного типа для размещения на кадре
@@ -711,174 +467,7 @@ void SQL_to_FB::create_new_obj_onpage(std::string name_obj, int x, int y, int wi
 
 }
 
-void SQL_to_FB::read(std::string query, std::string table, std::string coll_answer, std::any &answ)
-{
-	std::string type_answ;
 
-	std::string tmp_s; //строка временного хранения считанных данных GET
-	int tmp_i; //int временного хранения считанных данных GET
-
-	answ = 0;
-
-	IBPP::Transaction tr;
-	tr = IBPP::TransactionFactory(Database, IBPP::amRead);
-
-	if (Database->Connected())
-	{
-		tr->Start();
-		if (tr->Started())
-		{//		std::cout << "Транзакция выполнена" << std::endl;
-		}
-		IBPP::Statement st = IBPP::StatementFactory(Database, tr);
-
-		type_answ = get_type_name(table, coll_answer);
-		//logs << type_answ << std::endl;
-
-		try
-		{
-			st->Execute(query);//отправляем SQL-запрос
-			for (int i = 0; i < coll_answer.length(); i++)
-			{
-				if (coll_answer[i] == '"')
-				{
-					coll_answer.erase(i, 1);
-				}
-			}
-			while (st->Fetch())//пока получаем данные...
-			{
-				//записываем в вектор параметр
-				if (type_answ == "VARCHAR")
-				{
-				//	logs << "ЧАР" << std::endl;
-					tmp_s.clear();
-					st->Get(coll_answer, tmp_s);
-					answ = tmp_s;
-				}
-				else if (type_answ == "INTEGER" || type_answ == "SHORT")
-				{
-				//	logs << "ИНТ" << std::endl;
-					st->Get(coll_answer, tmp_i);
-					answ = tmp_i;
-				}
-				else
-				{
-					logs << timeToLogs() << "Исключение в методе read:";
-					logs << timeToLogs() << "Параметр не найден!" << std::endl;
-				}
-			}
-			st->Close();
-		}
-		catch (std::exception& exp)
-		{
-			logs << timeToLogs() << "Исключение в методе read:" << std::endl;
-			logs << timeToLogs() << "Запрос вида:" << query << std::endl;
-			logs << exp.what() << std::endl;
-		}
-		tr->Commit();
-	}
-}
-
-void SQL_to_FB::read(std::string query, std::string table, std::string coll_answer, std::vector <std::any> &answ)
-{
-	std::string type_answ;
-
-	std::string tmp_s; //строка временного хранения считанных данных GET
-	int tmp_i; //int временного хранения считанных данных GET
-
-	//answ = 0;
-
-	IBPP::Transaction tr;
-	tr = IBPP::TransactionFactory(Database, IBPP::amRead);
-
-	if (Database->Connected())
-	{
-		tr->Start();
-		if (tr->Started())
-		{//		std::cout << "Транзакция выполнена" << std::endl;
-		}
-		IBPP::Statement st = IBPP::StatementFactory(Database, tr);
-
-		type_answ = get_type_name(table, coll_answer);
-		//		std::cout << type_answ << std::endl;
-
-		try
-		{
-			st->Execute(query);//отправляем SQL-запрос
-			for (int i = 0; i < coll_answer.length(); i++)
-			{
-				if (coll_answer[i] == '"')
-				{
-					coll_answer.erase(i, 1);
-				}
-			}
-			while (st->Fetch())//пока получаем данные...
-			{
-				//записываем в вектор параметр
-				if (type_answ == "VARCHAR")
-				{
-					//										std::cout << "ЧАР" << std::endl;
-					tmp_s.clear();
-					st->Get(coll_answer, tmp_s);
-					answ.push_back(tmp_s);
-				}
-				else if (type_answ == "INTEGER" || type_answ == "SHORT")
-				{
-					//					std::cout << "ИНТ" << std::endl;
-					st->Get(coll_answer, tmp_i);
-					answ.push_back(tmp_i);
-				}
-			}
-			st->Close();
-		}
-		catch (std::exception& exp)
-		{
-			logs << timeToLogs() << "Исключение в методе read:" << std::endl;
-			logs << timeToLogs() << "Запрос вида:" << query << std::endl;
-			logs << exp.what() << std::endl;
-		}
-		tr->Commit();
-	}
-}
-
-std::string SQL_to_FB::any_to_str(std::any parameter)
-{
-	try {
-		if (parameter.type().hash_code() == 3440116983)
-		{
-			return std::to_string(std::any_cast <int> (parameter));
-		}
-		else if (parameter.type().hash_code() == 3406561745)
-		{
-			return std::to_string(std::any_cast <double> (parameter));
-		}
-		else if (parameter.type().hash_code() == 4027145609)
-		{
-			return std::any_cast <const char*> (parameter);
-		}
-		else if (parameter.type().hash_code() == 1628147040)
-		{
-			return std::to_string(std::any_cast <bool> (parameter));
-		}
-		else if (parameter.type().hash_code() == 1604120214)
-		{
-			return std::any_cast<std::string> (parameter);
-		}
-		else
-		{
-			logs << timeToLogs() << "Исключение в методе any_to_str:";
-			logs << timeToLogs() << "Попытка вывода неизвестного типа переменной!" << std::endl;
-			logs << timeToLogs() << "hash code параметра:" << parameter.type().hash_code() << std::endl;
-		}
-		if (parameter.type().hash_code() == 3708558887)
-		{
-			logs << timeToLogs() << "Попытка обработки пустого значения ANY и преобразования в строку!" << std::endl;
-		}
-	}
-	catch (const std::bad_any_cast & e) {
-		logs << timeToLogs() << "Исключение в методе any_to_str:" << std::endl;
-		logs << e.what() << std::endl;
-	}
-}
 
 void SQL_to_FB::create_new_prim_onpage(std::string name_obj, std::string type_obj, std::string content, int x, int y, int width, int height, std::string name_page,
 	int type, std::string FONCOLOR, std::string LINECOLOR, int group)
@@ -896,7 +485,7 @@ void SQL_to_FB::create_new_prim_onpage(std::string name_obj, std::string type_ob
 	get_param("GRPAGES", "NAME", "ID", name_page, page);
 	if (std::any_cast <int> (page) == 0)
 	{
-		logs << timeToLogs() << "Родительский кадр найден!" << std::endl;
+		logs << "Родительский кадр найден!";
 	}
 
 
@@ -1064,7 +653,7 @@ void SQL_to_FB::get_type_prim(std::string type_obj, std::string content, int typ
 	}
 	else
 	{
-		logs << timeToLogs() << "Тип примитива не определен!" << std::endl;
+		logs << "Тип примитива не определен!";
 		grobj_type = 0;
 		param_prim = "";
 	}
@@ -1110,7 +699,7 @@ void SQL_to_FB::pars_type_prim(std::string content, std::string &txt, std::strin
 	}
 	catch (const std::exception&)
 	{
-		logs << timeToLogs() << "Параметры примитива не определены!" << std::endl;
+		logs << "Параметры примитива не определены!";
 	}
 }
 
@@ -1124,13 +713,13 @@ void SQL_to_FB::create_new_anim_onpage(std::string type_anim, std::string conten
 //	logs << timeToLogs() << any_to_str(id_page) << std::endl;
 	if (std::any_cast <int> (id_page) == 0)
 	{
-		logs << timeToLogs() << "Кадр не найден!" << std::endl;
+		logs << "Кадр не найден!";
 	}
 	get_param("PAGECONTENTS", "PAGEID", "NAME", "ID", any_to_str(id_page), name_obj, id_prim);
 //	logs << timeToLogs() << any_to_str(id_prim) << std::endl;
 	if (std::any_cast <int> (id_prim) == 0)
 	{
-		logs << timeToLogs() << "Родительский примитив для аниматора на кадре не найден!" << std::endl;
+		logs << "Родительский примитив для аниматора на кадре не найден!";
 	}
 	else
 	{
@@ -1228,7 +817,7 @@ void SQL_to_FB::get_type_anim(std::string type_anim, std::string parametr, std::
 	}
 	else
 	{
-		logs << timeToLogs() << "Тип аниматора не определен!" << std::endl;
+		logs << "Тип аниматора не определен!";
 	}
 
 	//структура для определения условия срабатывания аниматора
@@ -1264,7 +853,7 @@ void SQL_to_FB::get_type_anim(std::string type_anim, std::string parametr, std::
 	}
 	else
 	{
-		logs << timeToLogs() << "Условие аниматора не определено!" << std::endl;
+		logs << "Условие аниматора не определено!";
 	}
 }
 
@@ -1278,12 +867,12 @@ void SQL_to_FB::create_new_rec_onpage(std::string type_rec, std::string name_pag
 	get_param("GRPAGES", "NAME", "ID", name_page, id_page);
 	if (std::any_cast <int> (id_page) == 0)
 	{
-		logs << timeToLogs() << "Родительский кадр не найден!" << std::endl;
+		logs << "Родительский кадр не найден!";
 	}
 	get_param("PAGECONTENTS", "PAGEID", "NAME", "ID", any_to_str(id_page), name_obj, id_prim);
 	if (std::any_cast <int> (id_prim) == 0)
 	{
-		logs << timeToLogs() << "Родительский примитив на кадре не найден!" << std::endl;
+		logs << "Родительский примитив на кадре не найден!";
 	}
 	else
 	{
@@ -1348,7 +937,7 @@ void SQL_to_FB::get_type_rec(std::string type_rec, std::string parametr, std::st
 	}
 	else
 	{
-		logs << timeToLogs() << "Тип рецептора не определен!" << std::endl;
+		logs << "Тип рецептора не определен!";
 	}
 
 }
@@ -1406,8 +995,8 @@ int SQL_to_FB::object_on_technological_program(std::string name_page, std::strin
 	}
 	if (std::any_cast <int> (pageID) == 0)
 	{
-		logs << timeToLogs() << "Исключение в методе object_on_technological_program:" << std::endl;
-		logs << timeToLogs() << "ID технологической программы не найден! Выполнение метода закончилось с кодом 2." << std::endl;
+		logs << "Исключение в методе object_on_technological_program:";
+		logs << "ID технологической программы не найден! Выполнение метода закончилось с кодом 2.";
 		return 2;
 	}
 	//ID техпрограммы найден*****************************************************
@@ -1416,15 +1005,15 @@ int SQL_to_FB::object_on_technological_program(std::string name_page, std::strin
 	get_param("CARDS", "MARKA", "PLC_GR", "ID", mark_obj, any_to_str(res), objectID);
 	if (std::any_cast <int> (objectID) == 0)
 	{
-		logs << timeToLogs() << "Исключение в методе object_on_technological_program:" << std::endl;
-		logs << timeToLogs() << "ID объекта не найден! Выполнение метода закончилось с кодом 3." << std::endl;
+		logs << "Исключение в методе object_on_technological_program:";
+		logs << "ID объекта не найден! Выполнение метода закончилось с кодом 3.";
 		return 3;
 	}
 	get_param("CARDS", "ID", "TEMPLATEID", any_to_str(objectID), templateID);
 	if (std::any_cast <int> (templateID) == 0)
 	{
-		logs << timeToLogs() << "Исключение в методе object_on_technological_program:" << std::endl;
-		logs << timeToLogs() << "ID шаблона не найден! Выполнение метода закончилось с кодом 1." << std::endl;
+		logs << "Исключение в методе object_on_technological_program:";
+		logs << "ID шаблона не найден! Выполнение метода закончилось с кодом 1.";
 		return 1;
 	}
 	//ID шаблона найден****************************
@@ -1444,8 +1033,8 @@ int SQL_to_FB::object_on_technological_program(std::string name_page, std::strin
 	}
 	if (std::any_cast <int> (tmpID) != 0)
 	{
-		logs << timeToLogs() << "Исключение в методе object_on_technological_program:" << std::endl;
-		logs << timeToLogs() << "Объект уже привязан! Выполнение метода закончилось с кодом 4." << std::endl;
+		logs << "Исключение в методе object_on_technological_program:";
+		logs << "Объект уже привязан! Выполнение метода закончилось с кодом 4.";
 		return 4;
 	}
 	// 3. Определим в ISACARDS по листу ID объектов, котоыре будем привязывать, их шаблоны ISACARDSTEMPLATEID
@@ -1626,9 +1215,9 @@ void SQL_to_FB::template_on_technological_program(std::any pageID, std::any temp
 	}
 	else
 	{
-		logs << timeToLogs() << "Исключение в методе template_on_technological_program:" << std::endl;
-		logs << timeToLogs() << "Шаблон объекта не найден!" << std::endl;
-		logs << timeToLogs() << "Создание объектов тех. программы выполнено не было." << std::endl;
+		logs << "Исключение в методе template_on_technological_program:";
+		logs << "Шаблон объекта не найден!";
+		logs << "Создание объектов тех. программы выполнено не было.";
 	}
 
 
@@ -1737,9 +1326,8 @@ int SQL_to_FB::create_new_object(std::string controller, std::string resource, s
 	get_param("RESOURCES", "NAME", "CARDID", "ID", resource, control, res);
 	if (std::any_cast <int> (control) == 0 || std::any_cast <int> (res) == 0)
 	{
-		logs << timeToLogs() << "Исключение в методе create_new_object:" << std::endl;
-		logs << timeToLogs() << "ID контроллера или ресурса не найден! Выполнение метода закончилось с кодом 1." << std::endl;
-		return 1;
+		logs << "Исключение в методе create_new_object:";
+		logs << "ID контроллера или ресурса не найден! Выполнение метода закончилось с кодом 1.";
 	}
 
 	//найдем ID требуемого шаблона и объекта*************************
@@ -1789,8 +1377,8 @@ int SQL_to_FB::create_new_object(std::string controller, std::string resource, s
 
 	if (std::any_cast <int> (templateID) == 0 || std::any_cast <int> (objectID) == 0)
 	{
-		logs << timeToLogs() << "Исключение в методе create_new_object:" << std::endl;
-		logs << timeToLogs() << "ID объекта или шаблона не найден! Выполнение метода закончилось с кодом 2." << std::endl;
+		logs << "Исключение в методе create_new_object:" ;
+		logs << "ID объекта или шаблона не найден! Выполнение метода закончилось с кодом 2." ;
 		return 2;
 	}
 	//ID шаблона и объекта найден****************************
@@ -1799,7 +1387,7 @@ int SQL_to_FB::create_new_object(std::string controller, std::string resource, s
 	get_param("EVKLASSIFIKATOR", "NAME", "ID", evklid_obj, evklID);
 	if (std::any_cast <int> (evklID) == 0)
 	{
-		logs << timeToLogs() << "Группа событий для объекта НЕ найдена. Объект помещен в группу [Все технологические]" << std::endl;
+		logs << "Группа событий для объекта НЕ найдена. Объект помещен в группу [Все технологические]";
 		evklID = -2;//группа все технологические
 	}
 
@@ -1810,8 +1398,8 @@ int SQL_to_FB::create_new_object(std::string controller, std::string resource, s
 	read(query, "CARDS", "ID", tmpIDlist);
 	if (tmpIDlist.size() != 0)
 	{
-		logs << timeToLogs() << "Исключение в методе create_new_object:" << std::endl;
-		logs << timeToLogs() << "Марка объекта уже существует! Объект не создан. Метод вернул ID найденного объекта." << std::endl;
+		logs << "Исключение в методе create_new_object:";
+		logs << "Марка объекта уже существует! Объект не создан. Метод вернул ID найденного объекта.";
 		get_param("CARDS", "MARKA", "PLC_GR", "ID", mark_obj, any_to_str(res), subjectID);
 		return std::any_cast <int> (subjectID);
 	}
@@ -1825,8 +1413,8 @@ int SQL_to_FB::create_new_object(std::string controller, std::string resource, s
 		read(query, "CARDS", "ID", tmpIDlist);
 		if (tmpIDlist.size() != 0)
 		{
-			logs << timeToLogs() << "Исключение в методе create_new_object:" << std::endl;
-			logs << timeToLogs() << "KKS объекта уже существует! Объект не создан. Выполнение метода закончилось с кодом 3." << std::endl;
+			logs << "Исключение в методе create_new_object:";
+			logs << "KKS объекта уже существует! Объект не создан. Выполнение метода закончилось с кодом 3.";
 			return 3;
 		}
 	}
@@ -1834,7 +1422,7 @@ int SQL_to_FB::create_new_object(std::string controller, std::string resource, s
 	if (sign_obj.size() > 10)
 	{
 		sign_obj = "";
-		logs << timeToLogs() << "Подпись объекта слишком длинная! Подпись стерта." << std::endl;
+		logs << "Подпись объекта слишком длинная! Подпись стерта.";
 	}
 
 	//Создадим запрос на создание объекта
@@ -1867,8 +1455,8 @@ int SQL_to_FB::create_new_digital_object(std::string controller, std::string obj
 	get_param("CARDS", "MARKA", "ID", controller, control);
 	if (std::any_cast <int> (control) == 0)
 	{
-		logs << timeToLogs() << "Исключение в методе create_new_digital_object:" << std::endl;
-		logs << timeToLogs() << "ID контроллера не найден! Выполнение метода закончилось с кодом 1." << std::endl;
+		logs << "Исключение в методе create_new_digital_object:";
+		logs << "ID контроллера не найден! Выполнение метода закончилось с кодом 1.";
 		return 1;
 	}
 
@@ -1878,8 +1466,8 @@ int SQL_to_FB::create_new_digital_object(std::string controller, std::string obj
 	read(query, "OBJTYPE", "ID", objectID);
 	if (std::any_cast <int> (objectID) == 0)
 	{
-		logs << timeToLogs() << "Исключение в методе create_new_digital_object:" << std::endl;
-		logs << timeToLogs() << "ID объекта не найден! Выполнение метода закончилось с кодом 2." << std::endl;
+		logs << "Исключение в методе create_new_digital_object:";
+		logs << "ID объекта не найден! Выполнение метода закончилось с кодом 2.";
 		return 2;
 	}
 
@@ -1887,7 +1475,7 @@ int SQL_to_FB::create_new_digital_object(std::string controller, std::string obj
 	get_param("EVKLASSIFIKATOR", "NAME", "ID", eventGroup, evklID);
 	if (std::any_cast <int> (evklID) == 0)
 	{
-		logs << timeToLogs() << "Группа событий для объекта НЕ найдена. Объект помещен в группу [Все технологические]" << std::endl;
+		logs << "Группа событий для объекта НЕ найдена. Объект помещен в группу [Все технологические]";
 		evklID = -2;//группа все технологические
 	}
 
@@ -1900,8 +1488,8 @@ int SQL_to_FB::create_new_digital_object(std::string controller, std::string obj
 		read(query, "CARDS", "ID", tmpIDlist);
 		if (tmpIDlist.size() != 0)
 		{
-			logs << timeToLogs() << "Исключение в методе create_new_digital_object:" << std::endl;
-			logs << timeToLogs() << "KKS объекта уже существует! Объект не создан. Выполнение метода закончилось с кодом 3." << std::endl;
+			logs << "Исключение в методе create_new_digital_object:";
+			logs << "KKS объекта уже существует! Объект не создан. Выполнение метода закончилось с кодом 3.";
 			return 3;
 		}
 	}
@@ -1909,7 +1497,7 @@ int SQL_to_FB::create_new_digital_object(std::string controller, std::string obj
 	if (signature.size() > 10)
 	{
 		signature = "";
-		logs << timeToLogs() << "Подпись объекта слишком длинная! Подпись стерта." << std::endl;
+		logs << "Подпись объекта слишком длинная! Подпись стерта.";
 	}
 
 	if (resource.size() == 0) resource = "0";
@@ -1926,13 +1514,7 @@ int SQL_to_FB::create_new_digital_object(std::string controller, std::string obj
 	return std::any_cast <int> (subjectID);
 }
 
-std::string SQL_to_FB::timeToLogs()
-{
-	time(&rawtime); // текущая дата в секундах
-	timeinfo = localtime(&rawtime);// текущее локальное время, представленное в структуре
-	strftime(buffer, sizeof(buffer), "%d.%m.%Y %X", timeinfo); // форматируем строку времени
-	return "(" + std::string(buffer) + "." + std::to_string(GetTickCount() % 1000) + ")	";
-}
+
 
 int SQL_to_FB::copy_page_with_object(std::string templatePage, std::string namePage, std::string parentPage, std::string idObject, std::string eventGroup, std::string description)
 {
@@ -1955,21 +1537,21 @@ int SQL_to_FB::copy_page_with_object(std::string templatePage, std::string nameP
 	//Проверим не пустое ли имя кадра
 	if (namePage.size() == 0)
 	{
-		logs << timeToLogs() << "Кадр имеет пустое имя! Кадр добавлен не был. Выход с кодом 3" << std::endl;
+		logs << "Кадр имеет пустое имя! Кадр добавлен не был. Выход с кодом 3";
 		return 3;
 	}
 	//Проверим нет ли уже такого кадра
 	get_param("GRPAGES", "NAME", "ID", namePage, tmpID);
 	if (std::any_cast <int> (tmpID) != 0)
 	{
-		logs << timeToLogs() << "Кадр с заданным именем уже существует! Кадр добавлен не был. Выход с кодом 1" << std::endl;
+		logs << "Кадр с заданным именем уже существует! Кадр добавлен не был. Выход с кодом 1";
 		return 1;
 	}
 	//Найдем ID кадра для копирования
 	get_param("GRPAGES", "NAME", "ID", templatePage, idTemplatePage);
 	if (std::any_cast <int> (idTemplatePage) == 0)
 	{
-		logs << timeToLogs() << "Шаблон для копирования кадра не найден! Кадр не был создан." << std::endl;
+		logs << "Шаблон для копирования кадра не найден! Кадр не был создан.";
 		return 2;
 	}
 
@@ -1989,7 +1571,7 @@ int SQL_to_FB::copy_page_with_object(std::string templatePage, std::string nameP
 		get_param("GRPAGES", "NAME", "ID", parentPage, pidPage);
 		if (std::any_cast <int> (pidPage) == 0)
 		{
-			logs << timeToLogs() << "Родительский кадр не найден! Создаем автоматически." << std::endl;
+			logs << "Родительский кадр не найден! Создаем автоматически.";
 
 			query.clear();
 			query = "INSERT INTO GRPAGES(NAME,EDITBY ,HEIGHT, WIDTH, SHABLONPAGEID, FONCOLOR, PRINTWIDTH, PRINTHEIGHT, FRAMENUM) VALUES( '" +
@@ -2038,8 +1620,8 @@ int SQL_to_FB::copy_page_with_object(std::string templatePage, std::string nameP
 		get_param("CARDS", "MARKA", "ID", description, idSecondObj);
 		if (std::any_cast <int> (idSecondObj) == 0)
 		{
-			logs << timeToLogs() << "Исключение в методе copy_page_with_object:" << std::endl;
-			logs << timeToLogs() << "ID второго объекта не найден!" << std::endl;
+			logs << "Исключение в методе copy_page_with_object:";
+			logs << "ID второго объекта не найден!";
 		}
 		else
 		{//Получим id объекта, переданного нам экзампляра
@@ -2138,13 +1720,13 @@ int SQL_to_FB::create_new_driver(std::string mark, std::string nameDrive, std::s
 
 	if (errorMark)
 	{
-		logs << timeToLogs() << "Драйвер не был создан! Ошибка в марке либо марка не уникальна." << std::endl;
+		logs << "Драйвер не был создан! Ошибка в марке либо марка не уникальна.";
 		return std::any_cast<int>(tmpID);
 	}
 
 	if (std::any_cast <int> (objectID) == 0 || std::any_cast <int> (serverID) == 0)
 	{
-		logs << timeToLogs() << "Драйвер не был создан! Ошибка в определении типа драйвери или сервера." << std::endl;
+		logs << "Драйвер не был создан! Ошибка в определении типа драйвери или сервера.";
 		return 1;
 	}
 
@@ -2159,7 +1741,7 @@ int SQL_to_FB::create_new_driver(std::string mark, std::string nameDrive, std::s
 
 	if (std::any_cast <int> (runTypeID) == 0)
 	{
-		logs << timeToLogs() << "Драйвер не был создан! Ошибка в определении типа исполнения драйвера (локальный/внутренний)." << std::endl;
+		logs << "Драйвер не был создан! Ошибка в определении типа исполнения драйвера (локальный/внутренний).";
 		return 2;
 	}
 
@@ -2190,37 +1772,37 @@ int SQL_to_FB::presenceObj(std::string name, std::string typeObject, std::string
 		get_param("RESOURCES", "NAME", "CARDID", "ID", resource, control, res);
 		if (std::any_cast <int> (control) == 0 || std::any_cast <int> (res) == 0)
 		{
-			logs << timeToLogs() << "Исключение в методе presenceObj:" << std::endl;
-			logs << timeToLogs() << "ID контроллера или ресурса не найден! Выполнение метода закончилось с кодом 1." << std::endl;
+			logs << "Исключение в методе presenceObj:";
+			logs << "ID контроллера или ресурса не найден! Выполнение метода закончилось с кодом 1.";
 			return 1;
 		}
 		//как итог работы возвратим ID объекта
 		get_param("CARDS", "MARKA", "PLC_GR", "ID", name, any_to_str(res), objectID);
-		logs << timeToLogs() << "Метод presenceObj: objectID = " << any_to_str(objectID) << std::endl;
+		logs << "Метод presenceObj: objectID = " + any_to_str(objectID);
 		return std::any_cast <int> (objectID);
 	}
 	else if (typeObject == "mnemonic")
 	{
 		//Найдем ID кадра
 		get_param("GRPAGES", "NAME", "ID", name, objectID);
-		logs << timeToLogs() << "Метод presenceObj: objectID = " << any_to_str(objectID) << std::endl;
+		logs << "Метод presenceObj: objectID = " + any_to_str(objectID);
 		return std::any_cast <int> (objectID);
 	}
 	else if (typeObject == "programm")
 	{
 		//как итог работы возвратим ID объекта
 		get_param("CARDS", "MARKA", "ID", name, objectID);
-		logs << timeToLogs() << "Метод presenceObj: objectID = " << any_to_str(objectID) << std::endl;
+		logs << "Метод presenceObj: objectID = " + any_to_str(objectID);
 		return std::any_cast <int> (objectID);
 	}
 	else
 	{
-		logs << timeToLogs() << "Исключение в методе presenceObj." << std::endl;
-		logs << timeToLogs() << "Не верно указан тип объекта! ID не был возвращен." << std::endl;
+		logs << "Исключение в методе presenceObj.";
+		logs << "Не верно указан тип объекта! ID не был возвращен.";
 		return 1; //если 
 	}
 
-	logs << timeToLogs() << "Исключение в методе presenceObj. Не был выполнен вход в метод для определения ID." << std::endl;
+	logs << "Исключение в методе presenceObj. Не был выполнен вход в метод для определения ID.";
 	return 1;
 }
 

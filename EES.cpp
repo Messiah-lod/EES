@@ -76,8 +76,6 @@ EES::EES(QWidget *parent)
 	//отобразим грид с виджетами
 	setLayout(gridLayout);
 
-	logs.open("./logs/logsQT.txt", std::ios_base::app);//открываем(создаем) файл
-	
 	//создадим таймер для ежесекндного вычитывания данных из логов
 	timer = new QTimer();
 	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(slotTimerLogs()));
@@ -137,6 +135,8 @@ void EES::on_buttonLoad_clicked()
 
 void EES::on_buttonUpLoad_clicked()
 {
+	SQL_to_FB dataBase(webserver, path, "SYSDBA", "masterkey");
+
 	QModelIndex index;
 	std::string mark;
 	std::string name;
@@ -166,7 +166,7 @@ void EES::on_buttonUpLoad_clicked()
 			tableData->columnCount() > 1)// && tableData->rowCount() > 1)
 		{
 			textEditLogs->append(tr("Upload START!", "txt_connect"));
-			logs << tr("Upload START!", "txt_connect").toStdString() << std::endl;
+			logs << tr("Upload START!", "txt_connect").toStdString();
 
 			for (size_t i = 0; i < tableData->rowCount(); i++)
 			{
@@ -192,7 +192,7 @@ void EES::on_buttonUpLoad_clicked()
 				technicalProgramParent = tableData->getObject(index).getTechnicalProgramParent().toString().toLocal8Bit();
 
 				textEditLogs->append(tr("transfer object ", "txt_connect") + " " + tableData->getObject(index).getMark().toString());
-				logs << tr("transfer object: ", "txt_connect").toStdString() << mark << std::endl;
+				logs << tr("transfer object: ", "txt_connect").toStdString() + mark;
 
 				//начинаем создавать объекты если марка не пустая
 				if (mark.size() != 0) {
@@ -211,13 +211,13 @@ void EES::on_buttonUpLoad_clicked()
 						id_subject = dataBase.create_new_object(controller, resource, objectTemplate, objectType, mark, name, eventGroup, description, KKS, signature);
 					}
 
-					logs << tr("Create new object, id = ", "txt_connect").toStdString() << std::to_string(id_subject) << std::endl;
+					logs << tr("Create new object, id = ", "txt_connect").toStdString() + std::to_string(id_subject);
 
 					//				textEditLogs->append(("id new subject: " + std::to_string(id_subject)).c_str());
 					dataBase.copy_page_with_object(mnemonicFrameTemplate, mnemonicFrameName, mnemonicFrameParent, std::to_string(id_subject), eventGroup, description);
 					id_techprog = dataBase.create_new_technical_programm(technicalProgramName, 300, 200, technicalProgramParent, controller, resource);
 
-					logs << tr("Create new technical programm, id = ", "txt_connect").toStdString() << std::to_string(id_techprog) << std::endl;
+					logs << tr("Create new technical programm, id = ", "txt_connect").toStdString() + std::to_string(id_techprog);
 
 					dataBase.object_on_technological_program(technicalProgramName, controller, resource, objectTemplate, objectType, mark);
 				}
@@ -250,30 +250,22 @@ void EES::on_buttonConnect_clicked()
 
 			if (fileName.isEmpty()) textEditLogs->append(tr("No data base chosen!", "txt_connect"));
 	}
-
+	
 	initializingConnection(tmp);
+	BaseSQL dataBase(webserver, path, "SYSDBA", "masterkey");
 
 	if (dataBase.connected())
 		{
 			textEditLogs->append(tr("Connection successful!", "txt_connect"));
-			//Метод вычитывания пути и записи его в лог
 			textEditLogs->append(tr("Database connected: ", "txt_connect")
 				+ txtPath->toPlainText());
 		}
 	else
 		{
 			textEditLogs->append(tr("Connection failed!", "txt_connect"));
+			logs << (tr("Connection failed!", "txt_connect") + txtPath->toPlainText()).toStdString();
 		}
 
-
-	//std::ofstream logs;
-	//logs.open("./logs/logsSQL.txt", std::ios_base::app);//открываем(создаем) файл
-	//logs << tmp.c_str() << std::endl;
-
-	//QTextCodec* codec = QTextCodec::codecForName("CP-1251");
-	//QMessageBox::warning(this, "Active filter", QString::number(tmp.size()));
-//		tabWidget->addTab(tab_tableData, QString());
-//		tabWidget->addTab(tab_tableDataLink, QString());
 }
 
 void EES::slotTimerLogs()
@@ -296,19 +288,13 @@ void EES::closeTab(int index)
 
 int EES::initializingConnection(std::string _path)
 {
-	std::string webserver;
-
+	webserver.clear();
+	path.clear();
 	//Запишем WEB-сервер в строку параметра
 	for (size_t i = 0; i < _path.size(); i++)
 	{
-		if (_path[i] != ':')
-		{
-			webserver.push_back(_path[i]);
-		}
-		else
-		{
-			break;
-		}
+		if (_path[i] != ':') webserver.push_back(_path[i]);
+		else break;
 	}
 	//вырежем web-сервер из параметра "путь"
 	try
@@ -319,10 +305,7 @@ int EES::initializingConnection(std::string _path)
 	{
 		return 2;
 	}
-
-	dataBase.setConnectParam(webserver, _path,
-		"SYSDBA", "masterkey");
-	dataBase.connect();
+	path = _path;	
 	
 }
 

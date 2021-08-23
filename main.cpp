@@ -5,6 +5,7 @@
 #include <ActiveQt/QAxObject>
 #include <QtGui>
 
+
 int main(int argc, char *argv[])
 {
 	SetConsoleCP(1251);
