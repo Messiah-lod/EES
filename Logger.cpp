@@ -36,11 +36,11 @@ Logger::~Logger()
 
 bool Logger::operator<<(const std::string message)
 {
-	logs.open("./logs/"+ fileName, std::ios_base::app);//открываем(создаем) файл с записью в конец
-	if(!logs.is_open()) return false;
-	logs << timeToLogs() << message << std::endl;
-	logs.close();
-	return true;//вернет тру при успешном открытии файла и записи туда
+    logs.open("./logs/"+ fileName, std::ios_base::app);//открываем(создаем) файл с записью в конец
+    if(!logs.is_open()) return false;
+    logs << timeToLogs() << message << std::endl;
+    logs.close();
+    return true;//вернет тру при успешном открытии файла и записи туда
 }
 
 

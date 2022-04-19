@@ -14,7 +14,7 @@ public:
 	Logger(const char* nameLogFile);
 	~Logger();
 	
-	bool Logger::operator<<(const std::string message);
+    bool operator<<(const std::string message);
 
 
 private:

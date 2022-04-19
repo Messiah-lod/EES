@@ -9,12 +9,13 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets>
 #include <ActiveQt/QAxObject>
+//#include <QAxFactory>
 #include <QtGui>
 #include <QPushButton>
 #include <QTextStream> 
 
 #include <iostream>
-#include "Windows.h"
+#include "windows.h"
 #include <string>
 #include <any>
 #include <vector>

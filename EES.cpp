@@ -158,7 +158,7 @@ void EES::on_buttonUpLoad_clicked()
 	std::string technicalProgramParent;
 
 	int id_subject = 0;// ID созданного тех. объекта
-	int evkl_subject = 0;// ID созданной группы событий
+    int evkl_subject = 0;// ID созданной группы событий
 	int id_techprog = 0;// ID созданной тех. программы
 
 	try	{
@@ -168,7 +168,7 @@ void EES::on_buttonUpLoad_clicked()
 			textEditLogs->append(tr("Upload START!", "txt_connect"));
 			logs << tr("Upload START!", "txt_connect").toStdString();
 
-			for (size_t i = 0; i < tableData->rowCount(); i++)
+            for (int i = 0; i < tableData->rowCount(); i++)
 			{
 				index = tableView->model()->index(i, 0);
 
@@ -236,7 +236,7 @@ void EES::on_buttonUpLoad_clicked()
 
 void EES::on_buttonConnect_clicked()
 {
-	std::string tmp = txtPath->toPlainText().toLocal8Bit();
+    std::string tmp = txtPath->toPlainText().toStdString();//.toLocal8Bit();
 	QString fileName;
 
 	//процедура для открытия диалогового окна проводника для выбора файла,
@@ -282,6 +282,7 @@ void EES::slotTimerLogs()
 
 void EES::closeTab(int index)
 {
+    Q_UNUSED(index)
 	//QMessageBox::warning(this, "Active filter", "Close tab index = " + QString::number(index));
 //	tabWidget->removeTab(index);//сам виджет жив, можно в любой момент вернуть обратно
 }
@@ -306,7 +307,7 @@ int EES::initializingConnection(std::string _path)
 		return 2;
 	}
 	path = _path;	
-	
+    return 0;
 }
 
 void EES::setDataToModel(QString fileName, int currentTab)
@@ -314,7 +315,7 @@ void EES::setDataToModel(QString fileName, int currentTab)
 	//Получили дир. запуска программы
 	//QString tmp_s = QApplication::applicationDirPath();
 	// получаем указатель на Excel
-	QAxObject *mExcel = new QAxObject("Excel.Application", 0);
+    QAxObject *mExcel = new QAxObject("Excel.Application", nullptr);
 	// на книги
 	QAxObject *workbooks = mExcel->querySubObject("Workbooks");
 	// на директорию, откуда грузить книг
@@ -334,6 +335,7 @@ void EES::setDataToModel(QString fileName, int currentTab)
 	//Соответственно, столбцов:
 	QAxObject * usedRange1 = StatSheet->querySubObject("UsedRange");
 	QAxObject* columns = usedRange1->querySubObject("Columns");
+    Q_UNUSED(columns)
 //	int countCols = columns->property("Count").toInt();
 	int countCols = tableData->columnCount();
 

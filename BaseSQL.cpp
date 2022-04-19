@@ -121,14 +121,13 @@ void BaseSQL::IntToBinary(int num, std::string  &buf)
 	{
 		buf += '0';
 	}
-
-	std::reverse(buf.begin(), buf.end());
+//	std::reverse(buf.begin(), buf.end());
 }
 
 void BaseSQL::write(std::string query)
 {
-	IBPP::Transaction tr2;
-	tr2 = IBPP::TransactionFactory(Database, IBPP::amWrite);//, IBPP::ilConcurrency,
+    IBPP::Transaction tr2;
+    tr2 = IBPP::TransactionFactory(Database, IBPP::amWrite);//, IBPP::ilConcurrency,
 //		IBPP::lrWait, IBPP::TFF(0));
 
 	if (Database->Connected())
