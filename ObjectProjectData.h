@@ -7,7 +7,7 @@
 #include <QtGui>
 
 
-class ObjectProjectData//набор полей строки
+class ObjectProjectData//РЅР°Р±РѕСЂ РїРѕР»РµР№ СЃС‚СЂРѕРєРё
 {
 public:
 	ObjectProjectData();
@@ -17,11 +17,11 @@ public:
 	QVariant getName() const;
 	QVariant getDescription() const;
 	QVariant getObjectType() const;
-	QVariant getDigital() const; //добавили для цифры
+	QVariant getDigital() const; //РґРѕР±Р°РІРёР»Рё РґР»СЏ С†РёС„СЂС‹
 	QVariant getSignature() const;
 	QVariant getController() const;
-	QVariant getPlcAdress() const;//добавили для цифры
-	QVariant getPlcVarname() const;//добавили для цифры
+	QVariant getPlcAdress() const;//РґРѕР±Р°РІРёР»Рё РґР»СЏ С†РёС„СЂС‹
+	QVariant getPlcVarname() const;//РґРѕР±Р°РІРёР»Рё РґР»СЏ С†РёС„СЂС‹
 	QVariant getResource() const;
 	QVariant getEventGroup() const;
 	QVariant getKKS() const;

@@ -45,7 +45,7 @@ QVariant ModelLinkData::headerData(int section, Qt::Orientation orientation, int
 		return QVariant();
 
 	if (orientation == Qt::Vertical)
-		//тут можно задать вертикальный хедер
+		//С‚СѓС‚ РјРѕР¶РЅРѕ Р·Р°РґР°С‚СЊ РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№ С…РµРґРµСЂ
 		return QVariant(section + 1);
 	else
 		switch (section) {
@@ -98,7 +98,7 @@ TableLinkData & ModelLinkData::getObject(const QModelIndex & index) const
 
 QVariant ModelLinkData::getData(int num, int position) const
 {
-	//бегаем по колонке (position)
+	//Р±РµРіР°РµРј РїРѕ РєРѕР»РѕРЅРєРµ (position)
 
 	switch (position) {
 	case 0:

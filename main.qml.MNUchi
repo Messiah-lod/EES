@@ -1,0 +1,219 @@
+import QtQuick 2.15
+import QtQuick.Window 2.15
+//import QtQuick.Controls 6.2
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtCharts 6.2
+
+Window {
+    width: 700
+    height: 500
+    visible: true
+    color: "#efefef"
+    minimumWidth: 700
+    minimumHeight: 500
+    title: qsTr("EESv2")
+
+    GridLayout {
+        id: gridLayout
+        anchors.fill: parent
+        anchors.rightMargin: 10
+        anchors.leftMargin: 10
+        anchors.bottomMargin: 10
+        anchors.topMargin: 10
+        rows: 3
+        columns: 4
+
+        Rectangle {
+            id: rectangle
+            color: "#ffffff"
+            border.color: "#00b3ff"
+            border.width: 3
+            Layout.maximumHeight: 40
+            Layout.maximumWidth: 65535
+            Layout.preferredHeight: -1
+            Layout.preferredWidth: -1
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.columnSpan: 3
+            Layout.rowSpan: 1
+            Layout.row: 0
+            Layout.column: 0
+
+            TextInput {
+                id: connectString
+                text: qsTr("Path to BD")
+                anchors.fill: parent
+                font.letterSpacing: 1
+                font.pixelSize: 12
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                selectionColor: "#00b3ff"
+                leftPadding: 10
+                selectByMouse: true
+                overwriteMode: true
+                cursorVisible: false
+                mouseSelectionMode: TextInput.SelectWords
+                font.wordSpacing: 0
+                font.weight: Font.Normal
+                scale: 1
+                font.family: "Times New Roman"
+            }
+        }
+
+        Button {
+            id: btnConnect
+            width: 150
+            height: 40
+            text: qsTr("Connect BD")
+            Layout.minimumHeight: 40
+            Layout.minimumWidth: 150
+            Layout.maximumHeight: 40
+            font.pointSize: 14
+            font.family: "Times New Roman"
+            display: AbstractButton.TextOnly
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.columnSpan: 1
+            Layout.rowSpan: 1
+            Layout.row: 0
+            Layout.column: 3
+        }
+
+        Button {
+            id: btnLoadFile
+            width: 150
+            height: 40
+            text: qsTr("Load file")
+            Layout.minimumHeight: 40
+            Layout.minimumWidth: 150
+            Layout.maximumHeight: 40
+            font.pointSize: 14
+            font.family: "Times New Roman"
+            display: AbstractButton.TextOnly
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.columnSpan: 1
+            Layout.rowSpan: 1
+            Layout.row: 1
+            Layout.column: 0
+        }
+
+        Button {
+            id: btnStart
+            width: 150
+            height: 40
+            text: qsTr("Start")
+            Layout.minimumHeight: 40
+            Layout.minimumWidth: 150
+            Layout.maximumHeight: 40
+            font.pointSize: 14
+            font.family: "Times New Roman"
+            display: AbstractButton.TextOnly
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.columnSpan: 1
+            Layout.rowSpan: 1
+            Layout.row: 1
+            Layout.column: 1
+        }
+
+        Rectangle {
+            id: rectangle3
+            color: "#ffffff"
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.columnSpan: 4
+            Layout.rowSpan: 1
+            Layout.row: 2
+            Layout.column: 0
+
+            SplitView {
+                id: splitVertical
+                anchors.fill: parent
+                orientation: Qt.Vertical
+
+                handle: Rectangle {
+                        implicitWidth: 4
+                        implicitHeight: 4
+                        color: SplitHandle.pressed ? "#efefef"
+                            : (SplitHandle.hovered ? Qt.lighter("#efefef", 1.1) : "#efefef")
+                    }
+
+
+                Rectangle {
+                    id: fieldView
+                    color: "#aa2a2a"
+                    SplitView.minimumHeight: 200
+                    onHeightChanged: splitVertical.restoreState
+                    //Layout.fillHeight: true
+
+                    TabBar {
+                        id: bar
+                        width: parent.width
+                        TabButton {
+                            text: qsTr("Home")
+                            font.family: "Times New Roman"
+                        }
+                        TabButton {
+                            text: qsTr("Discover")
+                            font.family: "Times New Roman"
+                        }
+                        TabButton {
+                            text: qsTr("Activity")
+                            font.family: "Times New Roman"
+                        }
+                    }
+
+                    StackLayout {
+                        width: parent.width
+                        currentIndex: bar.currentIndex
+                        Item {
+                            id: homeTab
+                            Rectangle {
+                                id: rectangle4
+                                color: "#ca2626"
+                                anchors.fill: parent
+                            }
+                        }
+                        Item {
+                            id: discoverTab
+                            Rectangle {
+                                id: rectangle5
+                                color: "#f7e300"
+                                anchors.fill: parent
+                            }
+                        }
+                        Item {
+                            id: activityTab
+                            Rectangle {
+                                id: rectangle6
+                                color: "#2a00ff"
+                                anchors.fill: parent
+                            }
+                        }
+                    }
+
+
+
+                }
+
+                Rectangle {
+                    id: fieldLog
+                    color: "#38ae7d"
+                    onHeightChanged: splitVertical.restoreState
+
+
+
+                }
+            }
+        }
+
+    }
+}

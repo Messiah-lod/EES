@@ -10,8 +10,8 @@ void ObjectProject::retranslateUi()
 
 }
 
-//ìåòîä data âûçûâàåòñÿ àâòîìàòè÷åñêè è íå òðåáóåò ÿâíîãî âûçîâà, ðîâíî êàê è rowCount ñ columnCount
-//ñ÷èòàåì ýòè ìåòîäû ïàðàìåòðàìè òàáëèöû
+//Ð¼ÐµÑ‚Ð¾Ð´ data Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸ Ð¸ Ð½Ðµ Ñ‚Ñ€ÐµÐ±ÑƒÐµÑ‚ ÑÐ²Ð½Ð¾Ð³Ð¾ Ð²Ñ‹Ð·Ð¾Ð²Ð°, Ñ€Ð¾Ð²Ð½Ð¾ ÐºÐ°Ðº Ð¸ rowCount Ñ columnCount
+//ÑÑ‡Ð¸Ñ‚Ð°ÐµÐ¼ ÑÑ‚Ð¸ Ð¼ÐµÑ‚Ð¾Ð´Ñ‹ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹
 
 QVariant ObjectProject::data(const QModelIndex & index, int role) const
 {
@@ -57,7 +57,7 @@ QVariant ObjectProject::headerData(int section, Qt::Orientation orientation, int
 		return QVariant();
 
 	if (orientation == Qt::Vertical)
-		//òóò ìîæíî çàäàòü âåðòèêàëüíûé õåäåð
+		//Ñ‚ÑƒÑ‚ Ð¼Ð¾Ð¶Ð½Ð¾ Ð·Ð°Ð´Ð°Ñ‚ÑŒ Ð²ÐµÑ€Ñ‚Ð¸ÐºÐ°Ð»ÑŒÐ½Ñ‹Ð¹ Ñ…ÐµÐ´ÐµÑ€
 		return QVariant(section + 1);
 	else 
 		switch (section) {
@@ -70,15 +70,15 @@ QVariant ObjectProject::headerData(int section, Qt::Orientation orientation, int
 		case 3:
 			return QVariant(tr("Object Type", "headerDataObjectProject"));
 		case 4:
-			return QVariant(tr("Digital", "headerDataObjectProject"));//äîáàâèëè äëÿ öèôðû
+			return QVariant(tr("Digital", "headerDataObjectProject"));//Ð´Ð¾Ð±Ð°Ð²Ð¸Ð»Ð¸ Ð´Ð»Ñ Ñ†Ð¸Ñ„Ñ€Ñ‹
 		case 5:
 			return QVariant(tr("Signature", "headerDataObjectProject"));
 		case 6:
 			return QVariant(tr("Controller", "headerDataObjectProject"));
 		case 7:
-			return QVariant(tr("PlcAdress", "headerDataObjectProject"));//äîáàâèëè äëÿ öèôðû
+			return QVariant(tr("PlcAdress", "headerDataObjectProject"));//Ð´Ð¾Ð±Ð°Ð²Ð¸Ð»Ð¸ Ð´Ð»Ñ Ñ†Ð¸Ñ„Ñ€Ñ‹
 		case 8:
-			return QVariant(tr("PlcVarname", "headerDataObjectProject"));//äîáàâèëè äëÿ öèôðû
+			return QVariant(tr("PlcVarname", "headerDataObjectProject"));//Ð´Ð¾Ð±Ð°Ð²Ð¸Ð»Ð¸ Ð´Ð»Ñ Ñ†Ð¸Ñ„Ñ€Ñ‹
 		case 9:
 			return QVariant(tr("Resource", "headerDataObjectProject"));
 		case 10:
@@ -103,7 +103,7 @@ QVariant ObjectProject::headerData(int section, Qt::Orientation orientation, int
 }
 
 QVariant ObjectProject::getData(int num, int position) const {
-	//áåãàåì ïî êîëîíêå (position)
+	//Ð±ÐµÐ³Ð°ÐµÐ¼ Ð¿Ð¾ ÐºÐ¾Ð»Ð¾Ð½ÐºÐµ (position)
 
 	switch (position) {
 	case 0:
@@ -115,15 +115,15 @@ QVariant ObjectProject::getData(int num, int position) const {
 	case 3:
 		return listOfParams->at(num).getObjectType();
 	case 4:
-		return listOfParams->at(num).getDigital();//äîáàâèëè äëÿ öèôðû
+		return listOfParams->at(num).getDigital();//Ð´Ð¾Ð±Ð°Ð²Ð¸Ð»Ð¸ Ð´Ð»Ñ Ñ†Ð¸Ñ„Ñ€Ñ‹
 	case 5:
 		return listOfParams->at(num).getSignature();
 	case 6:
 		return listOfParams->at(num).getController();
 	case 7:
-		return listOfParams->at(num).getPlcAdress();//äîáàâèëè äëÿ öèôðû
+		return listOfParams->at(num).getPlcAdress();//Ð´Ð¾Ð±Ð°Ð²Ð¸Ð»Ð¸ Ð´Ð»Ñ Ñ†Ð¸Ñ„Ñ€Ñ‹
 	case 8:
-		return listOfParams->at(num).getPlcVarname();//äîáàâèëè äëÿ öèôðû
+		return listOfParams->at(num).getPlcVarname();//Ð´Ð¾Ð±Ð°Ð²Ð¸Ð»Ð¸ Ð´Ð»Ñ Ñ†Ð¸Ñ„Ñ€Ñ‹
 	case 9:
 		return listOfParams->at(num).getResource();
 	case 10:

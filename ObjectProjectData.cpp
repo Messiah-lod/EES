@@ -28,7 +28,7 @@ QVariant ObjectProjectData::getObjectType() const
 	return data[3];
 }
 
-QVariant ObjectProjectData::getDigital() const//добавили для цифры
+QVariant ObjectProjectData::getDigital() const//РґРѕР±Р°РІРёР»Рё РґР»СЏ С†РёС„СЂС‹
 {
 	return data[4];
 }
@@ -43,12 +43,12 @@ QVariant ObjectProjectData::getController() const
 	return data[6];
 }
 
-QVariant ObjectProjectData::getPlcAdress() const//добавили для цифры
+QVariant ObjectProjectData::getPlcAdress() const//РґРѕР±Р°РІРёР»Рё РґР»СЏ С†РёС„СЂС‹
 {
 	return data[7];
 }
 
-QVariant ObjectProjectData::getPlcVarname() const//добавили для цифры
+QVariant ObjectProjectData::getPlcVarname() const//РґРѕР±Р°РІРёР»Рё РґР»СЏ С†РёС„СЂС‹
 {
 	return data[8];
 }
