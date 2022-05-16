@@ -4,51 +4,54 @@
 
 Logger::Logger(const char* nameLogFile)
 {
-	CreateDirectoryW(L"logs", NULL);
+    CreateDirectoryW(L"logs", nullptr);
 	fileName = nameLogFile;
 }
 
-Logger Logger::Warning()
+bool Logger::writeFile(const std::string message)
 {
-	logs.open("./logs/" + fileName, std::ios_base::app);//открываем(создаем) файл с записью в конец
-	if (logs.is_open()) {
-		logs << "************  WARNING!!!  ***************" << std::endl;
-		logs.close();
-	}
-	return Logger();
+    logs.open("./logs/"+ fileName, std::ios_base::app);//РѕС‚РєСЂС‹РІР°РµРј(СЃРѕР·РґР°РµРј) С„Р°Р№Р» СЃ Р·Р°РїРёСЃСЊСЋ РІ РєРѕРЅРµС†
+    if(!logs.is_open()) return false;
+    logs << message << std::endl;
+    logs.close();
+    return true;//РІРµСЂРЅРµС‚ С‚СЂСѓ РїСЂРё СѓСЃРїРµС€РЅРѕРј РѕС‚РєСЂС‹С‚РёРё С„Р°Р№Р»Р° Рё Р·Р°РїРёСЃРё С‚СѓРґР°
 }
 
-Logger Logger::Error()
+bool Logger::operator<<(const QString message)
 {
-	logs.open("./logs/" + fileName, std::ios_base::app);//открываем(создаем) файл с записью в конец
-	if (logs.is_open()) {
-		logs << "************  ERROR!!!  ***************" << std::endl;
-		logs.close();
-	}
-	return Logger();
+    return writeFile(timeToLogs() + message.toStdString());
+}
+
+bool Logger::warning(const QString message)
+{
+    return writeFile(timeToLogs() + "[WARNING] " + message.toStdString());
+}
+
+bool Logger::error(const QString message)
+{
+    return writeFile(timeToLogs() + "[ERROR] " + message.toStdString());
+}
+
+bool Logger::debug(const QString message)
+{
+#ifdef DEBUG
+    return writeFile(timeToLogs() + "[DEBUG] " + message.toStdString());
+#else
+    Q_UNUSED(message)
+    return true;
+#endif
+}
+
+std::string Logger::timeToLogs()
+{
+	time(&rawtime); // С‚РµРєСѓС‰Р°СЏ РґР°С‚Р° РІ СЃРµРєСѓРЅРґР°С…
+	timeinfo = localtime(&rawtime);// С‚РµРєСѓС‰РµРµ Р»РѕРєР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ, РїСЂРµРґСЃС‚Р°РІР»РµРЅРЅРѕРµ РІ СЃС‚СЂСѓРєС‚СѓСЂРµ
+	strftime(buffer, sizeof(buffer), "%d.%m.%Y %X", timeinfo); // С„РѕСЂРјР°С‚РёСЂСѓРµРј СЃС‚СЂРѕРєСѓ РІСЂРµРјРµРЅРё
+	return "(" + std::string(buffer) + "." + std::to_string(GetTickCount() % 1000) + ")	";
 }
 
 
 Logger::~Logger()
 {
-}
-
-
-bool Logger::operator<<(const std::string message)
-{
-	logs.open("./logs/"+ fileName, std::ios_base::app);//открываем(создаем) файл с записью в конец
-	if(!logs.is_open()) return false;
-	logs << timeToLogs() << message << std::endl;
-	logs.close();
-	return true;//вернет тру при успешном открытии файла и записи туда
-}
-
-
-std::string Logger::timeToLogs()
-{
-	time(&rawtime); // текущая дата в секундах
-	timeinfo = localtime(&rawtime);// текущее локальное время, представленное в структуре
-	strftime(buffer, sizeof(buffer), "%d.%m.%Y %X", timeinfo); // форматируем строку времени
-	return "(" + std::string(buffer) + "." + std::to_string(GetTickCount() % 1000) + ")	";
 }
 

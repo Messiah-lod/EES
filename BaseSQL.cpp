@@ -1,23 +1,10 @@
 #include "BaseSQL.h"
 
-BaseSQL::BaseSQL()
-{
-	webserver = "";
-	path = "";
-	user = "";
-	pass = "";
-}
-
 BaseSQL::BaseSQL(std::string webserver_, std::string path_, std::string user_, std::string pass_)
 {
-	webserver = webserver_;
-	path = path_;
-	user = user_;
-	pass = pass_;
-
+    setConnectParam(webserver_, path_, user_, pass_);
 	connect();
 }
-
 
 BaseSQL::~BaseSQL()
 {
@@ -25,87 +12,116 @@ BaseSQL::~BaseSQL()
 }
 
 int BaseSQL::connect()
-{//После получения данных о базе и пользователе создаем подключение
+{//РџРѕСЃР»Рµ РїРѕР»СѓС‡РµРЅРёСЏ РґР°РЅРЅС‹С… Рѕ Р±Р°Р·Рµ Рё РїРѕР»СЊР·РѕРІР°С‚РµР»Рµ СЃРѕР·РґР°РµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ
+    Database.setHostName(QString::fromStdString(webserver));
+//    Database.setDatabaseName("D:/_РЎ_/Р Р°Р±РѕС‡РёР№ СЃС‚РѕР»/РљРёСЂРёС€СЃРєР°СЏ Р“Р Р­РЎ РђРЎРЈ Р­РўРћ/Pr_KirGRES_ASU_ETO/SCADABD.GDB");
+    Database.setDatabaseName(QString::fromStdString(path));
+    Database.setUserName(QString::fromStdString(user));
+    Database.setPassword(QString::fromStdString(pass));
 
-	Database = IBPP::DatabaseFactory(webserver, path, user, pass);
-	logs << "Попытка подключения к базе данных";
-	logs << webserver + path;
-	try
-	{
-		Database->Connect();
-	}
-	catch (std::exception& exp)
-	{
-		logs << exp.what();
-		logs << "Заданы неверные параметры подключения к базе данных!";
+    logs.debug("РџРѕРїС‹С‚РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…");
+    logs.debug(QString::fromStdString("webserver: " + webserver + ", path: " + path));
+
+    bool isSuccessConnect;
+    try{
+         isSuccessConnect = Database.open();
+    }
+    catch(...) {
+        logs.warning("РСЃРєР»СЋС‡РµРЅРёРµ РїСЂРё РїРѕРїС‹С‚РєРµ РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”!");
+        return 1;
+    }
+
+    if(!isSuccessConnect){
+        logs.warning("Р—Р°РґР°РЅС‹ РЅРµРІРµСЂРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…!");
+        logs << Database.lastError().text();
 		return 1;
-	}
-
-	bool isSucessConn = Database->Connected();
-	if (isSucessConn) return 0;
-	else return 2;
-
+    }
+    return 0;
 }
 
 void BaseSQL::disconnect()
 {
-	Database->Disconnect();
+    Database.close();
 }
 
 bool BaseSQL::connected()
 {
-	return (Database->Connected());
+    bool isSuccessConnected = Database.isOpen();
+    if (!isSuccessConnected)logs << "РќРµС‚ РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…!";
+    return isSuccessConnected;
 }
 
 void BaseSQL::setConnectParam(std::string webserver_, std::string path_, std::string user_, std::string pass_)
 {
-	webserver = webserver_;
-	path = path_;
-	user = user_;
-	pass = pass_;
+    webserver = webserver_;
+    if(path_.find("SCADABD.GDB")==std::string::npos) path_+= "/SCADABD.GDB";
+    path = path_;
+    user = user_;
+    pass = pass_;
 }
 
 std::string BaseSQL::any_to_str(std::any parameter)
 {
 	try {
-		if (parameter.type().hash_code() == 3440116983)
+        if (parameter.type() == typeid(int))
 		{
 			return std::to_string(std::any_cast <int> (parameter));
 		}
-		else if (parameter.type().hash_code() == 3406561745)
+        else if (parameter.type() == typeid(double))
 		{
 			return std::to_string(std::any_cast <double> (parameter));
 		}
-		else if (parameter.type().hash_code() == 4027145609)
+        else if (parameter.type() == typeid(const char*))
 		{
 			return std::any_cast <const char*> (parameter);
 		}
-		else if (parameter.type().hash_code() == 1628147040)
+        else if (parameter.type() == typeid(bool))
 		{
 			return std::to_string(std::any_cast <bool> (parameter));
 		}
-		else if (parameter.type().hash_code() == 1604120214)
+        else if (parameter.type() == typeid(std::string))
 		{
 			return std::any_cast<std::string> (parameter);
 		}
-		else if (parameter.type().hash_code() == 3708558887)
-		{
-			logs << "Попытка обработки пустого значения ANY и преобразования в строку!";
-			return std::string();
-		}
 		else
 		{
-			logs << "Исключение в методе any_to_str:";
-			logs << "Попытка вывода неизвестного типа переменной!";
-			logs << "hash code параметра:" + parameter.type().hash_code();
-			return std::string();
+            logs.error("РСЃРєР»СЋС‡РµРЅРёРµ РІ РјРµС‚РѕРґРµ any_to_str: РџРѕРїС‹С‚РєР° РІС‹РІРѕРґР° РЅРµРёР·РІРµСЃС‚РЅРѕРіРѕ РёР»Рё РїСѓСЃС‚РѕРіРѕ С‚РёРїР° РїРµСЂРµРјРµРЅРЅРѕР№! "
+             "РќР°РёРјРµРЅРѕРІР°РЅРёРµ С‚РёРїР° РїР°СЂР°РјРµС‚СЂР°: " + QString::fromStdString(parameter.type().name()));
+            return "";
 		}
 	}
 	catch (const std::bad_any_cast & e) {
-		logs << "Исключение в методе any_to_str:";
-		logs << e.what();
-		return std::string();
-	}
+        logs << "РСЃРєР»СЋС‡РµРЅРёРµ РІ РјРµС‚РѕРґРµ any_to_str: " + QString::fromStdString(e.what());
+        return std::string("");
+    }
+}
+
+int BaseSQL::any_to_int(std::any parameter)
+{
+    try {
+        if (parameter.type() == typeid(int))
+        {
+            return std::any_cast <int> (parameter);
+        }
+        else if (parameter.type() == typeid(double))
+        {
+            return std::any_cast <int>(std::any_cast <double> (parameter));
+        }
+        else if (parameter.type() == typeid(bool))
+        {
+            return std::any_cast <int>(std::any_cast <bool> (parameter));
+        }
+        else
+        {
+            logs.error("РСЃРєР»СЋС‡РµРЅРёРµ РІ РјРµС‚РѕРґРµ any_to_int: РџРѕРїС‹С‚РєР° РІС‹РІРѕРґР° РЅРµРёР·РІРµСЃС‚РЅРѕРіРѕ, РїСѓСЃС‚РѕРіРѕ РёР»Рё СЃС‚СЂРѕРєРѕРІРѕРіРѕ С‚РёРїР° РїРµСЂРµРјРµРЅРЅРѕР№! "
+             "РќР°РёРјРµРЅРѕРІР°РЅРёРµ С‚РёРїР° РїР°СЂР°РјРµС‚СЂР°: " + QString::fromStdString(parameter.type().name()));
+            return 1;
+        }
+    }
+    catch (const std::bad_any_cast & e) {
+        logs << "РСЃРєР»СЋС‡РµРЅРёРµ РІ РјРµС‚РѕРґРµ any_to_int: " + QString::fromStdString(e.what());
+        return 2;
+    }
 }
 
 void BaseSQL::IntToBinary(int num, std::string  &buf)
@@ -127,314 +143,186 @@ void BaseSQL::IntToBinary(int num, std::string  &buf)
 
 void BaseSQL::write(std::string query)
 {
-	IBPP::Transaction tr2;
-	tr2 = IBPP::TransactionFactory(Database, IBPP::amWrite);//, IBPP::ilConcurrency,
-//		IBPP::lrWait, IBPP::TFF(0));
-
-	if (Database->Connected())
-	{
-		tr2->Start();
-		if (tr2->Started())
-		{
-			//		std::cout << "Транзакция выполнена" << std::endl;
-		}
-
-		IBPP::Statement st1 = IBPP::StatementFactory(Database, tr2);
-
-		try
-		{
-			st1->Execute(query);//отправляем SQL-запрос
-//			st1->Execute("COMMIT WORK;");
-			st1->Close();
-		}
-		catch (std::exception& exp)//
-		{
-			logs << "Исключение в методе write:";
-			logs << exp.what();
-			//		return 2;
-		}
-		tr2->Commit();    // Or tr->Rollback();
-	}
-	else
-	{
-		logs << "Нет подключения к базе данных!";
-	}
+    if (!connected()) return;
+    qDebug() << QString::fromStdString(query);
+    QSqlQuery sqlquery(Database);
+    if(!sqlquery.exec(QString::fromStdString(query))){
+        logs << sqlquery.lastError().text();
+    }
 }
 
-void BaseSQL::read(std::string query, std::string table, std::string coll_answer, std::any &answ)
+void BaseSQL::read(std::string query, std::string table, std::string collAnswer, std::any &answ)
 {
-	std::string type_answ;
-
-	std::string tmp_s; //строка временного хранения считанных данных GET
-	int tmp_i; //int временного хранения считанных данных GET
-
-	answ = 0;
-
-	IBPP::Transaction tr;
-	tr = IBPP::TransactionFactory(Database, IBPP::amRead);
-
-	if (Database->Connected())
-	{
-		tr->Start();
-		if (tr->Started())
-		{//		std::cout << "Транзакция выполнена" << std::endl;
-		}
-		IBPP::Statement st = IBPP::StatementFactory(Database, tr);
-
-		type_answ = get_type_name(table, coll_answer);
-		//logs << type_answ << std::endl;
-
-		try
-		{
-			st->Execute(query);//отправляем SQL-запрос
-			for (int i = 0; i < coll_answer.length(); i++)
-			{
-				if (coll_answer[i] == '"')
-				{
-					coll_answer.erase(i, 1);
-				}
-			}
-			while (st->Fetch())//пока получаем данные...
-			{
-				//записываем в вектор параметр
-				if (type_answ == "VARCHAR")
-				{
-					//	logs << "ЧАР" << std::endl;
-					tmp_s.clear();
-					st->Get(coll_answer, tmp_s);
-					answ = tmp_s;
-				}
-				else if (type_answ == "INTEGER" || type_answ == "SHORT")
-				{
-					//	logs << "ИНТ" << std::endl;
-					st->Get(coll_answer, tmp_i);
-					answ = tmp_i;
-				}
-				else
-				{
-					logs << "Исключение в методе read: Параметр не найден!";
-				}
-			}
-			st->Close();
-		}
-		catch (std::exception& exp)
-		{
-			logs << "Исключение в методе read:";
-			logs << "Запрос вида:" + query;
-			logs << exp.what();
-		}
-		tr->Commit();
-	}
+    std::vector <std::any> vectorAnsw;
+    read(query, table, collAnswer, vectorAnsw);
+    if(vectorAnsw.size() > 0) answ = vectorAnsw[0];
+    else answ = 0;
 }
 
-void BaseSQL::read(std::string query, std::string table, std::string coll_answer, std::vector <std::any> &answ)
+void BaseSQL::read(std::string query, std::string table, std::string collAnswer, std::vector <std::any> &answ)
 {
-	std::string type_answ;
+    if (!connected()) return;
 
-	std::string tmp_s; //строка временного хранения считанных данных GET
-	int tmp_i; //int временного хранения считанных данных GET
+    QSqlQuery sqlquery(QString::fromStdString(query), Database); //РѕР±СЉРµРєС‚ Р·Р°РїСЂРѕСЃР° СЃ СѓРєР°Р·Р°РЅРёРµРј РЅР° Р‘Р”
+    QSqlRecord sqlrecord = sqlquery.record();
+    int indexNameCol = sqlrecord.indexOf(QString::fromStdString(collAnswer)); // index of the field coll_answer
 
-	//answ = 0;
+    //РїСЂРёРІРѕРґРёРј any Рє С‚РёРїСѓ РґР°РЅРЅС‹С… РїРѕ Р·Р°РїСЂРѕСЃСѓ Рє Р‘Р”
+    std::string type_answ = get_type_name(table, collAnswer); //РїРѕР»СѓС‡РёРј С‚РёРї РїР°СЂР°РјРµС‚СЂР° РёР· Р‘Р”
+    qDebug() << QString::fromStdString(query);
+    qDebug() << QString::fromStdString(type_answ);
 
-	IBPP::Transaction tr;
-	tr = IBPP::TransactionFactory(Database, IBPP::amRead);
-
-	if (Database->Connected())
-	{
-		tr->Start();
-		if (tr->Started())
-		{//		std::cout << "Транзакция выполнена" << std::endl;
-		}
-		IBPP::Statement st = IBPP::StatementFactory(Database, tr);
-
-		type_answ = get_type_name(table, coll_answer);
-		//		std::cout << type_answ << std::endl;
-
-		try
-		{
-			st->Execute(query);//отправляем SQL-запрос
-			for (int i = 0; i < coll_answer.length(); i++)
-			{
-				if (coll_answer[i] == '"')
-				{
-					coll_answer.erase(i, 1);
-				}
-			}
-			while (st->Fetch())//пока получаем данные...
-			{
-				//записываем в вектор параметр
-				if (type_answ == "VARCHAR")
-				{
-					//										std::cout << "ЧАР" << std::endl;
-					tmp_s.clear();
-					st->Get(coll_answer, tmp_s);
-					answ.push_back(tmp_s);
-				}
-				else if (type_answ == "INTEGER" || type_answ == "SHORT")
-				{
-					//					std::cout << "ИНТ" << std::endl;
-					st->Get(coll_answer, tmp_i);
-					answ.push_back(tmp_i);
-				}
-			}
-			st->Close();
-		}
-		catch (std::exception& exp)
-		{
-			logs << "Исключение в методе read:";
-			logs << "Запрос вида:" + query;
-			logs << exp.what();
-		}
-		tr->Commit();
-	}
+    if (type_answ == "VARCHAR") {
+        while (sqlquery.next()) {//РїРѕР»СѓС‡Р°РµРј РґР°РЅРЅС‹Рµ Рё РїСЂРёРІРѕРґРёРј РёС… СЃСЂР°Р·Сѓ Рє СЃС‚СЂРѕРєРµ
+            QVariant tmpVariant = sqlquery.value(indexNameCol);
+            std::string tmpString = tmpVariant.toString().toStdString();
+            qDebug() << QString::fromStdString(tmpString);
+            answ.push_back(tmpString);
+        }
+//        if(answ.size() == 0) answ.push_back("");
+    }
+    else if (type_answ == "INTEGER" || type_answ == "SHORT") {
+        while (sqlquery.next()) {//РїРѕР»СѓС‡Р°РµРј РґР°РЅРЅС‹Рµ Рё РїСЂРёРІРѕРґРёРј РёС… СЃСЂР°Р·Сѓ Рє С‡РёСЃР»Сѓ
+            QVariant tmpVariant = sqlquery.value(indexNameCol);
+            int tmpInt = tmpVariant.toInt();
+            qDebug() << QString::number(tmpInt);
+            answ.push_back(tmpInt);
+        }
+//        if(answ.size() == 0) answ.push_back(0);
+    }
+    else logs << "РСЃРєР»СЋС‡РµРЅРёРµ РІ РјРµС‚РѕРґРµ read: РўРёРї РџР°СЂР°РјРµС‚СЂР° РЅРµ РЅР°Р№РґРµРЅ!";
+    qDebug() << "Р”Р»РёРЅ РІРµРєС‚РѕСЂР° СЃ РІС‹С‡РёС‚Р°РЅРЅС‹РјРё РґР°РЅРЅС‹РјРё СЂР°РІРЅР°: " + QString::number(answ.size());
+    /*    //РїСЂРёРІРѕРґРёРј any Рє С‚РёРїСѓ РґР°РЅРЅС‹С… РїРѕ QVariant
+        switch(answerVariant.userType()){
+        case QMetaType::Int: {
+            int a = answerVariant.toInt();
+            answ = a;
+            break;
+        }
+        case QMetaType::QString: {
+            std::string b = answerVariant.toString().toStdString();
+            answ = b;
+            break;
+        }
+        default: break;
+        }
+    */
 }
-
 
 std::string BaseSQL::get_type_name(std::string table, std::string coll)
 {
-	//набор переменных для метода get_type_name
-	std::vector <std::string> all_coll_name;
-	std::vector <int> all_coll_type;
-	std::string all_coll_name_;
-	int all_coll_type_ = 0;
+    std::transform(table.begin(), table.end(), table.begin(), toupper); //РїРµСЂРµРІРµРґРµРј РІ РІРµСЂС…РЅРёР№ СЂРµРіРёСЃС‚СЂ СЃС‚СЂРѕРєСѓ СЃ С‚Р°Р±Р»РёС†РµР№
+    std::transform(coll.begin(), coll.end(), coll.begin(), toupper);
 
+    //Р·Р°С‚РёСЂР°РµРј РІСЃРµ РєР°РІС‹С‡РєРё РІ РЅР°Р·РІР°РЅРёРё РєРѕР»РѕРЅРѕРє
+    for (unsigned int i = 0; i < coll.length(); i++)
+        if (coll[i] == '"')	coll.erase(i, 1);
 
+    //РїРѕРґРіРѕС‚РѕРІРёРј Р·Р°РїСЂРѕСЃ РЅР° С‚РёРї РґР°РЅРЅС‹С… РєРѕР»РѕРЅРєРё РІ С‚Р°Р±Р»РёС†Рµ
+    std::string  query1, query2;
+    query.clear();
+    query1 = "select R.RDB$RELATION_NAME,  R.RDB$FIELD_NAME, F.RDB$FIELD_TYPE from RDB$FIELDS F, RDB$RELATION_FIELDS R where F.RDB$FIELD_NAME = R.RDB$FIELD_SOURCE and R.RDB$SYSTEM_FLAG = 0";
+    query2 = "order by R.RDB$RELATION_NAME, R.RDB$FIELD_POSITION";
+    query = query1 + ' ' + "and R.RDB$RELATION_NAME = '" + table.c_str() + "' and R.RDB$FIELD_NAME = '"  + coll.c_str() + "' " + query2;
+//    qDebug() <<  QString::fromStdString(query);
 
-	for (int i = 0; i < coll.length(); i++)
-	{
-		if (coll[i] == '"')
-		{
-			coll.erase(i, 1);
-		}
-	}
+    QSqlQuery sqlquery(QString::fromStdString(query), Database); //РѕР±СЉРµРєС‚ Р·Р°РїСЂРѕСЃР° СЃ СѓРєР°Р·Р°РЅРёРµРј РЅР° Р‘Р”
+    QSqlRecord sqlrecord = sqlquery.record();
+    QVariant answerVariant;
 
-	all_coll_name.clear();
-	all_coll_type.clear();
+    while (sqlquery.next())//РїРѕРєР° РїРѕР»СѓС‡Р°РµРј РґР°РЅРЅС‹Рµ...
+        answerVariant = sqlquery.value(2);
 
-	std::string  query1, query2;
-	query.clear();
-	query1 = "select R.RDB$RELATION_NAME,  R.RDB$FIELD_NAME, F.RDB$FIELD_TYPE from RDB$FIELDS F, RDB$RELATION_FIELDS R where F.RDB$FIELD_NAME = R.RDB$FIELD_SOURCE and R.RDB$SYSTEM_FLAG = 0";
-	query2 = "order by R.RDB$RELATION_NAME, R.RDB$FIELD_POSITION";
-	query = query1 + ' ' + "and RDB$RELATION_NAME = '" + table.c_str() + "' " + query2;
+//    qDebug() << answerVariant;
+    int columnType = 0;
+    if (answerVariant.canConvert<int>())
+        columnType = answerVariant.toInt();
+    else logs.error("РќРµРґРѕРїСѓСЃС‚РёРјС‹Р№ С„РѕСЂРјР°С‚ РґР°РЅРЅС‹С… РІ С‚Р°Р±Р»РёС†Рµ: " + QString::fromStdString(table) + ", РєРѕР»РѕРЅРєР°: " + QString::fromStdString(coll));
 
-	IBPP::Transaction tr1;
-	tr1 = IBPP::TransactionFactory(Database, IBPP::amRead);
+    switch (columnType) {
+        case 7: return "SHORT";
+        case 8: return "INTEGER";
+        case 9: return "QUAD";
+        case 10: return "FLOAT";
+        case 12: return "DATE";
+        case 13: return "TIME";
+        case 14: return "TEXT";
+        case 16: return "INT64";
+        case 23: return "BOOLEAN";
+        case 27: return "DOUBLE";
+        case 35: return "TIMESTAMP";
+        case 37: return "VARCHAR";
+        case 40: return "CSTRING";
+        case 45: return "BLOB_ID";
+        case 261: return "BLOB";
+        default: {
+            logs.error("РќРµ СѓРґР°Р»РѕСЃСЊ РѕРїСЂРµРґРµР»РёС‚СЊ С‚РёРї РґР°РЅРЅС‹С… " + QString::fromStdString(table) + ", РєРѕР»РѕРЅРєР°: " + QString::fromStdString(coll));
+            return "";
+        }
+    }
+}
 
-	if (Database->Connected())
-	{
-		tr1->Start();
+int BaseSQL::color_convet(std::string FONCOLOR)
+{
+    std::string tmp_, color_str;
+    int colorR, colorG, colorB, count;
+    count = colorR = colorG = colorB = 0;
 
-		if (tr1->Started())
-		{
-			//					std::cout << "Транзакция выполнена" << std::endl;
-		}
+    //С†РёРєР» РґР»СЏ РІС‹РґРµР»РµРЅРёСЏ С†РІРµС‚Р° РёР· СЃС‚СЂРѕРєРё РїР°СЂР°РјРµС‚СЂР° РІ R:G:B
+    for (size_t i = 0; i < FONCOLOR.size(); i++)
+    {
+        tmp_ += FONCOLOR[i];
+        if (FONCOLOR[i] == ':' || i == (FONCOLOR.size() - 1))
+        {
+            if (count == 0)
+            {
+                colorR = std::stoi(tmp_);
+            }
+            else if (count == 1)
+            {
+                colorG = std::stoi(tmp_);
+            }
+            else
+            {
+                colorB = std::stoi(tmp_);
+            }
+            count++;
+            tmp_.clear();
+        }
+    }
+    //Р·Р°РїРёС€РµРј РІ Р±РёРЅР°СЂРЅРѕРј РІРёРґРµ РїР°СЂР°РјРµС‚СЂС‹ С†РІРµС‚Р° Рё СЃРєР»РµРёРј РІ РѕРґРЅСѓ СЃС‚СЂРѕРєСѓ
+    IntToBinary(colorB, tmp_);
+    color_str += tmp_;
+    tmp_.clear();
+    IntToBinary(colorG, tmp_);
+    color_str += tmp_;
+    tmp_.clear();
+    IntToBinary(colorR, tmp_);
+    color_str += tmp_;
+    tmp_.clear();
 
-		IBPP::Statement st = IBPP::StatementFactory(Database, tr1);
+    return std::bitset<32>(color_str).to_ulong();//РїРµСЂРµРІРµРґРµРј Р±РёРЅР°СЂРЅСѓСЋ СЃС‚СЂРѕРєСѓ РІ РґРµСЃСЏС‚РёС‡РЅС‹Р№ INT
+}
 
-		try
-		{
-			st->Execute(query);//отправляем SQL-запрос
-			while (st->Fetch())//пока получаем данные...
-			{
-				st->Get("RDB$FIELD_NAME", all_coll_name_);
-				//удалим лишние пробелы
-				for (int k = 0; k < all_coll_name_.size(); k++) {
-					if (all_coll_name_[k] == ' ') {
-						all_coll_name_.erase(k, 1);
-						k--;
-					}
-				}
-				all_coll_name.push_back(all_coll_name_);
-
-				st->Get("RDB$FIELD_TYPE", all_coll_type_);
-				all_coll_type.push_back(all_coll_type_);
-			}
-			st->Close();
-		}
-		catch (std::exception& exp)
-		{
-			logs << exp.what();
-		}
-		tr1->Commit();
-	}
-	else
-	{
-		logs << "Исключение в методе get_type_name:";
-		logs << "Отсутствует подключение к базе данных!";
-	}
-
-	//logs << coll << std::endl;
-	for (size_t i = 0; i < all_coll_name.size(); i++)
-	{
-		if (all_coll_name[i] == coll)
-		{
-			if (all_coll_type[i] == 7)
-			{
-				return "SHORT";
-			}
-			else if (all_coll_type[i] == 8)
-			{
-				return "INTEGER";
-			}
-			else if (all_coll_type[i] == 9)
-			{
-				return "QUAD";
-			}
-			else if (all_coll_type[i] == 10)
-			{
-				return "FLOAT";
-			}
-			else if (all_coll_type[i] == 12)
-			{
-				return "DATE";
-			}
-			else if (all_coll_type[i] == 13)
-			{
-				return "TIME";
-			}
-			else if (all_coll_type[i] == 14)
-			{
-				return "TEXT";
-			}
-			else if (all_coll_type[i] == 16)
-			{
-				return "INT64";
-			}
-			else if (all_coll_type[i] == 23)
-			{
-				return "BOOLEAN";
-			}
-			else if (all_coll_type[i] == 27)
-			{
-				return "DOUBLE";
-			}
-			else if (all_coll_type[i] == 35)
-			{
-				return "TIMESTAMP";
-			}
-			else if (all_coll_type[i] == 37)
-			{
-				return "VARCHAR";
-			}
-			else if (all_coll_type[i] == 40)
-			{
-				return "CSTRING";
-			}
-			else if (all_coll_type[i] == 45)
-			{
-				return "BLOB_ID";
-			}
-			else if (all_coll_type[i] == 261)
-			{
-				return "BLOB";
-			}
-			else
-			{
-				logs << "Исключение в методе get_type_name: Type not defined";
-				return "Type not defined";
-			}
-		}
-	}
-	return "Таблица или колонка с требуемым именем не найдена!";
-
+bool BaseSQL::checkingIsCorrectName(std::string m_name)
+{
+    qDebug() << "Р’С‹РїРѕР»РЅРёРј РїСЂРѕРІРµСЂРєСѓ РёРјРµРЅРё РЅР° РґРѕРїСѓСЃС‚РёРјРѕСЃС‚СЊ";
+    if (m_name.size() == 0){ 						//РџСЂРѕРІРµСЂРєР° РЅР° РїСѓСЃС‚РѕРµ РёРјСЏ
+        logs << "РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЅРµ РєРѕСЂСЂРµРєС‚РЅРѕ: РїСѓСЃС‚РѕРµ РёРјСЏ!";
+        return false;
+    }
+    QString name = QString::fromStdString(m_name); //РїРµСЂРµРІРµРґРµРј РІ utf-8 РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РєРёСЂРёР»РёС†РµР№
+    if(name.contains(QRegularExpression("[Рђ-РЇР°-СЏ]"))){
+        logs.warning("РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЅРµ РєРѕСЂСЂРµРєС‚РЅРѕ: РєРёСЂРёР»РёС†Р° РІ РёРјРµРЅРё!");
+        return false;
+    }
+    if(name.contains(QRegularExpression("[!-/:-@[-^`{-~]"))){
+        logs.warning("РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЅРµ РєРѕСЂСЂРµРєС‚РЅРѕ: РёРјСЏ СЃРѕРґРµСЂР¶РёС‚ РЅРµ РєРѕСЂСЂРµРєС‚РЅС‹Рµ СЃРёРјРІРѕР»С‹!");
+        return false;
+    }
+    if(QString(name[0]).contains(QRegularExpression("[0-9]"))){
+        logs.warning("РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЅРµ РєРѕСЂСЂРµРєС‚РЅРѕ: РёРјСЏ РЅР°С‡РёРЅР°РµС‚СЃСЏ СЃ С†РёС„СЂС‹!");
+        return false;
+    }
+    return true;
 }

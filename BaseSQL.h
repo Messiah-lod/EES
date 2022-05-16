@@ -1,50 +1,55 @@
 #pragma once
 
 #include "Logger.h"
-#include ".\ibpp\ibpp.h"
+
 #include <exception>
-#include "Windows.h"
+#include "windows.h"
+#include <map>
 #include <iostream>
 #include <any>
-#include <ctime> //либа для вывода текущего времени в лог
-
+#include <bitset>
+#include <ctime> //Р»РёР±Р° РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСѓС‰РµРіРѕ РІСЂРµРјРµРЅРё РІ Р»РѕРі
+#include <vector>
+#include <QtSql>
+#include <QString>
 
 class BaseSQL
 {
 public:
-	//методы, позволяющие получить простой доступ к БД (чтение/запись)
-	BaseSQL();
+	//РјРµС‚РѕРґС‹, РїРѕР·РІРѕР»СЏСЋС‰РёРµ РїРѕР»СѓС‡РёС‚СЊ РїСЂРѕСЃС‚РѕР№ РґРѕСЃС‚СѓРї Рє Р‘Р” (С‡С‚РµРЅРёРµ/Р·Р°РїРёСЃСЊ)
 	BaseSQL(std::string webserver_, std::string path_, std::string user_, std::string pass_);
 	void setConnectParam(std::string webserver_, std::string path_, std::string user_, std::string pass_);
 	~BaseSQL();
 	bool connected();
-	void disconnect(); //отключение от БД
+	void disconnect(); //РѕС‚РєР»СЋС‡РµРЅРёРµ РѕС‚ Р‘Р”
+
+    void write(std::string query);
+    void read(std::string query, std::string table, std::string collAnswer, std::any &answ);
+    void read(std::string query, std::string table, std::string collAnswer, std::vector <std::any> &answ);
 
 protected:
-	//методы, предназначенные для дочерних классов
+	//РјРµС‚РѕРґС‹, РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅРЅС‹Рµ РґР»СЏ РґРѕС‡РµСЂРЅРёС… РєР»Р°СЃСЃРѕРІ
 	Logger logs{ "logsSQL" };
-	std::string query; //общая переменная для записи запросов
-	
-	
-	void write(std::string query);
-	void read(std::string query, std::string table, std::string coll_answer, std::any &answ);
-	void read(std::string query, std::string table, std::string coll_answer, std::vector <std::any> &answ);
+	std::string query; //РѕР±С‰Р°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ Р·Р°РїРёСЃРё Р·Р°РїСЂРѕСЃРѕРІ
 
-	std::string any_to_str(std::any parameter);//сервисный метод конвертации
-	void IntToBinary(int num, std::string  &buf);//сервисный метод конвертации
+	std::string any_to_str(std::any parameter);//СЃРµСЂРІРёСЃРЅС‹Р№ РјРµС‚РѕРґ РєРѕРЅРІРµСЂС‚Р°С†РёРё
+    int any_to_int(std::any parameter);//СЃРµСЂРІРёСЃРЅС‹Р№ РјРµС‚РѕРґ РєРѕРЅРІРµСЂС‚Р°С†РёРё
+	void IntToBinary(int num, std::string  &buf);//СЃРµСЂРІРёСЃРЅС‹Р№ РјРµС‚РѕРґ РєРѕРЅРІРµСЂС‚Р°С†РёРё
+    int color_convet(std::string FONCOLOR);
+    bool checkingIsCorrectName(std::string m_name); //РїСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё РёРјРµРЅРё/РјР°СЂРєРё Рё С‚.Рї.
 
 private:
-	//локальные переменные, необходимые для работы класса
+	//Р»РѕРєР°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ СЂР°Р±РѕС‚С‹ РєР»Р°СЃСЃР°
 	std::string webserver;
 	std::string path;
 	std::string user;
 	std::string pass;
 
-	IBPP::Database Database;//объект БД
+    QSqlDatabase Database = QSqlDatabase::addDatabase("QIBASE");
 
-	int connect();//подключение к БД
+    int connect();//РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
 	
-	std::string get_type_name(std::string table, std::string coll);//метод, возвращающий тип значения из таблицы БД
+	std::string get_type_name(std::string table, std::string coll);//РјРµС‚РѕРґ, РІРѕР·РІСЂР°С‰Р°СЋС‰РёР№ С‚РёРї Р·РЅР°С‡РµРЅРёСЏ РёР· С‚Р°Р±Р»РёС†С‹ Р‘Р”
 	
 
 };

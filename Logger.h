@@ -2,10 +2,12 @@
 
 #include <fstream>
 #include <string>
-#include "Windows.h"
+#include "windows.h"
 #include <iostream>
-#include <ctime> //либа для вывода текущего времени в лог
+#include <ctime> //Р»РёР±Р° РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСѓС‰РµРіРѕ РІСЂРµРјРµРЅРё РІ Р»РѕРі
+#include <QString>
 
+#define DEBUG
 
 class Logger
 {
@@ -14,22 +16,20 @@ public:
 	Logger(const char* nameLogFile);
 	~Logger();
 	
-	bool Logger::operator<<(const std::string message);
-
+    bool operator<<(const QString message);
+    bool warning(const QString message);
+    bool error(const QString message);
+    bool debug(const QString message);
 
 private:
-
-	Logger Warning();//Проглатывает месседжи, НЕ использовать
-	Logger Error();//Проглатывает месседжи, НЕ использовать
-
-
-	Logger() {};
+//    Logger() {}
+    bool writeFile(const std::string message);
 	std::string timeToLogs();
 	std::string fileName;
 	std::string m_msg;
 	std::ofstream logs;
-	//Набор переменных для вывода даты в лог
+	//РќР°Р±РѕСЂ РїРµСЂРµРјРµРЅРЅС‹С… РґР»СЏ РІС‹РІРѕРґР° РґР°С‚С‹ РІ Р»РѕРі
 	time_t rawtime;
 	struct tm * timeinfo;
-	char buffer[80]; // строка, в которой будет храниться текущее время
+	char buffer[80]; // СЃС‚СЂРѕРєР°, РІ РєРѕС‚РѕСЂРѕР№ Р±СѓРґРµС‚ С…СЂР°РЅРёС‚СЊСЃСЏ С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ
 };

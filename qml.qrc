@@ -2,4 +2,12 @@
     <qresource prefix="/">
         <file>main.qml</file>
     </qresource>
+    <qresource prefix="/translator">
+        <file>qtbase_ru.qm</file>
+        <file>RU_ru.ts</file>
+        <file>RU_ru.qm</file>
+    </qresource>
+    <qresource prefix="/pic">
+        <file>icon.ico</file>
+    </qresource>
 </RCC>

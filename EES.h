@@ -2,30 +2,31 @@
 
 #include "SQL_to_FB.h"
 #include "BaseSQL.h"
-#include "ObjectProject.h"
+#include "ModelObjectProject.h"
 #include "ModelLinkData.h"
 #include "Logger.h"
 
 #include <QtWidgets/QWidget>
 #include <QtWidgets>
-#include <ActiveQt/QAxObject>
 #include <QtGui>
 #include <QPushButton>
 #include <QTextStream> 
+#include <QAxObject>
 
 #include <iostream>
-#include "Windows.h"
+#include "windows.h"
 #include <string>
 #include <any>
 #include <vector>
-#include <conio.h> //для getch
+#include <conio.h> //РґР»СЏ getch
+#include <thread>
 
 class EES : public QWidget
 {
 	Q_OBJECT
 
 public:
-	EES(QWidget *parent = 0);
+    EES(QWidget *parent = nullptr);
 	void retranslateUi();
 	int initializingConnection(std::string path);
 
@@ -33,22 +34,22 @@ private:
 
 	QSplitter *splitterVertical;
 
-	QTabWidget *tabWidget; //организуем вкладки
-	QWidget *tab_tableData;//вкладка создания
-	QWidget *tab_tableDataLink;//вкладка связки
+	QTabWidget *tabWidget; //РѕСЂРіР°РЅРёР·СѓРµРј РІРєР»Р°РґРєРё
+	QWidget *tab_tableData;//РІРєР»Р°РґРєР° СЃРѕР·РґР°РЅРёСЏ
+	QWidget *tab_tableDataLink;//РІРєР»Р°РґРєР° СЃРІСЏР·РєРё
 
-	enum Tab {//добавим перечисления для уникального идентифицирования вкладок
+	enum Tab {//РґРѕР±Р°РІРёРј РїРµСЂРµС‡РёСЃР»РµРЅРёСЏ РґР»СЏ СѓРЅРёРєР°Р»СЊРЅРѕРіРѕ РёРґРµРЅС‚РёС„РёС†РёСЂРѕРІР°РЅРёСЏ РІРєР»Р°РґРѕРє
 		enum_tableData = 0,
 		enum_tableDataLink
 	};
 	
-	QGridLayout *grid_tab_tableData; //создаем грид, который кладем на вкладку
-	QTableView *tableView;//создаем вью, который положим на грид вкладки
-	ObjectProject *tableData;//создадим модель, которую вложим во вью
+	QGridLayout *grid_tab_tableData; //СЃРѕР·РґР°РµРј РіСЂРёРґ, РєРѕС‚РѕСЂС‹Р№ РєР»Р°РґРµРј РЅР° РІРєР»Р°РґРєСѓ
+	QTableView *tableView;//СЃРѕР·РґР°РµРј РІСЊСЋ, РєРѕС‚РѕСЂС‹Р№ РїРѕР»РѕР¶РёРј РЅР° РіСЂРёРґ РІРєР»Р°РґРєРё
+    ModelObjectProject *tableData;//СЃРѕР·РґР°РґРёРј РјРѕРґРµР»СЊ, РєРѕС‚РѕСЂСѓСЋ РІР»РѕР¶РёРј РІРѕ РІСЊСЋ
 
-	QGridLayout *grid_tableDataLink;//создаем грид, который кладем на вкладку
-	QTableView *tableViewLink;//создаем вью, который положим на грид вкладки
-	ModelLinkData *tableDataLink;//создадим модель, которую вложим во вью
+	QGridLayout *grid_tableDataLink;//СЃРѕР·РґР°РµРј РіСЂРёРґ, РєРѕС‚РѕСЂС‹Р№ РєР»Р°РґРµРј РЅР° РІРєР»Р°РґРєСѓ
+	QTableView *tableViewLink;//СЃРѕР·РґР°РµРј РІСЊСЋ, РєРѕС‚РѕСЂС‹Р№ РїРѕР»РѕР¶РёРј РЅР° РіСЂРёРґ РІРєР»Р°РґРєРё
+    ModelLinkData *tableDataLink;//СЃРѕР·РґР°РґРёРј РјРѕРґРµР»СЊ, РєРѕС‚РѕСЂСѓСЋ РІР»РѕР¶РёРј РІРѕ РІСЊСЋ
 
 	QPushButton *buttonLoad;
 	QPushButton *buttonUpLoad;
@@ -57,13 +58,16 @@ private:
 	QGridLayout *gridLayout;
 	QTextEdit *txtPath;
 
-	//переменные для подключения к БД
+	//РїРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”
 	std::string webserver;
 	std::string path;
 
 	QTimer *timer;
-	Logger logs{"logsQT"};
+    Logger logs{"logsSQL"};
 	QString temp;
+
+    QPalette darkPalette;
+    std::vector<int> numberOfRows; //РїРµСЂРµС‡РµРЅСЊ РєРѕР»РѕРЅРѕРє РґР»СЏ Р·Р°Р»РёРІРєРё
 
 	void setDataToModel(QString fileName, int currentTab = 0);
 
@@ -73,4 +77,6 @@ public slots:
 	void on_buttonConnect_clicked();
 	void slotTimerLogs();
 	void closeTab(int index);
+    void onRowChangeTable(QModelIndex,QModelIndex);
+    void onRowChangeLink(QModelIndex,QModelIndex);
 };

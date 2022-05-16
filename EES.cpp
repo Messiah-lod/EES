@@ -1,26 +1,26 @@
 #include "EES.h"
-#pragma warning(disable : 4715)
+//#pragma warning(disable : 4715)
 
 EES::EES(QWidget *parent)
 	: QWidget(parent)
 {
 	
-	//инициализируем элементы графического интерфейса
+	//РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј СЌР»РµРјРµРЅС‚С‹ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РёРЅС‚РµСЂС„РµР№СЃР°
 	gridLayout = new QGridLayout;
 	splitterVertical = new QSplitter(Qt::Vertical);
 
-	tabWidget = new QTabWidget; //организуем вкладки
-	tab_tableData = new QWidget;//вкладка создания
-	tab_tableData->setAccessibleName(QString::number(enum_tableData));//добавим номер перечисения к вкладке, для уникального идентифицирования
-	tab_tableDataLink = new QWidget;//вкладка связки
+	tabWidget = new QTabWidget; //РѕСЂРіР°РЅРёР·СѓРµРј РІРєР»Р°РґРєРё
+	tab_tableData = new QWidget;//РІРєР»Р°РґРєР° СЃРѕР·РґР°РЅРёСЏ
+	tab_tableData->setAccessibleName(QString::number(enum_tableData));//РґРѕР±Р°РІРёРј РЅРѕРјРµСЂ РїРµСЂРµС‡РёСЃРµРЅРёСЏ Рє РІРєР»Р°РґРєРµ, РґР»СЏ СѓРЅРёРєР°Р»СЊРЅРѕРіРѕ РёРґРµРЅС‚РёС„РёС†РёСЂРѕРІР°РЅРёСЏ
+	tab_tableDataLink = new QWidget;//РІРєР»Р°РґРєР° СЃРІСЏР·РєРё
 	tab_tableDataLink->setAccessibleName(QString::number(enum_tableDataLink));
 
-	tableData = new ObjectProject;
+    tableData = new ModelObjectProject;
 	tableView = new QTableView;
 	grid_tab_tableData = new QGridLayout(tab_tableData);
 	grid_tab_tableData->addWidget(tableView);
 
-	tableDataLink = new ModelLinkData;
+    tableDataLink = new ModelLinkData;
 	tableViewLink = new QTableView;
 	grid_tableDataLink = new QGridLayout(tab_tableDataLink);
 	grid_tableDataLink->addWidget(tableViewLink);
@@ -32,62 +32,81 @@ EES::EES(QWidget *parent)
 	txtPath = new QTextEdit;
 
 	textEditLogs->setMinimumHeight(100);
-	//Установили запрет на редактирование текста
+	//РЈСЃС‚Р°РЅРѕРІРёР»Рё Р·Р°РїСЂРµС‚ РЅР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ С‚РµРєСЃС‚Р°
 	textEditLogs->setReadOnly(true);
 
 	txtPath->setMaximumHeight(25);
 	buttonConnect->setMaximumHeight(25);
-	//свяжем модель таблицы с представлением
-	tableView->setModel(tableData);
-	tableViewLink->setModel(tableDataLink);
-	//тригер запрета редактирования таблицы
+	//СЃРІСЏР¶РµРј РјРѕРґРµР»СЊ С‚Р°Р±Р»РёС†С‹ СЃ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµРј
+    tableView->setModel(tableData);
+    tableViewLink->setModel(tableDataLink);
+	//С‚СЂРёРіРµСЂ Р·Р°РїСЂРµС‚Р° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹
 	tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	tableViewLink->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-	//разделим основные элементы сплиттером
+	//СЂР°Р·РґРµР»РёРј РѕСЃРЅРѕРІРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹ СЃРїР»РёС‚С‚РµСЂРѕРј
 	splitterVertical->addWidget(tabWidget);
 	splitterVertical->addWidget(textEditLogs);
-	//наполним табы
+	//РЅР°РїРѕР»РЅРёРј С‚Р°Р±С‹
 	tabWidget->setMinimumHeight(300);
 	tabWidget->tabBar()->setExpanding(false);
 	tabWidget->addTab(tab_tableData, QString());
 	tabWidget->addTab(tab_tableDataLink, QString());
-	//выберем вкладку, которая открывается по умолчанию, счет с нуля
+	//РІС‹Р±РµСЂРµРј РІРєР»Р°РґРєСѓ, РєРѕС‚РѕСЂР°СЏ РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ, СЃС‡РµС‚ СЃ РЅСѓР»СЏ
 	tabWidget->setCurrentIndex(0);
-	tabWidget->setDocumentMode(false);//безрамочный режим таба
-	tabWidget->setMovable(true);//метод подвижности вкладок
-//	tabWidget->setTabsClosable(true);//добавит кнопки закрытия вкладок
+	tabWidget->setDocumentMode(false);//Р±РµР·СЂР°РјРѕС‡РЅС‹Р№ СЂРµР¶РёРј С‚Р°Р±Р°
+	tabWidget->setMovable(true);//РјРµС‚РѕРґ РїРѕРґРІРёР¶РЅРѕСЃС‚Рё РІРєР»Р°РґРѕРє
+//	tabWidget->setTabsClosable(true);//РґРѕР±Р°РІРёС‚ РєРЅРѕРїРєРё Р·Р°РєСЂС‹С‚РёСЏ РІРєР»Р°РґРѕРє
 
-	//Добавим на грид необходимые элементы
+	//Р”РѕР±Р°РІРёРј РЅР° РіСЂРёРґ РЅРµРѕР±С…РѕРґРёРјС‹Рµ СЌР»РµРјРµРЅС‚С‹
 	gridLayout->addWidget(txtPath, 0, 0, 1, 4);
 	gridLayout->addWidget(buttonConnect, 0, 4, 1, 1);
 	gridLayout->addWidget(buttonLoad, 1,0,1,1);
 	gridLayout->addWidget(buttonUpLoad, 1, 1, 1, 1);
 	gridLayout->addWidget(splitterVertical, 2, 0, 1, 5);
-	//Связь сигналов кнопок с методами
+	//РЎРІСЏР·СЊ СЃРёРіРЅР°Р»РѕРІ РєРЅРѕРїРѕРє СЃ РјРµС‚РѕРґР°РјРё
 	QObject::connect(buttonLoad, SIGNAL(clicked()), this, SLOT(on_buttonLoad_clicked()));
 	QObject::connect(buttonUpLoad, SIGNAL(clicked()), this, SLOT(on_buttonUpLoad_clicked()));
 	QObject::connect(buttonConnect, SIGNAL(clicked()), this, SLOT(on_buttonConnect_clicked()));
-	//связка для закрытия вкладки или смены
+    QObject::connect(tableView->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(onRowChangeTable(QModelIndex,QModelIndex)), Qt::QueuedConnection);
+    QObject::connect(tableViewLink->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(onRowChangeLink(QModelIndex,QModelIndex)), Qt::QueuedConnection);
+
+    //СЃРІСЏР·РєР° РґР»СЏ Р·Р°РєСЂС‹С‚РёСЏ РІРєР»Р°РґРєРё РёР»Рё СЃРјРµРЅС‹
 //	QObject::connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-//	QObject::connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(closeTab(int)));//сигнал при смене вкладке, отдает индекс выбранной вкладки
+//    QObject::connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(closeTab(int)));//СЃРёРіРЅР°Р» РїСЂРё СЃРјРµРЅРµ РІРєР»Р°РґРєРµ, РѕС‚РґР°РµС‚ РёРЅРґРµРєСЃ РІС‹Р±СЂР°РЅРЅРѕР№ РІРєР»Р°РґРєРё
 
 	retranslateUi();
-	//отобразим грид с виджетами
+	//РѕС‚РѕР±СЂР°Р·РёРј РіСЂРёРґ СЃ РІРёРґР¶РµС‚Р°РјРё
 	setLayout(gridLayout);
 
-	//создадим таймер для ежесекндного вычитывания данных из логов
+    //СЃРѕР·РґР°РґРёРј С‚Р°Р№РјРµСЂ РґР»СЏ РµР¶РµСЃРµРєСѓРЅРґРЅРѕРіРѕ РІС‹С‡РёС‚С‹РІР°РЅРёСЏ РґР°РЅРЅС‹С… РёР· Р»РѕРіРѕРІ
 	timer = new QTimer();
 	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(slotTimerLogs()));
 
-	//подгоним ширину столбцов под хедеры
+	//РїРѕРґРіРѕРЅРёРј С€РёСЂРёРЅСѓ СЃС‚РѕР»Р±С†РѕРІ РїРѕРґ С…РµРґРµСЂС‹
 	tableView->resizeColumnsToContents();
 	tableViewLink->resizeColumnsToContents();
+
+    darkPalette.setColor(QPalette::Window, QColor(53, 53, 53));
+    darkPalette.setColor(QPalette::WindowText, Qt::white);
+    darkPalette.setColor(QPalette::Base, QColor(25, 25, 25));
+    darkPalette.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
+    darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
+    darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+    darkPalette.setColor(QPalette::Text, Qt::white);
+    darkPalette.setColor(QPalette::Button, QColor(53, 53, 53));
+    darkPalette.setColor(QPalette::ButtonText, Qt::white);
+    darkPalette.setColor(QPalette::BrightText, Qt::red);
+    darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
+    darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+    darkPalette.setColor(QPalette::HighlightedText, Qt::black);
+    qApp->setPalette(darkPalette);
+
 }
 
 void EES::retranslateUi()
 {
-	setWindowTitle(QApplication::translate("EESClass", "Excel Export Scada", nullptr));
+    setWindowTitle(QApplication::translate("EESClass", "Excel Export Scada v2", nullptr));
 	buttonLoad->setText(QApplication::translate("buttonLoad", "Open file", nullptr));
 	buttonUpLoad->setText(QApplication::translate("buttonUpLoad", "Upload", nullptr));
 	buttonConnect->setText(QApplication::translate("buttonConnect", "Connect", nullptr));
@@ -99,12 +118,12 @@ void EES::retranslateUi()
 
 void EES::on_buttonLoad_clicked()
 {
-	QWidget* widget = tabWidget->currentWidget();//получили текущий выбраный виджет
-	QString name = widget->accessibleName();//получили уникальное имя виджета из enum Tab
+	QWidget* widget = tabWidget->currentWidget();//РїРѕР»СѓС‡РёР»Рё С‚РµРєСѓС‰РёР№ РІС‹Р±СЂР°РЅС‹Р№ РІРёРґР¶РµС‚
+	QString name = widget->accessibleName();//РїРѕР»СѓС‡РёР»Рё СѓРЅРёРєР°Р»СЊРЅРѕРµ РёРјСЏ РІРёРґР¶РµС‚Р° РёР· enum Tab
 	if (name.toInt() == enum_tableData) {
-		tableData->delData();//добавить очистку модели
+        tableData->delData();//РґРѕР±Р°РІРёС‚СЊ РѕС‡РёСЃС‚РєСѓ РјРѕРґРµР»Рё
 	} else if (name.toInt() == enum_tableDataLink) {
-		tableDataLink->delData();
+        tableDataLink->delData();
 	}
 			
 	QString fileName;
@@ -127,120 +146,169 @@ void EES::on_buttonLoad_clicked()
 		textEditLogs->append((tr("File open: ", "txt_connect")
 			+ fileName));
 
-		setDataToModel(fileName, name.toInt());
+        //Р·Р°РїСѓСЃРє Р·Р°РїРѕР»РЅРµРЅРёСЏ РјРѕРґРµР»Рё РІ РѕС‚РґРµР»СЊРЅРѕРј РїРѕС‚РѕРєРµ
+        std::thread t1(&EES::setDataToModel, this, fileName, name.toInt());
+        t1.detach();
+  //      setDataToModel(fileName, name.toInt());
 	}
-	tableView->resizeColumnsToContents();
-	tableViewLink->resizeColumnsToContents();
+
 }
 
 void EES::on_buttonUpLoad_clicked()
 {
-	SQL_to_FB dataBase(webserver, path, "SYSDBA", "masterkey");
+    SQL_to_FB dataBase(webserver, path, "SYSDBA", "masterkey");
+    QModelIndex index;
+    QString logString;
+    std::string mark;
+    std::string name;
+    std::string description;
+    std::string objectType;
+    std::string digital;//РґРѕР±Р°РІР»РµРЅ РґР»СЏ С†РёС„СЂС‹
+    std::string signature;
+    std::string controller;
+    std::string plcAdress;//РґРѕР±Р°РІР»РµРЅ РґР»СЏ С†РёС„СЂС‹
+    std::string plcVarname;//РґРѕР±Р°РІР»РµРЅ РґР»СЏ С†РёС„СЂС‹
+    std::string resource;
+    std::string eventGroup;
+    std::string KKS;
+    std::string objectTemplate;
+    std::string mnemonicFrameName;
+    std::string mnemonicFrameTemplate;
+    std::string mnemonicFrameParent;
+    std::string technicalProgramName;
+    std::string technicalProgramParent;
 
-	QModelIndex index;
-	std::string mark;
-	std::string name;
-	std::string description;
-	std::string objectType;
-	std::string digital;//добавлен для цифры
-	std::string signature;
-	std::string controller;
-	std::string plcAdress;//добавлен для цифры
-	std::string plcVarname;//добавлен для цифры
-	std::string resource;
-	std::string eventGroup;
-	std::string KKS;
-	std::string objectTemplate;
-	std::string mnemonicFrameName;
-	std::string mnemonicFrameTemplate;
-	std::string mnemonicFrameParent;
-	std::string technicalProgramName;
-	std::string technicalProgramParent;
+    //РјРµС…Р°РЅРёР·Рј Р·Р°Р»РёРІРєРё С‚РѕР»СЊРєРѕ РІС‹РґРµР»РµРЅРЅС‹С… СЃС‚СЂРѕРє
+    int pointStart = 0, pointEnd = 0;
+    std::sort(numberOfRows.begin(), numberOfRows.end());
+    std::vector<int>::iterator it;
+    it = std::unique(numberOfRows.begin(), numberOfRows.end());
+    numberOfRows.resize(distance(numberOfRows.begin(),it));
+    for (int var = 0; var < numberOfRows.size(); ++var) {
+        logs<<QString::number(numberOfRows[var]);
+    }
+    if(numberOfRows.size() != 0){
+        pointStart = numberOfRows[0];
+        pointEnd = numberOfRows[numberOfRows.size()-1]+1;
+    }
+    else{
+        pointStart = 0;
+        pointEnd = tableData->rowCount();
+    }
+    logs<< "РќР°С‡Р°Р»Рѕ РІС‹РіСЂСѓР·РєРё: " + QString::number(pointStart) + " , РєРѕРЅРµС† РІС‹РіСЂСѓР·РєРё: " + QString::number(numberOfRows[numberOfRows.size()-1]) + " , СЂР°Р·РјРµСЂ РјР°СЃСЃРёРІР°: " + QString::number(numberOfRows.size());
 
-	int id_subject = 0;// ID созданного тех. объекта
-	int evkl_subject = 0;// ID созданной группы событий
-	int id_techprog = 0;// ID созданной тех. программы
+    int id_subject = 0;// ID СЃРѕР·РґР°РЅРЅРѕРіРѕ С‚РµС…. РѕР±СЉРµРєС‚Р°
+    int evkl_subject = 0;// ID СЃРѕР·РґР°РЅРЅРѕР№ РіСЂСѓРїРїС‹ СЃРѕР±С‹С‚РёР№
+    int id_techprog = 0;// ID СЃРѕР·РґР°РЅРЅРѕР№ С‚РµС…. РїСЂРѕРіСЂР°РјРјС‹
+    int resultCreateMnemonicFrame = 0; //СЂРµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ СЃРѕР·РґР°РЅРёСЏ РІРёРґРµРѕРєР°РґСЂР°
+    int resultObjectOnTechnicalProgram = 0; //СЂРµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ СЃРѕР·РґР°РЅРёСЏ РІРёРґРµРѕРєР°РґСЂР°
+    bool isISAObject = false;
 
-	try	{
-		if (dataBase.connected() &&
-			tableData->columnCount() > 1)// && tableData->rowCount() > 1)
-		{
-			textEditLogs->append(tr("Upload START!", "txt_connect"));
-			logs << tr("Upload START!", "txt_connect").toStdString();
+    if (!dataBase.connected() || tableData->columnCount() <= 1)// && tableData->rowCount() > 1)
+    {
+        textEditLogs->append(tr("Connection failed or data not loaded!", "txt_connect"));
+        return;
+    }
+    textEditLogs->append(tr("Upload START!", "txt_connect"));
+    logs << tr("Upload START!", "txt_connect");
 
-			for (size_t i = 0; i < tableData->rowCount(); i++)
-			{
-				index = tableView->model()->index(i, 0);
+    for (int i = pointStart; i < pointEnd; i++)
+    {
+        index = tableView->model()->index(i, 0);
 
-				mark = tableData->getObject(index).getMark().toString().toLocal8Bit();
-				name = tableData->getObject(index).getName().toString().toLocal8Bit();
-				description = tableData->getObject(index).getDescription().toString().toLocal8Bit();
-				objectType = tableData->getObject(index).getObjectType().toString().toLocal8Bit();
-				digital = tableData->getObject(index).getDigital().toString().toLocal8Bit();//добавлен для цифры
-				signature = tableData->getObject(index).getSignature().toString().toLocal8Bit();
-				controller = tableData->getObject(index).getController().toString().toLocal8Bit();
-				plcAdress = tableData->getObject(index).getPlcAdress().toString().toLocal8Bit();//добавлен для цифры
-				plcVarname = tableData->getObject(index).getPlcVarname().toString().toLocal8Bit();//добавлен для цифры
-				resource = tableData->getObject(index).getResource().toString().toLocal8Bit();
-				eventGroup = tableData->getObject(index).getEventGroup().toString().toLocal8Bit();
-				KKS = tableData->getObject(index).getKKS().toString().toLocal8Bit();
-				objectTemplate = tableData->getObject(index).getObjectTemplate().toString().toLocal8Bit();
-				mnemonicFrameName = tableData->getObject(index).getMnemonicFrameName().toString().toLocal8Bit();
-				mnemonicFrameTemplate = tableData->getObject(index).getMnemonicFrameTemplate().toString().toLocal8Bit();
-				mnemonicFrameParent = tableData->getObject(index).getMnemonicFrameParent().toString().toLocal8Bit();
-				technicalProgramName = tableData->getObject(index).getTechnicalProgramName().toString().toLocal8Bit();
-				technicalProgramParent = tableData->getObject(index).getTechnicalProgramParent().toString().toLocal8Bit();
+        mark = tableData->getObject(index).Mark.toString().toStdString();
+        if (mark.size() == 0) continue; //РµСЃР»Рё РјР°СЂРєР° РїСѓСЃС‚Р°СЏ, РёРґРµРј РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ РёС‚РµСЂР°С†РёСЋ
 
-				textEditLogs->append(tr("transfer object ", "txt_connect") + " " + tableData->getObject(index).getMark().toString());
-				logs << tr("transfer object: ", "txt_connect").toStdString() + mark;
+        name = tableData->getObject(index).Name.toString().toStdString();
+        description = tableData->getObject(index).Description.toString().toStdString();
+        objectType = tableData->getObject(index).ObjectType.toString().toStdString();
+        digital = tableData->getObject(index).Digital.toString().toStdString();//РґРѕР±Р°РІР»РµРЅ РґР»СЏ С†РёС„СЂС‹
+        signature = tableData->getObject(index).Signature.toString().toStdString();
+        controller = tableData->getObject(index).Controller.toString().toStdString();
+        plcAdress = tableData->getObject(index).PlcAdress.toString().toStdString();//РґРѕР±Р°РІР»РµРЅ РґР»СЏ С†РёС„СЂС‹
+        plcVarname = tableData->getObject(index).PlcVarname.toString().toStdString();//РґРѕР±Р°РІР»РµРЅ РґР»СЏ С†РёС„СЂС‹
+        resource = tableData->getObject(index).Resource.toString().toStdString();
+        eventGroup = tableData->getObject(index).EventGroup.toString().toStdString();
+        KKS = tableData->getObject(index).KKS.toString().toStdString();
+        objectTemplate = tableData->getObject(index).ObjectTemplate.toString().toStdString();
+        mnemonicFrameName = tableData->getObject(index).MnemonicFrameName.toString().toStdString();
+        mnemonicFrameTemplate = tableData->getObject(index).MnemonicFrameTemplate.toString().toStdString();
+        mnemonicFrameParent = tableData->getObject(index).MnemonicFrameParent.toString().toStdString();
+        technicalProgramName = tableData->getObject(index).TechnicalProgramName.toString().toStdString();
+        technicalProgramParent = tableData->getObject(index).TechnicalProgramParent.toString().toStdString();
 
-				//начинаем создавать объекты если марка не пустая
-				if (mark.size() != 0) {
-					evkl_subject = dataBase.create_new_event(eventGroup, mnemonicFrameParent);
-					if (digital == "драйвер")
-					{
-						id_subject = dataBase.create_new_driver(mark, name, description, signature, objectType, controller, KKS, objectTemplate);
-					}
-					else if (digital == "цифровой")
-					{
-						id_subject = dataBase.create_new_digital_object(controller, objectType, mark, name, plcAdress,
-							plcVarname, resource, eventGroup, description, KKS, signature);
-					}
-					else
-					{
-						id_subject = dataBase.create_new_object(controller, resource, objectTemplate, objectType, mark, name, eventGroup, description, KKS, signature);
-					}
+        logString = tr("Transfer object ", "txt_connect") + QString::fromStdString(mark);
+        textEditLogs->append(logString);
+        logs << logString;
 
-					logs << tr("Create new object, id = ", "txt_connect").toStdString() + std::to_string(id_subject);
+        logs.debug(QString::fromStdString(mark) + "    "+QString::fromStdString(name) + "    "+ QString::fromStdString(description) + "    "+ QString::fromStdString(objectType) + "    "+ QString::fromStdString(digital) + "    "+
+                QString::fromStdString(signature) + "    "+ QString::fromStdString(controller) + "    "+ QString::fromStdString(plcAdress) + "    "+ QString::fromStdString(plcVarname) + "    "+
+                QString::fromStdString(resource) + "    "+ QString::fromStdString(eventGroup) + "    "+ QString::fromStdString(KKS) + "    "+ QString::fromStdString(objectTemplate) + "    "+
+                QString::fromStdString(mnemonicFrameName) + "    "+ QString::fromStdString(mnemonicFrameTemplate) + "    "+ QString::fromStdString(mnemonicFrameParent) + "    "+ QString::fromStdString(technicalProgramName) + "    "+
+                QString::fromStdString(technicalProgramParent));
 
-					//				textEditLogs->append(("id new subject: " + std::to_string(id_subject)).c_str());
-					dataBase.copy_page_with_object(mnemonicFrameTemplate, mnemonicFrameName, mnemonicFrameParent, std::to_string(id_subject), eventGroup, description);
-					id_techprog = dataBase.create_new_technical_programm(technicalProgramName, 300, 200, technicalProgramParent, controller, resource);
+        //РЅР°С‡РёРЅР°РµРј СЃРѕР·РґР°РІР°С‚СЊ РѕР±СЉРµРєС‚С‹ РµСЃР»Рё РјР°СЂРєР° РЅРµ РїСѓСЃС‚Р°СЏ
+        try	{
+            if(eventGroup.size() != 0) {
+                evkl_subject = dataBase.create_new_event(eventGroup, mnemonicFrameParent);
+                if(evkl_subject == 1 || evkl_subject == 2) logs << "РћС€РёР±РєР° РїСЂРё СЃРѕР·РґР°РЅРёРё РіСЂСѓРїРїС‹ СЃРѕР±С‹Р№С‚Рё";
+                qDebug() << "РЎРѕР·РґР°Р»Рё РіСЂСѓРїРїСѓ СЃРѕР±С‹С‚РёР№ СЃ ID: " + QString::number(evkl_subject);
+            }
+            id_subject = 0; //РѕР±РЅСѓР»СЏРµРј ID РЅР° РєР°Р¶РґРѕРј С†РёРєР»Рµ
 
-					logs << tr("Create new technical programm, id = ", "txt_connect").toStdString() + std::to_string(id_techprog);
+            if(name.size() != 0) {
+                if (digital == "РґСЂР°Р№РІРµСЂ"){
+                    qDebug() << "РЎРѕР·РґР°РµРј РґСЂР°Р№РІРµСЂ";
+                    isISAObject = false;
+                    id_subject = dataBase.create_new_driver(mark, name, description, signature, objectType, controller, KKS, objectTemplate);
+                }
+                else if (digital == "С†РёС„СЂРѕРІРѕР№"){
+                    qDebug() << "РЎРѕР·РґР°РµРј С†РёС„СЂРѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ";
+                    isISAObject = false;
+                    id_subject = dataBase.create_new_digital_object(controller, objectType, mark, name, plcAdress,
+                                                                    plcVarname, resource, eventGroup, description, KKS, signature);
+                }
+                else{
+                    qDebug() << "РЎРѕР·РґР°РµРј isa РѕР±СЉРµРєС‚";
+                    id_subject = dataBase.create_new_object(controller, resource, objectTemplate, objectType, mark, name, eventGroup, description, KKS, signature);
+                    if(id_subject != 0) isISAObject = true;
+                }
+            }
 
-					dataBase.object_on_technological_program(technicalProgramName, controller, resource, objectTemplate, objectType, mark);
-				}
-			}
+            if(id_subject != 0) {
+                //СЌС‚Рѕ РІРїРёСЃР°С‚СЊ РІ С€Р°РїРєСѓ РґРµСЂРµРІР° РІ textEditLogs (treeView)
+                logString = tr("Create new or update ") + QString::fromStdString(digital) + ", id = " + QString::number(id_subject);
+                textEditLogs->append(logString);
+                logs << logString;
 
-			textEditLogs->append(tr("Uploading completed!", "txt_connect"));
-		}
-		else
-		{
-			textEditLogs->append(tr("Connection failed or data not loaded!", "txt_connect"));
-		}
-	}
-	catch (const std::exception&){}
-	
+                //СЃРѕР·РґР°РµРј РјРЅРµРјРѕРєР°РґСЂ
+                if(mnemonicFrameName.size() != 0)
+                    resultCreateMnemonicFrame = dataBase.copy_page_with_object(mnemonicFrameTemplate, mnemonicFrameName, mnemonicFrameParent,
+                                                                               std::to_string(id_subject), eventGroup, description);
+                //СЃРѕР·РґР°РµРј С‚РµС…. РїСЂРѕРіСЂР°РјРјСѓ, РєР»Р°РґРµРј С‚СѓРґР° СЃРѕР·РґР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚
+                if(technicalProgramName.size() != 0) {
+                    id_techprog = dataBase.create_new_technical_programm(technicalProgramName, 300, 200, technicalProgramParent, controller, resource);
+                    resultObjectOnTechnicalProgram = dataBase.object_on_technological_program(technicalProgramName, controller, resource, objectTemplate, objectType, mark);
+                }
+            }
+        }
+        catch (const std::exception&){
+            logString = tr("Unhandled exception when creating an object");
+            textEditLogs->append(logString);
+            logs << logString;
+        }
+    }
+
+    textEditLogs->append(tr("Uploading completed!", "txt_connect"));
 }
 
 void EES::on_buttonConnect_clicked()
 {
-	std::string tmp = txtPath->toPlainText().toLocal8Bit();
+    std::string tmp = txtPath->toPlainText().toStdString();
 	QString fileName;
 
-	//процедура для открытия диалогового окна проводника для выбора файла,
-	//если пользователь сам не ввел путь
+	//РїСЂРѕС†РµРґСѓСЂР° РґР»СЏ РѕС‚РєСЂС‹С‚РёСЏ РґРёР°Р»РѕРіРѕРІРѕРіРѕ РѕРєРЅР° РїСЂРѕРІРѕРґРЅРёРєР° РґР»СЏ РІС‹Р±РѕСЂР° С„Р°Р№Р»Р°,
+	//РµСЃР»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ СЃР°Рј РЅРµ РІРІРµР» РїСѓС‚СЊ
 	if (tmp.size() == 0)
 	{
 			fileName = QFileDialog::getOpenFileName(this,
@@ -252,25 +320,24 @@ void EES::on_buttonConnect_clicked()
 	}
 	
 	initializingConnection(tmp);
-	BaseSQL dataBase(webserver, path, "SYSDBA", "masterkey");
+    SQL_to_FB dataBase(webserver, path, "SYSDBA", "masterkey");
 
-	if (dataBase.connected())
-		{
-			textEditLogs->append(tr("Connection successful!", "txt_connect"));
-			textEditLogs->append(tr("Database connected: ", "txt_connect")
-				+ txtPath->toPlainText());
-		}
-	else
-		{
-			textEditLogs->append(tr("Connection failed!", "txt_connect"));
-			logs << (tr("Connection failed!", "txt_connect") + txtPath->toPlainText()).toStdString();
-		}
-
+    if (dataBase.connected())
+        {
+            textEditLogs->append(tr("Connection successful!", "txt_connect"));
+            textEditLogs->append(tr("Database connected: ", "txt_connect")
+                + txtPath->toPlainText());
+        }
+    else
+        {
+            textEditLogs->append(tr("Connection failed!", "txt_connect"));
+            logs << (tr("Connection failed!", "txt_connect") + txtPath->toPlainText());
+        }
 }
 
 void EES::slotTimerLogs()
 {
-	//реализовать метод добавления только новых строк из лога
+	//СЂРµР°Р»РёР·РѕРІР°С‚СЊ РјРµС‚РѕРґ РґРѕР±Р°РІР»РµРЅРёСЏ С‚РѕР»СЊРєРѕ РЅРѕРІС‹С… СЃС‚СЂРѕРє РёР· Р»РѕРіР°
 //	file.setFileName("./logs/logsQT.txt");
 //	if (file.open(QIODevice::ReadOnly))
 //	{
@@ -283,20 +350,42 @@ void EES::slotTimerLogs()
 void EES::closeTab(int index)
 {
 	//QMessageBox::warning(this, "Active filter", "Close tab index = " + QString::number(index));
-//	tabWidget->removeTab(index);//сам виджет жив, можно в любой момент вернуть обратно
+    tabWidget->removeTab(index);//СЃР°Рј РІРёРґР¶РµС‚ Р¶РёРІ, РјРѕР¶РЅРѕ РІ Р»СЋР±РѕР№ РјРѕРјРµРЅС‚ РІРµСЂРЅСѓС‚СЊ РѕР±СЂР°С‚РЅРѕ
+}
+
+void EES::onRowChangeTable(QModelIndex, QModelIndex)
+{
+    numberOfRows.clear();
+    int numberRow;
+    QModelIndexList cntSelRow1 = tableView->selectionModel()->selectedIndexes();
+    for (int var = 0; var < cntSelRow1.size(); ++var) {
+        numberRow = cntSelRow1[var].row();
+        numberOfRows.push_back(numberRow);
+    }
+}
+
+void EES::onRowChangeLink(QModelIndex, QModelIndex)
+{
+    numberOfRows.clear();
+    int numberRow;
+    QModelIndexList cntSelRow1 = tableViewLink->selectionModel()->selectedIndexes();
+    for (int var = 0; var < cntSelRow1.size(); ++var) {
+        numberRow = cntSelRow1[var].row();
+        numberOfRows.push_back(numberRow);
+    }
 }
 
 int EES::initializingConnection(std::string _path)
 {
 	webserver.clear();
 	path.clear();
-	//Запишем WEB-сервер в строку параметра
+	//Р—Р°РїРёС€РµРј WEB-СЃРµСЂРІРµСЂ РІ СЃС‚СЂРѕРєСѓ РїР°СЂР°РјРµС‚СЂР°
 	for (size_t i = 0; i < _path.size(); i++)
 	{
 		if (_path[i] != ':') webserver.push_back(_path[i]);
 		else break;
 	}
-	//вырежем web-сервер из параметра "путь"
+	//РІС‹СЂРµР¶РµРј web-СЃРµСЂРІРµСЂ РёР· РїР°СЂР°РјРµС‚СЂР° "РїСѓС‚СЊ"
 	try
 	{
 		_path.erase(0, webserver.size() + 1);
@@ -306,72 +395,73 @@ int EES::initializingConnection(std::string _path)
 		return 2;
 	}
 	path = _path;	
-	
+    return 0;
 }
 
 void EES::setDataToModel(QString fileName, int currentTab)
 {
-	//Получили дир. запуска программы
-	//QString tmp_s = QApplication::applicationDirPath();
-	// получаем указатель на Excel
-	QAxObject *mExcel = new QAxObject("Excel.Application", 0);
-	// на книги
+	//РџРѕР»СѓС‡РёР»Рё РґРёСЂ. Р·Р°РїСѓСЃРєР° РїСЂРѕРіСЂР°РјРјС‹
+    //QString tmp_s = QApplication::applicationDirPath();
+	// РїРѕР»СѓС‡Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Excel
+    QAxObject *mExcel = new QAxObject("Excel.Application", nullptr);
+	// РЅР° РєРЅРёРіРё
 	QAxObject *workbooks = mExcel->querySubObject("Workbooks");
-	// на директорию, откуда грузить книг
+	// РЅР° РґРёСЂРµРєС‚РѕСЂРёСЋ, РѕС‚РєСѓРґР° РіСЂСѓР·РёС‚СЊ РєРЅРёРі
 	QAxObject *workbook = workbooks->querySubObject("Open(const QString&)", fileName);
-	// на листы
+	// РЅР° Р»РёСЃС‚С‹
 	QAxObject *mSheets = workbook->querySubObject("Sheets");
-	// указываем, какой лист выбрать
+	// СѓРєР°Р·С‹РІР°РµРј, РєР°РєРѕР№ Р»РёСЃС‚ РІС‹Р±СЂР°С‚СЊ
 	QAxObject *StatSheet = mSheets->querySubObject("Item(int)", 1);
 
-	//Кол-во листов в книге
+	//РљРѕР»-РІРѕ Р»РёСЃС‚РѕРІ РІ РєРЅРёРіРµ
 	//int countSheet = mSheets->property("Count").toInt();
-	//Количество используемых на листе строк можно получить с помощью такого кода
+	//РљРѕР»РёС‡РµСЃС‚РІРѕ РёСЃРїРѕР»СЊР·СѓРµРјС‹С… РЅР° Р»РёСЃС‚Рµ СЃС‚СЂРѕРє РјРѕР¶РЅРѕ РїРѕР»СѓС‡РёС‚СЊ СЃ РїРѕРјРѕС‰СЊСЋ С‚Р°РєРѕРіРѕ РєРѕРґР°
 	QAxObject* usedRange = StatSheet->querySubObject("UsedRange");
 	QAxObject* rows = usedRange->querySubObject("Rows");
-	int countRows = rows->property("Count").toInt() - 1;//вычитаем 1, т.к.заголовок не учитываем
+	int countRows = rows->property("Count").toInt() - 1;//РІС‹С‡РёС‚Р°РµРј 1, С‚.Рє.Р·Р°РіРѕР»РѕРІРѕРє РЅРµ СѓС‡РёС‚С‹РІР°РµРј
 
-	//Соответственно, столбцов:
-	QAxObject * usedRange1 = StatSheet->querySubObject("UsedRange");
+	//РЎРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ, СЃС‚РѕР»Р±С†РѕРІ:
+    QAxObject* usedRange1 = StatSheet->querySubObject("UsedRange");
 	QAxObject* columns = usedRange1->querySubObject("Columns");
+    Q_UNUSED(columns)
 //	int countCols = columns->property("Count").toInt();
-	int countCols = tableData->columnCount();
+    int countCols = tableData->columnCount();
 
-	//Имея количество строк и столбцов можно заполнить таблицу значениями из документа.Делается это так :
+	//РРјРµСЏ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ РјРѕР¶РЅРѕ Р·Р°РїРѕР»РЅРёС‚СЊ С‚Р°Р±Р»РёС†Сѓ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· РґРѕРєСѓРјРµРЅС‚Р°.Р”РµР»Р°РµС‚СЃСЏ СЌС‚Рѕ С‚Р°Рє :
 //	tableData->setColumnCount(countCols);
 //	tableData->setRowCount(countRows);
 
 
-	ObjectProjectData rowData;
-	TableLinkData rowDataLink;
+    ObjectProjectData rowData;
+    TableLinkData rowDataLink;
 	
 
-	for (int nRow = 0; nRow < countRows; ++nRow)
-	{
-		for (int nCol = 1; nCol <= countCols; ++nCol)
-		{
-			QAxObject* cell = StatSheet->querySubObject("Cells(int,int)", nRow + 2, nCol+1);
-			//метод записи в выбранную ячейку
+    for (int nRow = 0; nRow < countRows; ++nRow)
+    {
+        for (int nCol = 1; nCol <= countCols; ++nCol)
+        {
+            QAxObject* cell = StatSheet->querySubObject("Cells(int,int)", nRow + 2, nCol+1);
+            //РјРµС‚РѕРґ Р·Р°РїРёСЃРё РІ РІС‹Р±СЂР°РЅРЅСѓСЋ СЏС‡РµР№РєСѓ
 //			cell->setProperty("Value", QVariant("Some value"));
-			//метод чтения
-			QVariant value = cell->property("Value");
+            //РјРµС‚РѕРґ С‡С‚РµРЅРёСЏ
+            QVariant value = cell->property("Value");
 			
-			//заполним строку данных
-			if (currentTab == enum_tableData) {
-				rowData.setData(nCol - 1, value);
-			} else if (currentTab == enum_tableDataLink) {
-				rowDataLink.setData(nCol - 1, value);
-			}
+            //Р·Р°РїРѕР»РЅРёРј СЃС‚СЂРѕРєСѓ РґР°РЅРЅС‹С…
+            if (currentTab == enum_tableData) {
+                rowData.setData(nCol - 1, value);
+            } else if (currentTab == enum_tableDataLink) {
+                rowDataLink.setData(nCol - 1, value);
+            }
 			
-			//кончили заполнять
-		}
-		//запись в модель
-		if (currentTab == enum_tableData) {
-			tableData->addObject(rowData);
-		} else if (currentTab == enum_tableDataLink) {
-			tableDataLink->addObject(rowDataLink);
-		}
-	}
+            //РєРѕРЅС‡РёР»Рё Р·Р°РїРѕР»РЅСЏС‚СЊ
+        }
+        //Р·Р°РїРёСЃСЊ РІ РјРѕРґРµР»СЊ
+        if (currentTab == enum_tableData) {
+            tableData->addObject(rowData);
+        } else if (currentTab == enum_tableDataLink) {
+            tableDataLink->addObject(rowDataLink);
+        }
+    }
 
 	/*
 
@@ -379,30 +469,33 @@ void EES::setDataToModel(QString fileName, int currentTab)
 
 	//	QTableView treeView1;
 	//	treeView1.setModel(modelEvent);
-		//тригер запрета редактирования таблицы
+		//С‚СЂРёРіРµСЂ Р·Р°РїСЂРµС‚Р° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹
 	//	treeView1.setEditTriggers(QAbstractItemView::NoEditTriggers);
 	//	treeView1.show();
 
-		// получение указателя на ячейку [row][col] ((!)нумерация с единицы)
+		// РїРѕР»СѓС‡РµРЅРёРµ СѓРєР°Р·Р°С‚РµР»СЏ РЅР° СЏС‡РµР№РєСѓ [row][col] ((!)РЅСѓРјРµСЂР°С†РёСЏ СЃ РµРґРёРЅРёС†С‹)
 	//	QAxObject* cell = StatSheet->querySubObject("Cells(QVariant,QVariant)", 1, 1);
-		// вставка значения переменной data (любой тип, приводимый к QVariant) в полученную ячейку
+		// РІСЃС‚Р°РІРєР° Р·РЅР°С‡РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№ data (Р»СЋР±РѕР№ С‚РёРї, РїСЂРёРІРѕРґРёРјС‹Р№ Рє QVariant) РІ РїРѕР»СѓС‡РµРЅРЅСѓСЋ СЏС‡РµР№РєСѓ
 	//	cell->setProperty("Value", QVariant("Some value"));
 	//	mExcel->setProperty("DisplayAlerts", 0);
 
-		//говорим excel что всякие служебные сообщения выводить не надо
+		//РіРѕРІРѕСЂРёРј excel С‡С‚Рѕ РІСЃСЏРєРёРµ СЃР»СѓР¶РµР±РЅС‹Рµ СЃРѕРѕР±С‰РµРЅРёСЏ РІС‹РІРѕРґРёС‚СЊ РЅРµ РЅР°РґРѕ
 	//	mExcel->setProperty("DisplayAlerts", 0);
-		//сохраняем наш файл под сгенерированным именем в каталог с программой, хотя никто не    //запрещает в другое место
+		//СЃРѕС…СЂР°РЅСЏРµРј РЅР°С€ С„Р°Р№Р» РїРѕРґ СЃРіРµРЅРµСЂРёСЂРѕРІР°РЅРЅС‹Рј РёРјРµРЅРµРј РІ РєР°С‚Р°Р»РѕРі СЃ РїСЂРѕРіСЂР°РјРјРѕР№, С…РѕС‚СЏ РЅРёРєС‚Рѕ РЅРµ    //Р·Р°РїСЂРµС‰Р°РµС‚ РІ РґСЂСѓРіРѕРµ РјРµСЃС‚Рѕ
 	//	workbook->dynamicCall("SaveAs (const QString&)", tmp_s);
 
 	//	mExcel->setProperty("DisplayAlerts", 1);
 
 	*/
 
-	//зачем-то надо, канонично сразу не закомменитировал, теперь не помню
+	//Р·Р°С‡РµРј-С‚Рѕ РЅР°РґРѕ, РєР°РЅРѕРЅРёС‡РЅРѕ СЃСЂР°Р·Сѓ РЅРµ Р·Р°РєРѕРјРјРµРЅРёС‚РёСЂРѕРІР°Р», С‚РµРїРµСЂСЊ РЅРµ РїРѕРјРЅСЋ
 	workbook->dynamicCall("Close(Boolean)", false);
-	//закрываем приложение
+	//Р·Р°РєСЂС‹РІР°РµРј РїСЂРёР»РѕР¶РµРЅРёРµ
 	mExcel->dynamicCall("Quit(void)");
 
 	delete(mExcel);
 
+    tableView->resizeColumnsToContents();
+    tableViewLink->resizeColumnsToContents();
+    QMessageBox::information(this, tr("Info"), tr("Data uploaded successfully"));
 }
