@@ -1,5 +1,6 @@
 #include "SQL_to_FB.h"
 
+
 //#pragma warning(disable : 4715)
 
 #define BOOL_STR(b) (b?"true":"false")
@@ -9,6 +10,7 @@ SQL_to_FB::SQL_to_FB(std::string webserver_, std::string path_, std::string user
 {
     //вызван конструктор BaseSQL, с дальнейшим созданием подключения
 }
+
 
 SQL_to_FB::~SQL_to_FB()
 {

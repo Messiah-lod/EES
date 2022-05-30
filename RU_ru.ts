@@ -4,54 +4,105 @@
 <context>
     <name>EES</name>
     <message>
-        <location filename="EES.cpp" line="115"/>
-        <location filename="EES.cpp" line="252"/>
+        <location filename="EES.cpp" line="133"/>
+        <location filename="EES.cpp" line="203"/>
         <source>Open file</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="115"/>
+        <location filename="EES.cpp" line="133"/>
         <source>Data Files (*.xls *.xlsx *.xlsm)</source>
         <translation>Data Files (*.xls *.xlsx *.xlsm)</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="124"/>
+        <location filename="EES.cpp" line="142"/>
         <source>No file chosen!</source>
         <comment>txt_connect</comment>
         <translation>Файл не выбран!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="128"/>
+        <location filename="EES.cpp" line="146"/>
         <source>File open: </source>
         <comment>txt_connect</comment>
         <translation>Открыт файл: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="252"/>
+        <location filename="EES.cpp" line="182"/>
+        <source>Upload START!</source>
+        <comment>txt_connect</comment>
+        <translation>Старт выгрузки!</translation>
+    </message>
+    <message>
+        <location filename="EES.cpp" line="518"/>
+        <source>Uploading completed!</source>
+        <comment>txt_connect</comment>
+        <translation>Выгрузка завершена!</translation>
+    </message>
+    <message>
+        <location filename="EES.cpp" line="203"/>
         <source>Data base (*.gdb)</source>
         <translation>Data base (*.gdb)</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="256"/>
+        <location filename="EES.cpp" line="207"/>
         <source>No data base chosen!</source>
         <comment>txt_connect</comment>
         <translation>База данных не выбрана!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="415"/>
-        <source>Info</source>
-        <translation>Информация</translation>
+        <location filename="EES.cpp" line="215"/>
+        <source>Connection successful!</source>
+        <comment>txt_connect</comment>
+        <translation>Подключение успешно!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="415"/>
+        <location filename="EES.cpp" line="216"/>
+        <source>Database connected: </source>
+        <comment>txt_connect</comment>
+        <translation>Соединение с базой данных: </translation>
+    </message>
+    <message>
+        <location filename="EES.cpp" line="222"/>
+        <location filename="EES.cpp" line="223"/>
+        <source>Connection failed!</source>
+        <comment>txt_connect</comment>
+        <translation>Ошибка подключения!</translation>
+    </message>
+    <message>
+        <location filename="EES.cpp" line="453"/>
+        <source>Transfer line: </source>
+        <oldsource>Transfer object </oldsource>
+        <comment>txt_connect</comment>
+        <translation>Перекачиваем линию: </translation>
+    </message>
+    <message>
+        <location filename="EES.cpp" line="453"/>
+        <source>, object: </source>
+        <translation>, объект: </translation>
+    </message>
+    <message>
+        <location filename="EES.cpp" line="493"/>
+        <source>Create new or update </source>
+        <translation>Создан новый или обновлен </translation>
+    </message>
+    <message>
+        <location filename="EES.cpp" line="509"/>
+        <source>Unhandled exception when creating an object</source>
+        <translation>Необработанное исключение при создании бъекта</translation>
+    </message>
+    <message>
+        <source>Info</source>
+        <translation type="vanished">Информация</translation>
+    </message>
+    <message>
         <source>Data uploaded successfully</source>
-        <translation>Данные загружены успешно</translation>
+        <translation type="vanished">Данные загружены успешно</translation>
     </message>
 </context>
 <context>
     <name>EESClass</name>
     <message>
-        <location filename="EES.cpp" line="91"/>
+        <location filename="EES.cpp" line="109"/>
         <source>Excel Export Scada v2</source>
         <translation>Excel Export Scada v2</translation>
     </message>
@@ -59,52 +110,60 @@
 <context>
     <name>ModelLinkData</name>
     <message>
-        <location filename="ModelLinkData.cpp" line="56"/>
         <source>Source Control</source>
         <comment>headerLinkData</comment>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Источник Контроллер</translation>
     </message>
     <message>
-        <location filename="ModelLinkData.cpp" line="58"/>
         <source>Source Res</source>
         <comment>headerLinkData</comment>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Источник Ресурс</translation>
+    </message>
+    <message>
+        <location filename="ModelLinkData.cpp" line="57"/>
+        <source>Source Control</source>
+        <translation>Источник Контроллер</translation>
     </message>
     <message>
         <location filename="ModelLinkData.cpp" line="60"/>
+        <source>Source Res</source>
+        <translation>Источник Ресурс</translation>
+    </message>
+    <message>
+        <location filename="ModelLinkData.cpp" line="63"/>
         <source>Source Mark</source>
         <comment>headerLinkData</comment>
-        <translation type="unfinished"></translation>
+        <translation>Источник Марка</translation>
     </message>
     <message>
-        <location filename="ModelLinkData.cpp" line="62"/>
+        <location filename="ModelLinkData.cpp" line="65"/>
         <source>Source Chanel</source>
         <comment>headerLinkData</comment>
-        <translation type="unfinished"></translation>
+        <translation>Источник Канал</translation>
     </message>
     <message>
-        <location filename="ModelLinkData.cpp" line="64"/>
+        <location filename="ModelLinkData.cpp" line="67"/>
         <source>Receiver Control</source>
         <comment>headerLinkData</comment>
-        <translation type="unfinished"></translation>
+        <translation>Приемник Контроллер</translation>
     </message>
     <message>
-        <location filename="ModelLinkData.cpp" line="66"/>
+        <location filename="ModelLinkData.cpp" line="69"/>
         <source>Receiver Res</source>
         <comment>headerLinkData</comment>
-        <translation type="unfinished"></translation>
+        <translation>Приемник Ресурс</translation>
     </message>
     <message>
-        <location filename="ModelLinkData.cpp" line="68"/>
+        <location filename="ModelLinkData.cpp" line="71"/>
         <source>Receiver Mark</source>
         <comment>headerLinkData</comment>
-        <translation type="unfinished"></translation>
+        <translation>Приемник Марка</translation>
     </message>
     <message>
-        <location filename="ModelLinkData.cpp" line="70"/>
+        <location filename="ModelLinkData.cpp" line="73"/>
         <source>Receiver Chanel</source>
         <comment>headerLinkData</comment>
-        <translation type="unfinished"></translation>
+        <translation>Приемник Канал</translation>
     </message>
 </context>
 <context>
@@ -125,103 +184,103 @@
         <location filename="ModelObjectProject.cpp" line="66"/>
         <source>Description</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished">Описание</translation>
+        <translation>Описание</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="68"/>
         <source>Object Type</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Тип объекта</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="70"/>
         <source>Digital</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Цифровой</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="72"/>
         <source>Signature</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Подпись</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="74"/>
         <source>Controller</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Контроллер</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="76"/>
         <source>PlcAdress</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Адрес</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="78"/>
         <source>PlcVarname</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>PLC переменная</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="80"/>
         <source>Resource</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Ресурс</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="82"/>
         <source>Group events</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Группа событий</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="84"/>
         <source>KKS</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>KKS</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="86"/>
         <source>Template object</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Шаблон объекта</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="88"/>
         <source>Mnemonic Frame Name</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Наименование мнемокадра</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="90"/>
         <source>Mnemonic Frame Template</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Шаблон мнемокадра</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="92"/>
         <source>Mnemonic Frame Parent</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Родительский мнемокадр</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="94"/>
         <source>Technical Program Name</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Наименование тех. программы</translation>
     </message>
     <message>
         <location filename="ModelObjectProject.cpp" line="96"/>
         <source>Technical Program Parent</source>
         <comment>headerDataObjectProject</comment>
-        <translation type="unfinished"></translation>
+        <translation>Группа тех. программ</translation>
     </message>
 </context>
 <context>
     <name>buttonConnect</name>
     <message>
-        <location filename="EES.cpp" line="94"/>
+        <location filename="EES.cpp" line="112"/>
         <source>Connect</source>
         <translation>Подключение</translation>
     </message>
@@ -229,7 +288,7 @@
 <context>
     <name>buttonLoad</name>
     <message>
-        <location filename="EES.cpp" line="92"/>
+        <location filename="EES.cpp" line="110"/>
         <source>Open file</source>
         <translation>Открыть файл</translation>
     </message>
@@ -237,7 +296,7 @@
 <context>
     <name>buttonUpLoad</name>
     <message>
-        <location filename="EES.cpp" line="93"/>
+        <location filename="EES.cpp" line="111"/>
         <source>Upload</source>
         <translation>Выгрузить в БД</translation>
     </message>
@@ -247,53 +306,53 @@
     <message>
         <location filename="main.qml" line="26"/>
         <source>EESv2</source>
-        <translation type="unfinished"></translation>
+        <translation>EESv2</translation>
     </message>
     <message>
         <location filename="main.qml" line="57"/>
         <source>Path to BD</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь к базе данных</translation>
     </message>
     <message>
         <location filename="main.qml" line="80"/>
         <source>Connect BD</source>
-        <translation type="unfinished"></translation>
+        <translation>Подключение</translation>
     </message>
     <message>
         <location filename="main.qml" line="100"/>
         <source>Load file</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить файл</translation>
     </message>
     <message>
         <location filename="main.qml" line="120"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Старт</translation>
     </message>
     <message>
         <location filename="main.qml" line="175"/>
         <source>Filling</source>
-        <translation type="unfinished"></translation>
+        <translation>Заливка</translation>
     </message>
     <message>
         <location filename="main.qml" line="180"/>
         <source>Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Связи</translation>
     </message>
 </context>
 <context>
     <name>tab_tableData</name>
     <message>
-        <location filename="EES.cpp" line="96"/>
+        <location filename="EES.cpp" line="114"/>
         <source>Filling</source>
-        <translation type="unfinished"></translation>
+        <translation>Заливка</translation>
     </message>
 </context>
 <context>
     <name>tab_tableDataLink</name>
     <message>
-        <location filename="EES.cpp" line="97"/>
+        <location filename="EES.cpp" line="115"/>
         <source>Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Связи</translation>
     </message>
 </context>
 </TS>

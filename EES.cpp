@@ -151,43 +151,25 @@ void EES::on_buttonLoad_clicked()
         t1.detach();
   //      setDataToModel(fileName, name.toInt());
 	}
-
+//    QMessageBox::information(this, tr("Info"), tr("Data uploaded successfully"));
 }
 
 void EES::on_buttonUpLoad_clicked()
 {
-    SQL_to_FB dataBase(webserver, path, "SYSDBA", "masterkey");
-    QModelIndex index;
+    if(!on_buttonConnect_clicked()) return;
     QString logString;
-    std::string mark;
-    std::string name;
-    std::string description;
-    std::string objectType;
-    std::string digital;//добавлен для цифры
-    std::string signature;
-    std::string controller;
-    std::string plcAdress;//добавлен для цифры
-    std::string plcVarname;//добавлен для цифры
-    std::string resource;
-    std::string eventGroup;
-    std::string KKS;
-    std::string objectTemplate;
-    std::string mnemonicFrameName;
-    std::string mnemonicFrameTemplate;
-    std::string mnemonicFrameParent;
-    std::string technicalProgramName;
-    std::string technicalProgramParent;
+    int pointStart = 0, pointEnd = 0;
 
     //механизм заливки только выделенных строк
-    int pointStart = 0, pointEnd = 0;
-    std::sort(numberOfRows.begin(), numberOfRows.end());
-    std::vector<int>::iterator it;
-    it = std::unique(numberOfRows.begin(), numberOfRows.end());
-    numberOfRows.resize(distance(numberOfRows.begin(),it));
-    for (int var = 0; var < numberOfRows.size(); ++var) {
-        logs<<QString::number(numberOfRows[var]);
-    }
     if(numberOfRows.size() != 0){
+        std::sort(numberOfRows.begin(), numberOfRows.end());
+        std::vector<int>::iterator it;
+        it = std::unique(numberOfRows.begin(), numberOfRows.end());
+        numberOfRows.resize(distance(numberOfRows.begin(),it));
+        for (int i = 0; i < numberOfRows.size(); ++i) {
+            logs.debug(QString::number(numberOfRows[i]));
+        }
+
         pointStart = numberOfRows[0];
         pointEnd = numberOfRows[numberOfRows.size()-1]+1;
     }
@@ -195,114 +177,20 @@ void EES::on_buttonUpLoad_clicked()
         pointStart = 0;
         pointEnd = tableData->rowCount();
     }
-    logs<< "Начало выгрузки: " + QString::number(pointStart) + " , конец выгрузки: " + QString::number(numberOfRows[numberOfRows.size()-1]) + " , размер массива: " + QString::number(numberOfRows.size());
+    logs<< "Начало выгрузки: " + QString::number(pointStart) + " , конец выгрузки: " + QString::number(pointEnd) + " , количество строк для загрузки: " + QString::number(pointEnd-pointStart);
 
-    int id_subject = 0;// ID созданного тех. объекта
-    int evkl_subject = 0;// ID созданной группы событий
-    int id_techprog = 0;// ID созданной тех. программы
-    int resultCreateMnemonicFrame = 0; //результат выполнения создания видеокадра
-    int resultObjectOnTechnicalProgram = 0; //результат выполнения создания видеокадра
-    bool isISAObject = false;
+    logString = tr("Upload START!", "txt_connect");
+    textEditLogs->append(logString);
+    logs << logString;
 
-    if (!dataBase.connected() || tableData->columnCount() <= 1)// && tableData->rowCount() > 1)
-    {
-        textEditLogs->append(tr("Connection failed or data not loaded!", "txt_connect"));
-        return;
-    }
-    textEditLogs->append(tr("Upload START!", "txt_connect"));
-    logs << tr("Upload START!", "txt_connect");
+    //запуск заполнения модели в отдельном потоке
+    std::thread t1(&EES::fillingToDB, this, pointStart, pointEnd);
+    t1.detach();
 
-    for (int i = pointStart; i < pointEnd; i++)
-    {
-        index = tableView->model()->index(i, 0);
-
-        mark = tableData->getObject(index).Mark.toString().toStdString();
-        if (mark.size() == 0) continue; //если марка пустая, идем на следующую итерацию
-
-        name = tableData->getObject(index).Name.toString().toStdString();
-        description = tableData->getObject(index).Description.toString().toStdString();
-        objectType = tableData->getObject(index).ObjectType.toString().toStdString();
-        digital = tableData->getObject(index).Digital.toString().toStdString();//добавлен для цифры
-        signature = tableData->getObject(index).Signature.toString().toStdString();
-        controller = tableData->getObject(index).Controller.toString().toStdString();
-        plcAdress = tableData->getObject(index).PlcAdress.toString().toStdString();//добавлен для цифры
-        plcVarname = tableData->getObject(index).PlcVarname.toString().toStdString();//добавлен для цифры
-        resource = tableData->getObject(index).Resource.toString().toStdString();
-        eventGroup = tableData->getObject(index).EventGroup.toString().toStdString();
-        KKS = tableData->getObject(index).KKS.toString().toStdString();
-        objectTemplate = tableData->getObject(index).ObjectTemplate.toString().toStdString();
-        mnemonicFrameName = tableData->getObject(index).MnemonicFrameName.toString().toStdString();
-        mnemonicFrameTemplate = tableData->getObject(index).MnemonicFrameTemplate.toString().toStdString();
-        mnemonicFrameParent = tableData->getObject(index).MnemonicFrameParent.toString().toStdString();
-        technicalProgramName = tableData->getObject(index).TechnicalProgramName.toString().toStdString();
-        technicalProgramParent = tableData->getObject(index).TechnicalProgramParent.toString().toStdString();
-
-        logString = tr("Transfer object ", "txt_connect") + QString::fromStdString(mark);
-        textEditLogs->append(logString);
-        logs << logString;
-
-        logs.debug(QString::fromStdString(mark) + "    "+QString::fromStdString(name) + "    "+ QString::fromStdString(description) + "    "+ QString::fromStdString(objectType) + "    "+ QString::fromStdString(digital) + "    "+
-                QString::fromStdString(signature) + "    "+ QString::fromStdString(controller) + "    "+ QString::fromStdString(plcAdress) + "    "+ QString::fromStdString(plcVarname) + "    "+
-                QString::fromStdString(resource) + "    "+ QString::fromStdString(eventGroup) + "    "+ QString::fromStdString(KKS) + "    "+ QString::fromStdString(objectTemplate) + "    "+
-                QString::fromStdString(mnemonicFrameName) + "    "+ QString::fromStdString(mnemonicFrameTemplate) + "    "+ QString::fromStdString(mnemonicFrameParent) + "    "+ QString::fromStdString(technicalProgramName) + "    "+
-                QString::fromStdString(technicalProgramParent));
-
-        //начинаем создавать объекты если марка не пустая
-        try	{
-            if(eventGroup.size() != 0) {
-                evkl_subject = dataBase.create_new_event(eventGroup, mnemonicFrameParent);
-                if(evkl_subject == 1 || evkl_subject == 2) logs << "Ошибка при создании группы собыйти";
-                qDebug() << "Создали группу событий с ID: " + QString::number(evkl_subject);
-            }
-            id_subject = 0; //обнуляем ID на каждом цикле
-
-            if(name.size() != 0) {
-                if (digital == "драйвер"){
-                    qDebug() << "Создаем драйвер";
-                    isISAObject = false;
-                    id_subject = dataBase.create_new_driver(mark, name, description, signature, objectType, controller, KKS, objectTemplate);
-                }
-                else if (digital == "цифровой"){
-                    qDebug() << "Создаем цифровую переменную";
-                    isISAObject = false;
-                    id_subject = dataBase.create_new_digital_object(controller, objectType, mark, name, plcAdress,
-                                                                    plcVarname, resource, eventGroup, description, KKS, signature);
-                }
-                else{
-                    qDebug() << "Создаем isa объект";
-                    id_subject = dataBase.create_new_object(controller, resource, objectTemplate, objectType, mark, name, eventGroup, description, KKS, signature);
-                    if(id_subject != 0) isISAObject = true;
-                }
-            }
-
-            if(id_subject != 0) {
-                //это вписать в шапку дерева в textEditLogs (treeView)
-                logString = tr("Create new or update ") + QString::fromStdString(digital) + ", id = " + QString::number(id_subject);
-                textEditLogs->append(logString);
-                logs << logString;
-
-                //создаем мнемокадр
-                if(mnemonicFrameName.size() != 0)
-                    resultCreateMnemonicFrame = dataBase.copy_page_with_object(mnemonicFrameTemplate, mnemonicFrameName, mnemonicFrameParent,
-                                                                               std::to_string(id_subject), eventGroup, description);
-                //создаем тех. программу, кладем туда созданный объект
-                if(technicalProgramName.size() != 0) {
-                    id_techprog = dataBase.create_new_technical_programm(technicalProgramName, 300, 200, technicalProgramParent, controller, resource);
-                    resultObjectOnTechnicalProgram = dataBase.object_on_technological_program(technicalProgramName, controller, resource, objectTemplate, objectType, mark);
-                }
-            }
-        }
-        catch (const std::exception&){
-            logString = tr("Unhandled exception when creating an object");
-            textEditLogs->append(logString);
-            logs << logString;
-        }
-    }
-
-    textEditLogs->append(tr("Uploading completed!", "txt_connect"));
+//    fillingToDB(pointStart, pointEnd);
 }
 
-void EES::on_buttonConnect_clicked()
+bool EES::on_buttonConnect_clicked()
 {
     std::string tmp = txtPath->toPlainText().toStdString();
 	QString fileName;
@@ -327,11 +215,13 @@ void EES::on_buttonConnect_clicked()
             textEditLogs->append(tr("Connection successful!", "txt_connect"));
             textEditLogs->append(tr("Database connected: ", "txt_connect")
                 + txtPath->toPlainText());
+            return true;
         }
     else
         {
             textEditLogs->append(tr("Connection failed!", "txt_connect"));
             logs << (tr("Connection failed!", "txt_connect") + txtPath->toPlainText());
+            return false;
         }
 }
 
@@ -497,5 +387,133 @@ void EES::setDataToModel(QString fileName, int currentTab)
 
     tableView->resizeColumnsToContents();
     tableViewLink->resizeColumnsToContents();
-    QMessageBox::information(this, tr("Info"), tr("Data uploaded successfully"));
+//    QMessageBox::information(this, tr("Info"), tr("Data uploaded successfully"));
+}
+
+void EES::fillingToDB(int pointStart, int pointEnd)
+{
+    SQL_to_FB dataBase(webserver, path, "SYSDBA", "masterkey");
+    QModelIndex index;
+    QString logString;
+    std::string mark;
+    std::string name;
+    std::string description;
+    std::string objectType;
+    std::string digital;//добавлен для цифры
+    std::string signature;
+    std::string controller;
+    std::string plcAdress;//добавлен для цифры
+    std::string plcVarname;//добавлен для цифры
+    std::string resource;
+    std::string eventGroup;
+    std::string KKS;
+    std::string objectTemplate;
+    std::string mnemonicFrameName;
+    std::string mnemonicFrameTemplate;
+    std::string mnemonicFrameParent;
+    std::string technicalProgramName;
+    std::string technicalProgramParent;
+
+    time_t start, end;
+    time(&start);
+
+    int id_subject = 0;// ID созданного тех. объекта
+    int evkl_subject = 0;// ID созданной группы событий
+    int id_techprog = 0;// ID созданной тех. программы
+    int resultCreateMnemonicFrame = 0; //результат выполнения создания видеокадра
+    int resultObjectOnTechnicalProgram = 0; //результат выполнения создания видеокадра
+    bool isISAObject = false;
+
+    for (int i = pointStart; i < pointEnd; i++)
+    {
+        Sleep(1);
+        index = tableView->model()->index(i, 0);
+
+        mark = tableData->getObject(index).Mark.toString().toStdString();
+        if (mark.size() == 0) continue; //если марка пустая, идем на следующую итерацию
+
+        name = tableData->getObject(index).Name.toString().toStdString();
+        description = tableData->getObject(index).Description.toString().toStdString();
+        objectType = tableData->getObject(index).ObjectType.toString().toStdString();
+        digital = tableData->getObject(index).Digital.toString().toStdString();//добавлен для цифры
+        signature = tableData->getObject(index).Signature.toString().toStdString();
+        controller = tableData->getObject(index).Controller.toString().toStdString();
+        plcAdress = tableData->getObject(index).PlcAdress.toString().toStdString();//добавлен для цифры
+        plcVarname = tableData->getObject(index).PlcVarname.toString().toStdString();//добавлен для цифры
+        resource = tableData->getObject(index).Resource.toString().toStdString();
+        eventGroup = tableData->getObject(index).EventGroup.toString().toStdString();
+        KKS = tableData->getObject(index).KKS.toString().toStdString();
+        objectTemplate = tableData->getObject(index).ObjectTemplate.toString().toStdString();
+        mnemonicFrameName = tableData->getObject(index).MnemonicFrameName.toString().toStdString();
+        mnemonicFrameTemplate = tableData->getObject(index).MnemonicFrameTemplate.toString().toStdString();
+        mnemonicFrameParent = tableData->getObject(index).MnemonicFrameParent.toString().toStdString();
+        technicalProgramName = tableData->getObject(index).TechnicalProgramName.toString().toStdString();
+        technicalProgramParent = tableData->getObject(index).TechnicalProgramParent.toString().toStdString();
+
+        logString = tr("Transfer line: ", "txt_connect") + QString::number(i) + tr(", object: ") + QString::fromStdString(mark);
+        textEditLogs->append(logString);
+        logs << logString;
+
+        logs.debug(QString::fromStdString(mark) + "    "+QString::fromStdString(name) + "    "+ QString::fromStdString(description) + "    "+ QString::fromStdString(objectType) + "    "+ QString::fromStdString(digital) + "    "+
+                QString::fromStdString(signature) + "    "+ QString::fromStdString(controller) + "    "+ QString::fromStdString(plcAdress) + "    "+ QString::fromStdString(plcVarname) + "    "+
+                QString::fromStdString(resource) + "    "+ QString::fromStdString(eventGroup) + "    "+ QString::fromStdString(KKS) + "    "+ QString::fromStdString(objectTemplate) + "    "+
+                QString::fromStdString(mnemonicFrameName) + "    "+ QString::fromStdString(mnemonicFrameTemplate) + "    "+ QString::fromStdString(mnemonicFrameParent) + "    "+ QString::fromStdString(technicalProgramName) + "    "+
+                QString::fromStdString(technicalProgramParent));
+
+        //начинаем создавать объекты если марка не пустая
+        try	{
+            if(eventGroup.size() != 0) {
+                evkl_subject = dataBase.create_new_event(eventGroup, mnemonicFrameParent);
+                if(evkl_subject == 1 || evkl_subject == 2) logs << "Ошибка при создании группы собыйти";
+                qDebug() << "Создали группу событий с ID: " + QString::number(evkl_subject);
+            }
+            id_subject = 0; //обнуляем ID на каждом цикле
+
+            if(name.size() != 0) {
+                if (digital == "драйвер"){
+                    qDebug() << "Создаем драйвер";
+                    isISAObject = false;
+                    id_subject = dataBase.create_new_driver(mark, name, description, signature, objectType, controller, KKS, objectTemplate);
+                }
+                else if (digital == "цифровой"){
+                    qDebug() << "Создаем цифровую переменную";
+                    isISAObject = false;
+                    id_subject = dataBase.create_new_digital_object(controller, objectType, mark, name, plcAdress,
+                                                                    plcVarname, resource, eventGroup, description, KKS, signature);
+                }
+                else{
+                    qDebug() << "Создаем isa объект";
+                    id_subject = dataBase.create_new_object(controller, resource, objectTemplate, objectType, mark, name, eventGroup, description, KKS, signature);
+                    if(id_subject != 0) isISAObject = true;
+                }
+            }
+
+            if(id_subject != 0) {
+                //это вписать в шапку дерева в textEditLogs (treeView)
+                logString = tr("Create new or update ") + QString::fromStdString(digital) + ", id = " + QString::number(id_subject);
+                textEditLogs->append(logString);
+                logs << logString;
+
+                //создаем мнемокадр
+                if(mnemonicFrameName.size() != 0)
+                    resultCreateMnemonicFrame = dataBase.copy_page_with_object(mnemonicFrameTemplate, mnemonicFrameName, mnemonicFrameParent,
+                                                                               std::to_string(id_subject), eventGroup, description);
+                //создаем тех. программу, кладем туда созданный объект
+                if(technicalProgramName.size() != 0) {
+                    id_techprog = dataBase.create_new_technical_programm(technicalProgramName, 300, 200, technicalProgramParent, controller, resource);
+                    resultObjectOnTechnicalProgram = dataBase.object_on_technological_program(technicalProgramName, controller, resource, objectTemplate, objectType, mark);
+                }
+            }
+        }
+        catch (const std::exception&){
+            logString = tr("Unhandled exception when creating an object");
+            textEditLogs->append(logString);
+            logs << logString;
+        }
+    }
+
+    time(&end);
+    double seconds = difftime(end, start);
+    logs.debug("Время выполнения равно: " + QString::number(seconds) + " секунд");
+    textEditLogs->append(tr("Uploading completed!", "txt_connect"));
 }

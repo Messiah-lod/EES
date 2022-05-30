@@ -44,6 +44,7 @@ Qt::ItemFlags ModelLinkData::flags(const QModelIndex & index) const
 
 QVariant ModelLinkData::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    QString nameHeader;
 	if (role != Qt::DisplayRole)
 		return QVariant();
 
@@ -53,9 +54,11 @@ QVariant ModelLinkData::headerData(int section, Qt::Orientation orientation, int
 	else
 		switch (section) {
 		case 0:
-			return QVariant(tr("Source Control", "headerLinkData"));
+            nameHeader = tr("Source Control");
+            return QVariant(nameHeader);
 		case 1:
-			return QVariant(tr("Source Res", "headerLinkData"));
+            nameHeader = tr("Source Res");
+            return QVariant(nameHeader);
 		case 2:
 			return QVariant(tr("Source Mark", "headerLinkData"));
 		case 3:

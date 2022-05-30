@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
     a.setWindowIcon(mainIcon);
 
     EES excelExportScada;
-    excelExportScada.setMinimumHeight(800);
-    excelExportScada.setMinimumWidth(1000);
+    excelExportScada.setMinimumWidth(800);
+    excelExportScada.setMinimumHeight(600);
     excelExportScada.show();
 
     return a.exec();

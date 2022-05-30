@@ -18,6 +18,7 @@ class BaseSQL
 public:
 	//методы, позволяющие получить простой доступ к БД (чтение/запись)
 	BaseSQL(std::string webserver_, std::string path_, std::string user_, std::string pass_);
+
 	void setConnectParam(std::string webserver_, std::string path_, std::string user_, std::string pass_);
 	~BaseSQL();
 	bool connected();

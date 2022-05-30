@@ -20,6 +20,7 @@
 #include <vector>
 #include <conio.h> //для getch
 #include <thread>
+#include <time.h>
 
 class EES : public QWidget
 {
@@ -70,11 +71,12 @@ private:
     std::vector<int> numberOfRows; //перечень колонок для заливки
 
 	void setDataToModel(QString fileName, int currentTab = 0);
+    void fillingToDB(int pointStart, int pointEnd);
 
 public slots:
 	void on_buttonLoad_clicked();
 	void on_buttonUpLoad_clicked();
-	void on_buttonConnect_clicked();
+    bool on_buttonConnect_clicked();
 	void slotTimerLogs();
 	void closeTab(int index);
     void onRowChangeTable(QModelIndex,QModelIndex);
