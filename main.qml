@@ -14,9 +14,9 @@ import QtCharts 6.2
 //import QtQuick.Controls.Styles 1.4
 
 
-import ModelFillingDB 1.0
+//import ModelFillingDB 1.0
 
-Window {
+Item {
     width: 1000
     height: 800
     visible: true
@@ -253,4 +253,3 @@ Window {
         }
     }
 }
-

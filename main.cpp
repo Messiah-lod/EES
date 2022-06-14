@@ -4,24 +4,48 @@
 //#include <QtGui>
 //#include <QtSql>
 
-//#include <QGuiApplication>
-
-//#include <QQmlApplicationEngine>
-//#include <QQmlContext>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
 
 #include <QtWidgets>
 #include <QApplication>
+#include <QPluginLoader>
 
 #include "EES.h"
+#include "FileJob.h"
+
 
 int main(int argc, char *argv[])
 {
-//    SetConsoleCP(1251);
-//    SetConsoleOutputCP(1251);
-//    setlocale(LC_ALL,"RUS");
+    //    SetConsoleCP(1251);
+    //    SetConsoleOutputCP(1251);
+    //    setlocale(LC_ALL,"RUS");
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+
+
+    QGuiApplication app(argc, argv);
+    QQmlApplicationEngine engine;
+
+    qmlRegisterType<FileAbout>("FileJob", 1, 0, "FileJob");
+
+    const QUrl url(QStringLiteral(""));
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                     &app, [url](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl)
+            QCoreApplication::exit(-1);
+    }, Qt::QueuedConnection);
+    //    engine.load(url);
+
+
 
     QApplication a(argc, argv);
     a.setStyle(QStyleFactory::create("fusion"));
+
+    qDebug() << "Used drivers: :" << QSqlDatabase::drivers();
 
     QTranslator *translator = new QTranslator(qApp);
     static_cast<void>(translator->load(":/translator/RU_ru.qm"));
@@ -38,33 +62,16 @@ int main(int argc, char *argv[])
     excelExportScada.setMinimumHeight(600);
     excelExportScada.show();
 
+
+
+
+
+    //    qDebug() << "Доступные драйверы:" << QSqlDatabase::drivers();
+
+
+
+
+    //    return app.exec();
+
     return a.exec();
-
-//#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-//    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-//#endif
-//    QGuiApplication app(argc, argv);
-//    QApplication a(argc, argv);
-
-//    qmlRegisterType<ModelFillingDB>("ModelFillingDB", 1, 0, "ModelFillingDB");
-
-//    QQmlApplicationEngine engine;
-//    const QUrl url(QStringLiteral("qrc:/main.qml"));
-//    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-//                     &app, [url](QObject *obj, const QUrl &objUrl) {
-//        if (!obj && url == objUrl)
-//            QCoreApplication::exit(-1);
-//    }, Qt::QueuedConnection);
-
-
-//    ModelFillingDB *model = new ModelFillingDB;
-//    engine.rootContext()->setContextProperty("model", model);
-
-
-//    engine.load(url);
-
-////    qDebug() << "Доступные драйверы:" << QSqlDatabase::drivers();
-
-
-//    return app.exec();
 }

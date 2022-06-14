@@ -12,6 +12,7 @@
 #include <vector>
 #include <QtSql>
 #include <QString>
+#include <algorithm>
 
 class BaseSQL
 {

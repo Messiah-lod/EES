@@ -14,7 +14,6 @@ BaseSQL::~BaseSQL()
 int BaseSQL::connect()
 {//После получения данных о базе и пользователе создаем подключение
     Database.setHostName(QString::fromStdString(webserver));
-//    Database.setDatabaseName("D:/_С_/Рабочий стол/Киришская ГРЭС АСУ ЭТО/Pr_KirGRES_ASU_ETO/SCADABD.GDB");
     Database.setDatabaseName(QString::fromStdString(path));
     Database.setUserName(QString::fromStdString(user));
     Database.setPassword(QString::fromStdString(pass));
@@ -54,6 +53,7 @@ bool BaseSQL::connected()
 void BaseSQL::setConnectParam(std::string webserver_, std::string path_, std::string user_, std::string pass_)
 {
     webserver = webserver_;
+    std::transform(path_.begin(), path_.end(),path_.begin(), ::toupper);
     if(path_.find("SCADABD.GDB")==std::string::npos) path_+= "/SCADABD.GDB";
     path = path_;
     user = user_;
@@ -157,11 +157,15 @@ void BaseSQL::read(std::string query, std::string table, std::string collAnswer,
     read(query, table, collAnswer, vectorAnsw);
     if(vectorAnsw.size() > 0) answ = vectorAnsw[0];
     else answ = 0;
+    qDebug() << "Метод Read вернул следующее значение: " + QString::number(any_to_int(answ));
 }
 
 void BaseSQL::read(std::string query, std::string table, std::string collAnswer, std::vector <std::any> &answ)
 {
     if (!connected()) return;
+
+    logs.debug(QString::fromStdString(query));
+
 
     QSqlQuery sqlquery(QString::fromStdString(query), Database); //объект запроса с указанием на БД
     QSqlRecord sqlrecord = sqlquery.record();
@@ -191,7 +195,7 @@ void BaseSQL::read(std::string query, std::string table, std::string collAnswer,
 //        if(answ.size() == 0) answ.push_back(0);
     }
     else logs << "Исключение в методе read: Тип Параметра не найден!";
-    qDebug() << "Длин вектора с вычитанными данными равна: " + QString::number(answ.size());
+    qDebug() << "Длина вектора с вычитанными данными равна: " + QString::number(answ.size());
     /*    //приводим any к типу данных по QVariant
         switch(answerVariant.userType()){
         case QMetaType::Int: {

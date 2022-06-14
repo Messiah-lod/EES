@@ -141,7 +141,8 @@ int SQL_to_FB::create_new_technical_programm(std::string name_page, int height, 
     {
         logs << "Ошибка в методе create_new_technical_programm: имя не уникально! Создание новой программы не требуется.";
         logs << "Метод create_new_technical_programm: tmpID = " + QString::fromStdString(any_to_str(tmpID));
-        return std::any_cast<int>(tmpID);
+//        return std::any_cast<int>(tmpID);
+        return 1;
     }
 
 
@@ -242,7 +243,7 @@ int SQL_to_FB::create_new_event(std::string name_event, std::string parent_event
     logs.debug("Запрос на создание группы событий: " + QString::fromStdString(name_event));
     std::any PID = 0;
     //Проверим не пустое ли имя группы событий
-    if (name_event .size() == 0)
+    if (name_event.size() == 0)
     {
         logs << "Указанная группа событий имеет пустое имя. Группа событий создана не была.";
         return 2;
@@ -1191,6 +1192,7 @@ int SQL_to_FB::create_new_object(std::string controller, std::string resource, s
     {
         logs << "Исключение в методе create_new_object:";
         logs << "ID контроллера или ресурса не найден! Выполнение метода закончилось с кодом 1.";
+        return 1;
     }
 
     //найдем ID требуемого шаблона и объекта*************************
@@ -1268,8 +1270,8 @@ int SQL_to_FB::create_new_object(std::string controller, std::string resource, s
         write(query);
 
         logs << "Марка объекта уже существует! Поля объекта обновлены. Новый объект не создан. Метод вернул ID найденного объекта.";
-        get_param("CARDS", "MARKA", "PLC_GR", "ID", mark_obj, any_to_str(res), subjectID);
-        return any_to_int(subjectID);
+ //       get_param("CARDS", "MARKA", "PLC_GR", "ID", mark_obj, any_to_str(res), subjectID);
+        return 10;
     }
 
     //находим все ID с KKS объекта заданным пользователем
@@ -1369,12 +1371,12 @@ int SQL_to_FB::create_new_digital_object(std::string controller, std::string obj
     }
 
     get_param("CARDS", "MARKA", "PLC_ID", "ID", mark, any_to_str(control), subjectID);
-    int tmpID = any_to_int(subjectID);//переменная для хранения найденного ID объекта по марке в контроллере
+ //   int tmpID = any_to_int(subjectID);//переменная для хранения найденного ID объекта по марке в контроллере
     bool errorMark = !checkingIsCorrectName(mark);
     if (errorMark)
     {
         logs << "Цифровой объект не был создан! Ошибка в марке либо марка не уникальна.";
-        return tmpID;
+        return 4;
     }
     if (any_to_int(subjectID) != 0){	//прверим уникальность имени
         query.clear();
@@ -1382,7 +1384,7 @@ int SQL_to_FB::create_new_digital_object(std::string controller, std::string obj
                 " , KKS = '"+KKS +"' WHERE ID = " + any_to_str(subjectID);
         write(query);
         logs << "Марка цифрового объекта не уникальна! Поля объекта были обновлены. Метод вернул ID обновленного объекта.";
-        return tmpID;
+        return 10;
     }
 
     if (resource.size() == 0) resource = "0";
@@ -1562,7 +1564,7 @@ int SQL_to_FB::copy_page_with_object(std::string templatePage, std::string nameP
 
     create_new_rec_onpage("event", namePage, "BUTEVENT", eventGroup, "[5][1][0][0]");
 
-    return 0;
+    return any_to_int(idNewPage);
 }
 
 int SQL_to_FB::create_new_driver(std::string mark, std::string nameDrive, std::string diskDrive, std::string signDrive, std::string typeDrive, std::string contorllDrive, std::string KKSDrive, std::string groupDrive)
@@ -1586,7 +1588,8 @@ int SQL_to_FB::create_new_driver(std::string mark, std::string nameDrive, std::s
     if (errorMark)
     {
         logs << "Драйвер не был создан! Ошибка в марке либо марка не уникальна.";
-        return std::any_cast<int>(tmpID);
+//        return std::any_cast<int>(tmpID);
+        return 3;
     }
     if (any_to_int(tmpID) != 0){	//прверим уникальность имени
         query.clear();
@@ -1594,13 +1597,18 @@ int SQL_to_FB::create_new_driver(std::string mark, std::string nameDrive, std::s
                 "' , KKS = '"+KKSDrive +"' WHERE ID = " + any_to_str(tmpID);
         write(query);
         logs << "Марка драйвера не уникальна! Поля объекта были обновлены. Метод вернул ID обновленного драйвера.";
-        return any_to_int(tmpID);
+        return 10;
     }
 
-    if (std::any_cast <int> (objectID) == 0 || std::any_cast <int> (serverID) == 0)
+    if (std::any_cast <int> (serverID) == 0)
     {
-        logs << "Драйвер не был создан! Ошибка в определении типа драйвери или сервера.";
+        logs << "Драйвер не был создан! Ошибка в определении провайдера.";
         return 1;
+    }
+    if (std::any_cast <int> (objectID) == 0)
+    {
+        logs << "Драйвер не был создан! Ошибка в определении типа драйвера.";
+        return 4;
     }
 
     if (signDrive == "Внутренний")

@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>About.qml</file>
     </qresource>
     <qresource prefix="/translator">
         <file>qtbase_ru.qm</file>
@@ -9,5 +10,13 @@
     </qresource>
     <qresource prefix="/pic">
         <file>icon.ico</file>
+        <file>information.png</file>
+        <file>036-trash.png</file>
+        <file>007-edit.png</file>
+        <file>check.png</file>
+        <file>warning.png</file>
+    </qresource>
+    <qresource prefix="/text">
+        <file>README.md</file>
     </qresource>
 </RCC>

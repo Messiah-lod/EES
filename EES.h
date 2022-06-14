@@ -5,6 +5,8 @@
 #include "ModelObjectProject.h"
 #include "ModelLinkData.h"
 #include "Logger.h"
+#include "FileJob.h"
+#include "ChangeLine.hpp"
 
 #include <QtWidgets/QWidget>
 #include <QtWidgets>
@@ -12,6 +14,10 @@
 #include <QPushButton>
 #include <QTextStream> 
 #include <QAxObject>
+#include <QQuickView>
+#include <QQmlEngine>
+#include <QSettings>
+#include <QComboBox>
 
 #include <iostream>
 #include "windows.h"
@@ -21,64 +27,98 @@
 #include <conio.h> //для getch
 #include <thread>
 #include <time.h>
+#include <cctype>
 
-class EES : public QWidget
+class EES : public QMainWindow
 {
 	Q_OBJECT
 
 public:
     EES(QWidget *parent = nullptr);
+    ~EES();
 	void retranslateUi();
 	int initializingConnection(std::string path);
 
 private:
 
-	QSplitter *splitterVertical;
+    QWidget *centreWidget {nullptr};
+    QSplitter *splitterVertical {nullptr};
 
-	QTabWidget *tabWidget; //организуем вкладки
-	QWidget *tab_tableData;//вкладка создания
-	QWidget *tab_tableDataLink;//вкладка связки
+    QTabWidget *tabWidget {nullptr}; //организуем вкладки
+    QWidget *tab_tableData {nullptr};//вкладка создания
+    QWidget *tab_tableDataLink {nullptr};//вкладка связки
 
 	enum Tab {//добавим перечисления для уникального идентифицирования вкладок
 		enum_tableData = 0,
 		enum_tableDataLink
 	};
 	
-	QGridLayout *grid_tab_tableData; //создаем грид, который кладем на вкладку
-	QTableView *tableView;//создаем вью, который положим на грид вкладки
-    ModelObjectProject *tableData;//создадим модель, которую вложим во вью
+    QGridLayout *grid_tab_tableData {nullptr}; //создаем грид, который кладем на вкладку
+    QTableView *tableView {nullptr};//создаем вью, который положим на грид вкладки
+    ModelObjectProject *tableData {nullptr};//создадим модель, которую вложим во вью
 
-	QGridLayout *grid_tableDataLink;//создаем грид, который кладем на вкладку
-	QTableView *tableViewLink;//создаем вью, который положим на грид вкладки
-    ModelLinkData *tableDataLink;//создадим модель, которую вложим во вью
+    QGridLayout *grid_tableDataLink {nullptr};//создаем грид, который кладем на вкладку
+    QTableView *tableViewLink {nullptr};//создаем вью, который положим на грид вкладки
+    ModelLinkData *tableDataLink {nullptr};//создадим модель, которую вложим во вью
 
-	QPushButton *buttonLoad;
-	QPushButton *buttonUpLoad;
-	QPushButton *buttonConnect;
-	QTextEdit *textEditLogs;
-	QGridLayout *gridLayout;
-	QTextEdit *txtPath;
+    QPushButton *buttonLoad {nullptr};
+    QPushButton *buttonUpLoad {nullptr};
+    QPushButton *buttonConnect {nullptr};
+    QPushButton *buttonAbout {nullptr};
+    QPushButton *buttonSelectAll {nullptr};
+
+    QTreeView *textTreeLogs {nullptr};
+    QStandardItemModel* textTreeLogsModel {nullptr};
+    QGridLayout *gridLayout {nullptr};
+    QComboBox *txtPath {nullptr};
+    QToolBar *aboutToolBar {nullptr};
 
 	//переменные для подключения к БД
 	std::string webserver;
 	std::string path;
 
-	QTimer *timer;
     Logger logs{"logsSQL"};
-	QString temp;
 
     QPalette darkPalette;
     std::vector<int> numberOfRows; //перечень колонок для заливки
 
 	void setDataToModel(QString fileName, int currentTab = 0);
-    void fillingToDB(int pointStart, int pointEnd);
+    void fillingToDB(std::vector<int> rows);
+
+    QQuickView *view{nullptr};
+    QWidget *container{nullptr};
+
+    QSettings mySetting {"settings.ini", QSettings::Format::IniFormat, this};
+    QStringList listPath;
+    QAction *actEdit;
+    QAction *actDel;
+    int selectedIndexPath = 0;
+    ChangeLine *changeLine {nullptr};
+
+    bool eventFilter(QObject *o, QEvent *e);
 
 public slots:
 	void on_buttonLoad_clicked();
 	void on_buttonUpLoad_clicked();
     bool on_buttonConnect_clicked();
-	void slotTimerLogs();
+    void on_buttonAbout_clicked();
+    void on_buttonSelectAll_clicked();
+
 	void closeTab(int index);
-    void onRowChangeTable(QModelIndex,QModelIndex);
-    void onRowChangeLink(QModelIndex,QModelIndex);
+
+    void closeAbout();
+
+    void list_context_menu(QPoint pos);
+    void changePath(int index);
+    void selectedPath(int index);
+    void on_actionEdit_clicked();
+    void on_actionDel_clicked();
+    void addChangePath(QString path, int index);
+
+    void slotFinishSetDataToModel();
+    void slotFinishFillingToDB();
+
+signals:
+    void finishSetDataToModel();
+    void finishFillingToDB();
 };
