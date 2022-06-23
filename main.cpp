@@ -11,9 +11,11 @@
 #include <QtWidgets>
 #include <QApplication>
 #include <QPluginLoader>
+#include <QQuickStyle>
 
 #include "EES.h"
 #include "FileJob.h"
+#include "SettingsApp.h"
 
 
 int main(int argc, char *argv[])
@@ -31,6 +33,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     qmlRegisterType<FileAbout>("FileJob", 1, 0, "FileJob");
+    qmlRegisterType<SettingsApp>("SettingsApp", 1, 0, "SettingsApp");
 
     const QUrl url(QStringLiteral(""));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
@@ -44,18 +47,26 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     a.setStyle(QStyleFactory::create("fusion"));
+//    QQuickStyle::setStyle("Material");
 
     qDebug() << "Used drivers: :" << QSqlDatabase::drivers();
 
-    QTranslator *translator = new QTranslator(qApp);
-    static_cast<void>(translator->load(":/translator/RU_ru.qm"));
-    QTranslator *translatorStandart = new QTranslator(qApp);
-    static_cast<void>(translatorStandart->load(":/translator/qtbase_ru.qm"));
-    qApp->installTranslator(translator);
-    qApp->installTranslator(translatorStandart);
+//    QTranslator *translator = new QTranslator(qApp);
+//    static_cast<void>(translator->load(":/translator/RU_ru.qm"));
+//    QTranslator *translatorStandart = new QTranslator(qApp);
+//    static_cast<void>(translatorStandart->load(":/translator/qtbase_ru.qm"));
+//    qApp->installTranslator(translator);
+//    qApp->installTranslator(translatorStandart);
 
     const QIcon mainIcon = QIcon::fromTheme("mainIcon", QIcon(":/pic/icon.ico"));
     a.setWindowIcon(mainIcon);
+
+
+//    QQuickView *view = new QQuickView;
+//    view->setSource(QUrl(QLatin1String("qrc:/Splash.qml")));
+//    view->show();
+ //   view->close();
+
 
     EES excelExportScada;
     excelExportScada.setMinimumWidth(800);

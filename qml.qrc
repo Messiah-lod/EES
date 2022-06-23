@@ -2,6 +2,9 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>About.qml</file>
+        <file>SettingsWindow.qml</file>
+        <file>Splash.qml</file>
+        <file>CustomizingStyle.qml</file>
     </qresource>
     <qresource prefix="/translator">
         <file>qtbase_ru.qm</file>
@@ -15,6 +18,7 @@
         <file>007-edit.png</file>
         <file>check.png</file>
         <file>warning.png</file>
+        <file>162-settings.png</file>
     </qresource>
     <qresource prefix="/text">
         <file>README.md</file>

@@ -1,5 +1,3 @@
-//import QtQuick 2.0
-//import QtQuick.Window 2.15
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtCharts 6.2
@@ -129,3 +127,9 @@ Rectangle  {
 
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

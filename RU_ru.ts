@@ -4,7 +4,7 @@
 <context>
     <name>About</name>
     <message>
-        <location filename="About.qml" line="80"/>
+        <location filename="About.qml" line="78"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -12,25 +12,35 @@
 <context>
     <name>ChangeLine</name>
     <message>
-        <location filename="ChangeLine.hpp" line="38"/>
+        <location filename="ChangeLine.hpp" line="43"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="ChangeLine.hpp" line="39"/>
+        <location filename="ChangeLine.hpp" line="44"/>
         <source>Path to DB</source>
-        <translation>Пусть к БД</translation>
+        <translation>Путь к БД</translation>
+    </message>
+    <message>
+        <location filename="ChangeLine.hpp" line="68"/>
+        <source>Open file</source>
+        <translation>Открыть файл</translation>
+    </message>
+    <message>
+        <location filename="ChangeLine.hpp" line="68"/>
+        <source>Data base (*.gdb)</source>
+        <translation>Data base (*.gdb)</translation>
     </message>
 </context>
 <context>
     <name>EES</name>
     <message>
-        <location filename="EES.cpp" line="209"/>
+        <location filename="EES.cpp" line="250"/>
         <source>Open file</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="209"/>
+        <location filename="EES.cpp" line="250"/>
         <source>Data Files (*.xls *.xlsx *.xlsm)</source>
         <translation>Data Files (*.xls *.xlsx *.xlsm)</translation>
     </message>
@@ -45,7 +55,7 @@
         <translation type="vanished">Открыт файл: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="256"/>
+        <location filename="EES.cpp" line="297"/>
         <source>Upload START!</source>
         <comment>txt_connect</comment>
         <translation>Старт выгрузки!</translation>
@@ -75,95 +85,93 @@
         <translation type="vanished">Соединение с базой данных: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="139"/>
+        <location filename="EES.cpp" line="151"/>
         <source>Add...</source>
         <translation>Добавить...</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="189"/>
+        <location filename="EES.cpp" line="205"/>
         <source>Edit</source>
         <translation>Изменить</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="190"/>
+        <location filename="EES.cpp" line="206"/>
         <source>Delete</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="218"/>
+        <location filename="EES.cpp" line="259"/>
         <source>No file chosen!</source>
         <translation>Файл не выбран!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="223"/>
+        <location filename="EES.cpp" line="264"/>
         <source>File open: </source>
         <translation>Открыт файл: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="282"/>
+        <location filename="EES.cpp" line="323"/>
         <source>Connection successful!</source>
         <translation>Подключение успешно!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="284"/>
+        <location filename="EES.cpp" line="325"/>
         <source>Database connected: </source>
         <translation>Соединение с базой данных: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="290"/>
+        <location filename="EES.cpp" line="331"/>
         <source>Connection failed! Path: </source>
         <translation>Ошибка подключения! Путь: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="292"/>
+        <location filename="EES.cpp" line="333"/>
         <source>Connection failed!</source>
         <comment>txt_connect</comment>
         <translation>Ошибка подключения!</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="386"/>
-        <location filename="EES.cpp" line="391"/>
+        <location filename="EES.cpp" line="432"/>
+        <location filename="EES.cpp" line="437"/>
         <source>Information</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="386"/>
+        <location filename="EES.cpp" line="432"/>
         <source>Data from the file has been uploaded</source>
         <translation>Данные из файла загружены</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="391"/>
+        <location filename="EES.cpp" line="437"/>
         <source>The data has been uploaded to the database</source>
         <translation>Данные в базу данных загружены</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="589"/>
+        <location filename="EES.cpp" line="636"/>
         <source>Transfer line: </source>
         <oldsource>Transfer object </oldsource>
         <comment>txt_connect</comment>
         <translation>Перекачиваем линию: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="589"/>
+        <location filename="EES.cpp" line="636"/>
         <source>, object: </source>
         <translation>, объект: </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="606"/>
         <source>Наименование группы событий пустое</source>
-        <translation>Наименование группы событий пустое</translation>
+        <translation type="vanished">Наименование группы событий пустое</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="610"/>
         <source>Группа событий создана</source>
-        <translation>Группа событий создана</translation>
+        <translation type="vanished">Группа событий создана</translation>
     </message>
     <message>
         <source>Create new or update </source>
         <translation type="vanished">Создан новый или обновлен </translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="734"/>
+        <location filename="EES.cpp" line="781"/>
         <source>Unhandled exception when creating an object</source>
         <translation>Необработанное исключение при создании бъекта</translation>
     </message>
@@ -183,7 +191,7 @@
         <translation type="vanished">Excel Export Scada v2</translation>
     </message>
     <message>
-        <location filename="EES.cpp" line="179"/>
+        <location filename="EES.cpp" line="195"/>
         <source>Excel Export Scada v2.1.0</source>
         <translation>Excel Export Scada v2.1.0</translation>
     </message>
@@ -359,9 +367,22 @@
     </message>
 </context>
 <context>
+    <name>SettingsWindow</name>
+    <message>
+        <location filename="SettingsWindow.qml" line="47"/>
+        <source>Dark theme</source>
+        <translation>Темная тема</translation>
+    </message>
+    <message>
+        <location filename="SettingsWindow.qml" line="104"/>
+        <source>Language</source>
+        <translation>Язык</translation>
+    </message>
+</context>
+<context>
     <name>buttonConnect</name>
     <message>
-        <location filename="EES.cpp" line="182"/>
+        <location filename="EES.cpp" line="198"/>
         <source>Connect</source>
         <translation>Подключение</translation>
     </message>
@@ -369,7 +390,7 @@
 <context>
     <name>buttonLoad</name>
     <message>
-        <location filename="EES.cpp" line="180"/>
+        <location filename="EES.cpp" line="196"/>
         <source>Open file</source>
         <translation>Открыть файл</translation>
     </message>
@@ -377,7 +398,7 @@
 <context>
     <name>buttonSelectAll</name>
     <message>
-        <location filename="EES.cpp" line="183"/>
+        <location filename="EES.cpp" line="199"/>
         <source>Select all</source>
         <translation>Выделить все</translation>
     </message>
@@ -385,7 +406,7 @@
 <context>
     <name>buttonUpLoad</name>
     <message>
-        <location filename="EES.cpp" line="181"/>
+        <location filename="EES.cpp" line="197"/>
         <source>Upload</source>
         <translation>Выгрузить в БД</translation>
     </message>
@@ -431,7 +452,7 @@
 <context>
     <name>tab_tableData</name>
     <message>
-        <location filename="EES.cpp" line="186"/>
+        <location filename="EES.cpp" line="202"/>
         <source>Filling</source>
         <translation>Заливка</translation>
     </message>
@@ -439,7 +460,7 @@
 <context>
     <name>tab_tableDataLink</name>
     <message>
-        <location filename="EES.cpp" line="187"/>
+        <location filename="EES.cpp" line="203"/>
         <source>Link</source>
         <translation>Связи</translation>
     </message>

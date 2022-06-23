@@ -18,10 +18,15 @@ public:
     {
         QGridLayout *mainGrid = new QGridLayout(this);
         line = new QLineEdit;
+        getPath = new QPushButton;
+        getPath->setText("...");
+        getPath->setMaximumWidth(50);
         btnOk = new QPushButton;
         mainGrid->addWidget(line, 0,0,1,3);
-        mainGrid->addWidget(btnOk, 0,3,1,1);
+        mainGrid->addWidget(getPath, 0,3,1,1);
+        mainGrid->addWidget(btnOk, 0,4,1,1);
 
+        QObject::connect(getPath, SIGNAL(clicked()), this, SLOT(on_getPath_clicked()));
         QObject::connect(btnOk, SIGNAL(clicked()), this, SLOT(on_btnOk_clicked()));
 
         this->setLayout(mainGrid);
@@ -42,28 +47,34 @@ public:
 
 private:
     QLineEdit *line {nullptr};
+    QPushButton *getPath {nullptr};
     QPushButton *btnOk {nullptr};
     int currentLine = -1;
 
 private slots:
     void on_btnOk_clicked(){
-//       qDebug() << "Тап-тап";
         emit changeLineComplete(line->text(), currentLine);
         currentLine = -1;
         line->clear();
         this->close();
     }
 
+
+    void on_getPath_clicked(){
+        QString fileName;
+        try
+        {
+            fileName = QFileDialog::getOpenFileName(this,
+                            tr("Open file"), "", tr("Data base (*.gdb)"));
+        }
+        catch (const std::exception&) { fileName = ""; }
+        line->setText(fileName);
+    }
+
 signals:
     void changeLineComplete(QString, int);
 
 };
-
-
-
-
-
-
 
 
 

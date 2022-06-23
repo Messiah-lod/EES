@@ -29,6 +29,11 @@ EES::EES(QWidget *parent) : QMainWindow(parent)
     buttonConnect = new QPushButton;
     buttonSelectAll = new QPushButton;
 
+    buttonSettings = new QPushButton;
+    buttonSettings->setIcon(QIcon(":/pic/162-settings.png"));
+    buttonSettings->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    buttonSettings->setFixedSize(QSize(30,30));
+
     buttonAbout = new QPushButton;
     buttonAbout->setIcon(QIcon(":/pic/information.png"));
     buttonAbout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -80,6 +85,7 @@ EES::EES(QWidget *parent) : QMainWindow(parent)
     QObject::connect(buttonLoad, SIGNAL(clicked()), this, SLOT(on_buttonLoad_clicked()));
     QObject::connect(buttonUpLoad, SIGNAL(clicked()), this, SLOT(on_buttonUpLoad_clicked()));
     QObject::connect(buttonConnect, SIGNAL(clicked()), this, SLOT(on_buttonConnect_clicked()));
+    QObject::connect(buttonSettings, SIGNAL(clicked()), this, SLOT(on_buttonSettings_clicked()));
     QObject::connect(buttonAbout, SIGNAL(clicked()), this, SLOT(on_buttonAbout_clicked()));
     QObject::connect(buttonSelectAll, SIGNAL(clicked()), this, SLOT(on_buttonSelectAll_clicked()));
 
@@ -88,6 +94,7 @@ EES::EES(QWidget *parent) : QMainWindow(parent)
 
     aboutToolBar = new QToolBar;
     this->addToolBar(aboutToolBar);
+    aboutToolBar->addWidget(buttonSettings);
     aboutToolBar->addWidget(buttonAbout);
 
     //связка для закрытия вкладки или смены
@@ -100,38 +107,43 @@ EES::EES(QWidget *parent) : QMainWindow(parent)
     tableView->resizeColumnsToContents();
     tableViewLink->resizeColumnsToContents();
 
-    darkPalette.setColor(QPalette::Window, QColor(53, 53, 53));
-    darkPalette.setColor(QPalette::WindowText, Qt::white);
-    darkPalette.setColor(QPalette::Base, QColor(25, 25, 25));
-    darkPalette.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
-    darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
-    darkPalette.setColor(QPalette::ToolTipText, Qt::white);
-    darkPalette.setColor(QPalette::Text, Qt::white);
-    darkPalette.setColor(QPalette::Button, QColor(53, 53, 53));
-    darkPalette.setColor(QPalette::ButtonText, Qt::white);
-    darkPalette.setColor(QPalette::BrightText, Qt::red);
-    darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
-    darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
-    darkPalette.setColor(QPalette::HighlightedText, Qt::black);
-    qApp->setPalette(darkPalette);
+
 
     //отобразим грид с виджетами
     //   centreWidget->setLayout(gridLayout);
     this->setCentralWidget(centreWidget);
 
 
-    //механизм для отображения окна "О программе", написанного на QML
-    view = new QQuickView();
-    view->setResizeMode(QQuickView::SizeRootObjectToView);
-    view->setSource(QUrl("qrc:/About.qml")); // зададим адрес к ресурсу
-    container = QWidget::createWindowContainer(view, this, Qt::Window);
-    container->setMinimumSize(600, 400);
+    //механизм для отображения окна "Настройки", написанного на QML
+    settingsApp = new SettingsApp(); //класс хрнения наборов стилей, языков и тп....
+    viewSettings = new QQuickView();
+    viewSettings->setResizeMode(QQuickView::SizeRootObjectToView);
+    viewSettings->setSource(QUrl("qrc:/SettingsWindow.qml")); // зададим адрес к ресурсу
+    QQuickItem *item = viewSettings->rootObject();
+//    QObject *swLang = item->findChild<QObject*>("comboBoxLanguage");
+    QObject::connect(item, SIGNAL(qmlSettingsChangeLanguage()), this, SLOT(retranslateUi()));
+    QObject::connect(item, SIGNAL(qmlSettingsChangeTheme()), this, SLOT(redrawUI()));
 
+    containerSettings = QWidget::createWindowContainer(viewSettings, this, Qt::Window);
+    containerSettings->setMinimumSize(250, 100);
+    containerSettings->setMaximumSize(250, 100);
+
+
+
+
+
+
+
+    //механизм для отображения окна "О программе", написанного на QML
+    viewAbout = new QQuickView();
+    viewAbout->setResizeMode(QQuickView::SizeRootObjectToView);
+    viewAbout->setSource(QUrl("qrc:/About.qml")); // зададим адрес к ресурсу
+    containerAbout = QWidget::createWindowContainer(viewAbout, this, Qt::Window);
+    containerAbout->setMinimumSize(600, 400);
     //   container->setMaximumSize(300, 200);
     //   container->setFocusPolicy(Qt::TabFocus);
-
     //связка для закрытия окна из QML
-    QObject::connect(view->engine(), SIGNAL(quit()), this, SLOT(closeAbout()));
+    QObject::connect(viewAbout->engine(), SIGNAL(quit()), this, SLOT(closeAbout()));
 
 
     //механизм для считывания из файла настроек всех путей и добавление их в выпадающий список
@@ -162,8 +174,10 @@ EES::EES(QWidget *parent) : QMainWindow(parent)
     //механизм открытия пути, который использовался в последний раз
     QVariant curIndPath = mySetting.value("last_DB");
     txtPath->setCurrentIndex(curIndPath.toInt());
+    if (txtPath->count() == 1) changeLine->show();
 
     retranslateUi();
+    redrawUI();
 }
 
 EES::~EES()
@@ -176,7 +190,9 @@ EES::~EES()
 
 void EES::retranslateUi()
 {
-    setWindowTitle(QApplication::translate("EESClass", "Excel Export Scada v2.1.0", nullptr));
+    qDebug() << "Переводим UI";
+
+    setWindowTitle(QApplication::translate("EESClass", "Excel Export Scada v2.1.1", nullptr));
     buttonLoad->setText(QApplication::translate("buttonLoad", "Open file", nullptr));
     buttonUpLoad->setText(QApplication::translate("buttonUpLoad", "Upload", nullptr));
     buttonConnect->setText(QApplication::translate("buttonConnect", "Connect", nullptr));
@@ -190,7 +206,30 @@ void EES::retranslateUi()
     actDel->setText(tr("Delete"));
     //   txtPath->setPlaceholderText(QStringLiteral("--Select path--"));
 
-} // retranslateUi
+
+    viewAbout->engine()->retranslate();
+    viewSettings->engine()->retranslate();
+
+}
+
+//void EES::redrawUI(QString _qss, QPalette _palette)
+void EES::redrawUI()
+{
+ //   this->setPalette(settingsApp->getPalette());
+
+    buttonSettings->setStyleSheet(settingsApp->getQss());
+    buttonAbout->setStyleSheet(settingsApp->getQss());
+
+
+    viewAbout->engine()->clearComponentCache();
+    viewAbout->setSource(QUrl("qrc:/About.qml"));
+
+
+    //после включения, ломается, т.к. перерисовываются окна настроек и сигналы не испускаются
+//    viewSettings->setSource(QUrl("qrc:/SettingsWindow.qml"));
+
+
+}
 
 void EES::on_buttonLoad_clicked()
 {
@@ -297,7 +336,12 @@ bool EES::on_buttonConnect_clicked()
 void EES::on_buttonAbout_clicked()
 {
     qDebug() << "about";
-    container->show();
+    containerAbout->show();
+}
+
+void EES::on_buttonSettings_clicked()
+{
+    containerSettings->show();
 }
 
 void EES::on_buttonSelectAll_clicked()
@@ -318,7 +362,7 @@ void EES::closeTab(int index)
 
 void EES::closeAbout()
 {
-    container->close();
+    containerAbout->close();
 }
 
 void EES::list_context_menu(QPoint pos)
@@ -391,17 +435,35 @@ void EES::slotFinishFillingToDB()
     QMessageBox::information(this, tr("Information"), tr("The data has been uploaded to the database"));
 }
 
+
 int EES::initializingConnection(std::string _path)
 {
     webserver.clear();
     path.clear();
     //Запишем WEB-сервер в строку параметра
-    for (size_t i = 0; i < _path.size(); i++)
-    {
-        if (!std::isalpha(_path[i])) webserver.push_back(_path[i]);
+    if(_path.size() > 3){
+        if(std::isalpha(_path[2])){
+            webserver = "//";
+            for (size_t i = 2; i < _path.size(); i++)
+            {
+                if ( _path[i] != '/' && _path[i] != '\\' ) webserver.push_back(_path[i]);
+                else {
+                    webserver.push_back(_path[i]);
+                    try{webserver.push_back(_path[i+1]);}
+                    catch(...){}
+                    break;
+                }
+            }
+        }
         else {
-            webserver.push_back(_path[i]);
-            break;
+            for (size_t i = 0; i < _path.size(); i++)
+            {
+                if (!std::isalpha(_path[i])) webserver.push_back(_path[i]);
+                else {
+                    webserver.push_back(_path[i]);
+                    break;
+                }
+            }
         }
     }
     //вырежем web-сервер из параметра "путь"
@@ -418,6 +480,10 @@ int EES::initializingConnection(std::string _path)
 
     //    webserver = "192.168.37.3\\D";
     //    path = "ScadaPr\\ASU_ETO\\Scada 2.8\\Pr_KirGRES_ASU_ETO\\scadabd.gdb";
+
+    //    webserver = "\\devsrv.ivtek\D";
+    //    path = "\\devsrv.ivtek\D\ScadaPr\ASU_ETO\Scada 2.1.4\Pr_Piter_TEC_14_PGU\scadabd.gdb";
+
     //    библиотека сама добавляет двоеточие между сервером и путем
 
     return 0;

@@ -7,6 +7,7 @@
 #include "Logger.h"
 #include "FileJob.h"
 #include "ChangeLine.hpp"
+#include "SettingsApp.h"
 
 #include <QtWidgets/QWidget>
 #include <QtWidgets>
@@ -18,6 +19,8 @@
 #include <QQmlEngine>
 #include <QSettings>
 #include <QComboBox>
+#include <QObject>
+#include <QQuickItem>
 
 #include <iostream>
 #include "windows.h"
@@ -31,13 +34,13 @@
 
 class EES : public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
     EES(QWidget *parent = nullptr);
     ~EES();
-	void retranslateUi();
-	int initializingConnection(std::string path);
+
+    int initializingConnection(std::string path);
 
 private:
 
@@ -48,11 +51,11 @@ private:
     QWidget *tab_tableData {nullptr};//вкладка создания
     QWidget *tab_tableDataLink {nullptr};//вкладка связки
 
-	enum Tab {//добавим перечисления для уникального идентифицирования вкладок
-		enum_tableData = 0,
-		enum_tableDataLink
-	};
-	
+    enum Tab {//добавим перечисления для уникального идентифицирования вкладок
+        enum_tableData = 0,
+        enum_tableDataLink
+    };
+
     QGridLayout *grid_tab_tableData {nullptr}; //создаем грид, который кладем на вкладку
     QTableView *tableView {nullptr};//создаем вью, который положим на грид вкладки
     ModelObjectProject *tableData {nullptr};//создадим модель, которую вложим во вью
@@ -65,6 +68,7 @@ private:
     QPushButton *buttonUpLoad {nullptr};
     QPushButton *buttonConnect {nullptr};
     QPushButton *buttonAbout {nullptr};
+    QPushButton *buttonSettings {nullptr};
     QPushButton *buttonSelectAll {nullptr};
 
     QTreeView *textTreeLogs {nullptr};
@@ -73,22 +77,26 @@ private:
     QComboBox *txtPath {nullptr};
     QToolBar *aboutToolBar {nullptr};
 
-	//переменные для подключения к БД
-	std::string webserver;
-	std::string path;
+    //переменные для подключения к БД
+    std::string webserver;
+    std::string path;
 
     Logger logs{"logsSQL"};
 
     QPalette darkPalette;
     std::vector<int> numberOfRows; //перечень колонок для заливки
 
-	void setDataToModel(QString fileName, int currentTab = 0);
+    void setDataToModel(QString fileName, int currentTab = 0);
     void fillingToDB(std::vector<int> rows);
 
-    QQuickView *view{nullptr};
-    QWidget *container{nullptr};
+    QQuickView *viewSettings{nullptr};
+    QWidget *containerSettings{nullptr};
+    QQuickView *viewAbout{nullptr};
+    QWidget *containerAbout{nullptr};
 
     QSettings mySetting {"settings.ini", QSettings::Format::IniFormat, this};
+    SettingsApp *settingsApp {nullptr};
+
     QStringList listPath;
     QAction *actEdit;
     QAction *actDel;
@@ -97,14 +105,23 @@ private:
 
     bool eventFilter(QObject *o, QEvent *e);
 
+
+    QTranslator *translator = nullptr;
+    QTranslator *translatorStandart = nullptr;
+
 public slots:
-	void on_buttonLoad_clicked();
-	void on_buttonUpLoad_clicked();
+    void retranslateUi();
+//    void redrawUI(QString _qss, QPalette _palette);
+    void redrawUI();
+
+    void on_buttonLoad_clicked();
+    void on_buttonUpLoad_clicked();
     bool on_buttonConnect_clicked();
     void on_buttonAbout_clicked();
+    void on_buttonSettings_clicked();
     void on_buttonSelectAll_clicked();
 
-	void closeTab(int index);
+    void closeTab(int index);
 
     void closeAbout();
 
@@ -117,6 +134,7 @@ public slots:
 
     void slotFinishSetDataToModel();
     void slotFinishFillingToDB();
+
 
 signals:
     void finishSetDataToModel();
